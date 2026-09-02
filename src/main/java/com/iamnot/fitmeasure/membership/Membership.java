@@ -81,4 +81,6 @@ public class Membership extends BaseEntity {
     public void activate() {
         this.status = MembershipStatus.ACTIVE;
     }
+
+    public void assignMemberNo(String memberNo) { this.memberNo = memberNo; }
 }
