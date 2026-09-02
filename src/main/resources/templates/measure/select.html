@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>측정 프로그램 선택</title>
+    <style>
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+            line-height:1.6;padding:32px;max-width:640px;margin:0 auto;letter-spacing:-0.01em;}
+        h1{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:24px;}
+        .card{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;
+            padding:20px;margin-bottom:12px;text-decoration:none;color:inherit;transition:border-color .15s;}
+        .card:hover{border-color:var(--orange);}
+        .card .name{font-size:19px;font-weight:700;}
+        .card .meta{font-size:14px;color:var(--sub);margin-top:4px;}
+    </style>
+</head>
+<body>
+<h1>어떤 프로그램으로 측정할까요?</h1>
+<a class="card" th:each="p : ${programs}"
+   th:href="@{/measure/{mid}/program/{pid}(mid=${membershipId},pid=${p.id})}">
+    <div class="name" th:text="${p.name}">3대 측정</div>
+    <div class="meta">항목 <span th:text="${p.itemCount}">3</span>개</div>
+</a>
+</body>
+</html>
