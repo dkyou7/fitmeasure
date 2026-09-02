@@ -1,10 +1,13 @@
-package com.iamnot.fitmeasure.membership;
+package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
-import com.iamnot.fitmeasure.member.Member;
-import com.iamnot.fitmeasure.member.MemberRepository;
+import com.iamnot.fitmeasure.member.dto.MemberRow;
+import com.iamnot.fitmeasure.membership.Membership;
+import com.iamnot.fitmeasure.membership.MembershipRepository;
+import com.iamnot.fitmeasure.membership.MembershipRole;
+import com.iamnot.fitmeasure.membership.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +26,17 @@ public class MemberService {
 
     /** 현재 클럽의 회원(MEMBER 역할) 목록 */
     @Transactional(readOnly = true)
-    public List<Membership> listMembers() {
-        return membershipRepository.findByClubIdAndRoleOrderByNicknameAsc(
-                currentClub.clubId(), MembershipRole.MEMBER);
+    public List<MemberRow> listMembers() {
+        return membershipRepository
+                .findByClubIdAndRoleOrderByNicknameAsc(currentClub.clubId(), MembershipRole.MEMBER)
+                .stream()
+                .map(m -> new MemberRow(
+                        m.getId(),
+                        m.getNickname(),
+                        m.getMemberNo(),
+                        !m.getMember().isClaimed(),   // 트랜잭션 안에서 접근 → OK
+                        m.getJoinedAt()))
+                .toList();
     }
 
     /** 트레이너가 회원 등록. nickname 비우면 자동 생성(익명) */

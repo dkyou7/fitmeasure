@@ -52,7 +52,7 @@
         <tr th:each="m : ${members}">
             <td>
                 <span th:text="${m.nickname}">이름 없는 곰</span>
-                <span class="badge" th:if="${!m.member.claimed}">익명</span>
+                <span class="badge" th:if="${m.anonymous}">익명</span>
             </td>
             <td th:text="${m.memberNo} ?: '-'">-</td>
             <td th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>

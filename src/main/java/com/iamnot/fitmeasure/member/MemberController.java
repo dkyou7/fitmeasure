@@ -1,6 +1,5 @@
 package com.iamnot.fitmeasure.member;
 
-import com.iamnot.fitmeasure.membership.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
