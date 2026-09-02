@@ -46,7 +46,7 @@
 <div th:fragment="memberTable" id="memberTable">
     <table th:if="${!members.isEmpty()}">
         <thead>
-        <tr><th>이름</th><th>회원번호</th><th>등록일</th></tr>
+        <tr><th>이름</th><th>회원번호</th><th>등록일</th><th></th></tr>
         </thead>
         <tbody>
         <tr th:each="m : ${members}">
@@ -56,6 +56,10 @@
             </td>
             <td th:text="${m.memberNo} ?: '-'">-</td>
             <td th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
+            <td>
+                <a th:href="@{/measure/{id}(id=${m.membershipId})}"
+                   style="color:var(--orange);font-weight:600;text-decoration:none;font-size:14px;">측정하기 →</a>
+            </td>
         </tr>
         </tbody>
     </table>

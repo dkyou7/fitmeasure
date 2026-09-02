@@ -1,8 +1,7 @@
 package com.iamnot.fitmeasure.measurement;
 
 import com.iamnot.fitmeasure.config.CurrentClub;
-import com.iamnot.fitmeasure.measurement.dto.MeasureForm;
-import com.iamnot.fitmeasure.measurement.dto.MeasureItemInput;
+import com.iamnot.fitmeasure.measurement.dto.*;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
@@ -23,6 +22,7 @@ public class MeasurementService {
     private final MembershipRepository membershipRepository;
     private final MeasurementTemplateRepository templateRepository;
     private final MeasurementSessionRepository sessionRepository;
+    private final MeasurementValueRepository valueRepository;
 
     /** 측정 화면 데이터 구성: 회원 + 프로그램의 활성 항목 */
     @Transactional(readOnly = true)
@@ -101,5 +101,75 @@ public class MeasurementService {
                         .findByClubIdAndRoleOrderByNicknameAsc(currentClub.clubId(), MembershipRole.OWNER)
                         .stream().findFirst())
                 .orElseThrow(() -> new IllegalStateException("측정자(STAFF/OWNER)가 없습니다."));
+    }
+
+    /** 측정 결과지: 이번 세션 + 직전 세션 대비 변화 */
+    @Transactional(readOnly = true)
+    public ResultView getResult(Long sessionId) {
+        MeasurementSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("측정 기록을 찾을 수 없습니다."));
+        // 격리 검증: 세션의 클럽이 현재 클럽인지
+        Long clubId = session.getMembership().getClub().getId();
+        if (!clubId.equals(currentClub.clubId())) {
+            throw new IllegalArgumentException("접근할 수 없는 기록입니다.");
+        }
+
+        Long membershipId = session.getMembership().getId();
+
+        List<ResultValueRow> rows = session.getValues().stream().map(v -> {
+            TemplateItem item = v.getTemplateItem();
+            String display = v.isSkipped() ? "-"
+                    : MeasurementFormat.display(item.getMeasurementType(),
+                    v.getValueNumber(), v.getValueText());
+            // 직전 값과 비교
+            String change = "첫 측정";
+            boolean improved = false;
+            if (!v.isSkipped() && v.getValueNumber() != null) {
+                var trend = valueRepository.findTrend(membershipId, item.getId());
+                // trend는 측정일 오름차순. 현재 세션 값의 직전을 찾음
+                BigDecimal prev = null;
+                for (MeasurementValue tv : trend) {
+                    if (tv.getSession().getId().equals(sessionId)) break;
+                    if (tv.getValueNumber() != null) prev = tv.getValueNumber();
+                }
+                if (prev != null) {
+                    BigDecimal diff = v.getValueNumber().subtract(prev);
+                    int cmp = diff.signum();
+                    boolean higherBetter = item.getDirection() == ScoreDirection.HIGHER_BETTER;
+                    improved = higherBetter ? cmp > 0 : cmp < 0;
+                    change = (cmp > 0 ? "+" : "") + diff.stripTrailingZeros().toPlainString();
+                }
+            }
+            return new ResultValueRow(item.getId(), item.getName(), item.getUnit(),
+                    display, v.isSkipped() ? "-" : change, improved, v.isSkipped());
+        }).toList();
+
+        return new ResultView(session.getId(), membershipId,
+                session.getMembership().getNickname(),
+                session.getTemplate().getName(),
+                session.getMeasuredAt(), rows);
+    }
+
+    /** 특정 항목의 성장 추이 */
+    @Transactional(readOnly = true)
+    public TrendView getTrend(Long membershipId, Long itemId) {
+        // 격리 검증
+        membershipRepository.findByIdAndClubId(membershipId, currentClub.clubId())
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        var values = valueRepository.findTrend(membershipId, itemId);
+        List<String> labels = new java.util.ArrayList<>();
+        List<Double> nums = new java.util.ArrayList<>();
+        String itemName = "";
+        String unit = "";
+        for (MeasurementValue v : values) {
+            if (v.getValueNumber() == null) continue;
+            labels.add(v.getSession().getMeasuredAt()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yy.MM.dd")));
+            nums.add(v.getValueNumber().doubleValue());
+            itemName = v.getTemplateItem().getName();
+            unit = v.getTemplateItem().getUnit();
+        }
+        return new TrendView(itemName, unit, labels, nums);
     }
 }

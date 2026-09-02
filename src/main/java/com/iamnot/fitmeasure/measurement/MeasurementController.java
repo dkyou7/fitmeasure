@@ -45,4 +45,19 @@ public class MeasurementController {
         Long sessionId = measurementService.save(membershipId, programId, values, note);
         return "redirect:/measure/result/" + sessionId;  // 결과 화면은 커밋 11
     }
+
+    /** 측정 결과지 */
+    @GetMapping("/result/{sessionId}")
+    public String result(@PathVariable Long sessionId, Model model) {
+        model.addAttribute("result", measurementService.getResult(sessionId));
+        return "measure/result";
+    }
+
+    /** 성장 추이 데이터 (JSON, Chart.js용) */
+    @GetMapping("/trend/{membershipId}/item/{itemId}")
+    @ResponseBody
+    public com.iamnot.fitmeasure.measurement.dto.TrendView trend(
+            @PathVariable Long membershipId, @PathVariable Long itemId) {
+        return measurementService.getTrend(membershipId, itemId);
+    }
 }
