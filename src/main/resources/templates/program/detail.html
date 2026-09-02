@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>측정표 관리</title>
+    <title th:text="${program.name} + ' · 항목 관리'">프로그램 항목 관리</title>
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <style>
         :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
             line-height:1.6;padding:32px;max-width:820px;margin:0 auto;letter-spacing:-0.01em;}
-        h1{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;}
+        a.back{font-size:14px;color:var(--sub);text-decoration:none;}
+        a.back:hover{color:var(--orange);}
+        h1{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin:8px 0 6px;}
         .cadence{font-size:14px;color:var(--sub);margin-bottom:24px;}
         .form{display:grid;grid-template-columns:1.6fr 1fr 0.8fr 1fr 1fr auto;gap:8px;margin-bottom:24px;
             padding:16px;background:#fff;border:1px solid var(--line);border-radius:14px;align-items:center;}
@@ -34,22 +36,23 @@
     </style>
 </head>
 <body>
-<h1 th:text="${template.name}">기본 운동력 측정표</h1>
-<div class="cadence">권장 측정 주기: <span th:text="${template.recommendedCadenceDays}">28</span>일마다</div>
+<a class="back" href="/programs">← 프로그램 목록</a>
+<h1 th:text="${program.name}">3대 측정</h1>
+<div class="cadence">권장 측정 주기: <span th:text="${program.recommendedCadenceDays}">28</span>일마다</div>
 
 <div class="form">
-    <input type="text" name="name" id="i-name" placeholder="항목 이름 (예: 케틀벨 스윙)">
-    <select name="measurementType" id="i-type">
+    <input type="text" id="i-name" placeholder="항목 이름">
+    <select id="i-type">
         <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
     </select>
-    <input type="text" name="unit" id="i-unit" placeholder="단위">
-    <select name="direction" id="i-dir">
+    <input type="text" id="i-unit" placeholder="단위">
+    <select id="i-dir">
         <option th:each="d : ${directions}" th:value="${d}" th:text="${d}"></option>
     </select>
-    <select name="category" id="i-cat">
+    <select id="i-cat">
         <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
     </select>
-    <button hx-post="/template/items"
+    <button th:hx-post="@{/programs/{id}/items(id=${program.templateId})}"
             hx-include="#i-name,#i-type,#i-unit,#i-dir,#i-cat"
             hx-target="#itemTable" hx-swap="outerHTML"
             hx-on::after-request="document.getElementById('i-name').value='';document.getElementById('i-unit').value='';">
@@ -63,7 +66,7 @@
         <tr><th>항목</th><th>유형</th><th>단위</th><th>방향</th><th>분류</th><th></th></tr>
         </thead>
         <tbody>
-        <tr th:each="i : ${template.items}" th:classappend="${!i.active} ? 'inactive'">
+        <tr th:each="i : ${program.items}" th:classappend="${!i.active} ? 'inactive'">
             <td th:text="${i.name}">벤치프레스 1RM</td>
             <td th:text="${i.measurementType}">NUMBER</td>
             <td th:text="${i.unit} ?: '-'">kg</td>
@@ -71,7 +74,7 @@
             <td class="cat" th:text="${i.category}">STRENGTH</td>
             <td>
                 <button th:if="${i.active}" class="del"
-                        th:hx-post="@{/template/items/{id}/deactivate(id=${i.id})}"
+                        th:hx-post="@{/programs/{pid}/items/{iid}/deactivate(pid=${program.templateId},iid=${i.id})}"
                         hx-target="#itemTable" hx-swap="outerHTML">비활성</button>
                 <span th:unless="${i.active}" class="off">비활성됨</span>
             </td>

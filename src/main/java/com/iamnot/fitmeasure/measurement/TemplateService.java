@@ -1,13 +1,16 @@
 package com.iamnot.fitmeasure.measurement;
 
+import com.iamnot.fitmeasure.club.Club;
+import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.measurement.dto.ProgramRow;
 import com.iamnot.fitmeasure.measurement.dto.TemplateItemRow;
 import com.iamnot.fitmeasure.measurement.dto.TemplateView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,11 +18,31 @@ public class TemplateService {
 
     private final CurrentClub currentClub;
     private final MeasurementTemplateRepository templateRepository;
+    private final ClubRepository clubRepository;
 
-    /** 현재 클럽의 기본 측정표 조회 (활성 항목만 표시, 비활성은 흐리게) */
+    /** 현재 클럽의 프로그램 목록 */
     @Transactional(readOnly = true)
-    public TemplateView getDefaultTemplate() {
-        MeasurementTemplate t = loadDefaultTemplate();
+    public List<ProgramRow> listPrograms() {
+        return templateRepository.findByClubId(currentClub.clubId()).stream()
+                .map(t -> new ProgramRow(
+                        t.getId(), t.getName(),
+                        (int) t.getItems().stream().filter(TemplateItem::isActive).count(),
+                        t.getRecommendedCadenceDays()))
+                .toList();
+    }
+
+    /** 빈 프로그램 새로 생성 */
+    @Transactional
+    public Long createProgram(String name, int cadenceDays) {
+        Club club = clubRepository.getReferenceById(currentClub.clubId());
+        MeasurementTemplate t = MeasurementTemplate.forClub(club, name, cadenceDays);
+        return templateRepository.save(t).getId();
+    }
+
+    /** 특정 프로그램 상세 (항목 포함) */
+    @Transactional(readOnly = true)
+    public TemplateView getProgram(Long programId) {
+        MeasurementTemplate t = load(programId);
         var rows = t.getItems().stream()
                 .map(i -> new TemplateItemRow(
                         i.getId(), i.getName(), i.getMeasurementType(), i.getUnit(),
@@ -28,34 +51,33 @@ public class TemplateService {
         return new TemplateView(t.getId(), t.getName(), t.getRecommendedCadenceDays(), rows);
     }
 
-    /** 항목 추가 */
     @Transactional
-    public void addItem(String name, MeasurementType type, String unit,
+    public void addItem(Long programId, String name, MeasurementType type, String unit,
                         ScoreDirection direction, FitnessCategory category) {
-        MeasurementTemplate t = loadDefaultTemplate();
+        MeasurementTemplate t = load(programId);
         int nextOrder = t.getItems().stream()
                 .mapToInt(TemplateItem::getSortOrder).max().orElse(-1) + 1;
         t.addItem(TemplateItem.builder()
                 .name(name).measurementType(type).unit(unit)
-                .direction(direction).category(category)
-                .sortOrder(nextOrder)
+                .direction(direction).category(category).sortOrder(nextOrder)
                 .build());
-        // cascade로 저장됨 (트랜잭션 dirty checking)
     }
 
-    /** 항목 비활성 (삭제 아님 — 과거 측정값 보존) */
     @Transactional
-    public void deactivateItem(Long itemId) {
-        MeasurementTemplate t = loadDefaultTemplate();
-        t.getItems().stream()
-                .filter(i -> i.getId().equals(itemId))
-                .findFirst()
+    public void deactivateItem(Long programId, Long itemId) {
+        load(programId).getItems().stream()
+                .filter(i -> i.getId().equals(itemId)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("항목을 찾을 수 없습니다."))
                 .deactivate();
     }
 
-    private MeasurementTemplate loadDefaultTemplate() {
-        return templateRepository.findByClubIdAndIsDefaultTrue(currentClub.clubId())
-                .orElseThrow(() -> new IllegalStateException("클럽 기본 측정표가 없습니다."));
+    private MeasurementTemplate load(Long programId) {
+        return templateRepository.findByIdAndClubId(programId, currentClub.clubId())
+                .orElseThrow(() -> new IllegalArgumentException("프로그램을 찾을 수 없습니다."));
+    }
+
+    private com.iamnot.fitmeasure.club.Club clubReference() {
+        // ClubRepository.getReferenceById 사용을 위해 주입 필요 — 아래 주석 참고
+        throw new UnsupportedOperationException();
     }
 }

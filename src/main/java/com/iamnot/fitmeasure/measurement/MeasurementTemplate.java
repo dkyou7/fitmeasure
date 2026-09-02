@@ -63,7 +63,6 @@ public class MeasurementTemplate extends BaseEntity {
         copy.name = this.name;
         copy.sourceTemplate = this;
         copy.recommendedCadenceDays = this.recommendedCadenceDays;
-        copy.isDefault = true;
         for (TemplateItem item : this.items) {
             copy.addItem(item.copyForTemplate(copy));
         }
@@ -89,5 +88,14 @@ public class MeasurementTemplate extends BaseEntity {
 
     public void markAsDefault() {
         this.isDefault = true;
+    }
+
+    /** 클럽이 새로 만드는 빈 프로그램 */
+    public static MeasurementTemplate forClub(Club club, String name, int cadenceDays) {
+        MeasurementTemplate t = new MeasurementTemplate();
+        t.club = club;
+        t.name = name;
+        t.recommendedCadenceDays = cadenceDays;
+        return t;
     }
 }

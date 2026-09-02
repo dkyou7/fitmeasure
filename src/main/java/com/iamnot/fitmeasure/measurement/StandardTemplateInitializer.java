@@ -26,71 +26,77 @@ public class StandardTemplateInitializer implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         if (!templateRepository.findByClubIsNull().isEmpty()) {
-            log.info("표준 측정표가 이미 존재하여 시드를 건너뜁니다.");
+            log.info("표준 프로그램이 이미 존재하여 시드를 건너뜁니다.");
             return;
         }
 
-        MeasurementTemplate t = MeasurementTemplate.standard("기본 운동력 측정표");
-        t.changeCadence(28);
+        templateRepository.save(bigThree());
+        templateRepository.save(basicFitness());
+        log.info("표준 프로그램 2개 시드 완료");
+    }
 
-        int order = 0;
+    /** 3대 측정 */
+    private MeasurementTemplate bigThree() {
+        MeasurementTemplate t = MeasurementTemplate.standard("3대 측정");
+        t.changeCadence(28);
+        int o = 0;
         t.addItem(TemplateItem.builder()
                 .name("벤치프레스 1RM").measurementType(MeasurementType.NUMBER).unit("kg")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.STRENGTH)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("충분한 워밍업 후 1회 최대 중량. 보조자 필수, 풀 가동범위.")
                 .minValue(new BigDecimal("0")).maxValue(new BigDecimal("400"))
                 .build());
-
         t.addItem(TemplateItem.builder()
                 .name("스쿼트 1RM").measurementType(MeasurementType.NUMBER).unit("kg")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.STRENGTH)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("대퇴가 지면과 평행(패러렐)까지 내려간 1회 최대 중량.")
                 .minValue(new BigDecimal("0")).maxValue(new BigDecimal("500"))
                 .build());
-
         t.addItem(TemplateItem.builder()
                 .name("데드리프트 1RM").measurementType(MeasurementType.NUMBER).unit("kg")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.STRENGTH)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("컨벤셔널. 락아웃 완료 기준 1회 최대 중량.")
                 .minValue(new BigDecimal("0")).maxValue(new BigDecimal("500"))
                 .build());
+        return t;
+    }
 
+    /** 기초 체력 테스트 */
+    private MeasurementTemplate basicFitness() {
+        MeasurementTemplate t = MeasurementTemplate.standard("기초 체력 테스트");
+        t.changeCadence(28);
+        int o = 0;
         t.addItem(TemplateItem.builder()
                 .name("푸시업(1분)").measurementType(MeasurementType.REPS).unit("회")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.ENDURANCE)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("1분간 정자세 반복 횟수. 가슴이 주먹 높이까지 내려와야 1회 인정.")
                 .minValue(new BigDecimal("0")).maxValue(new BigDecimal("200"))
                 .build());
-
         t.addItem(TemplateItem.builder()
                 .name("플랭크").measurementType(MeasurementType.TIME).unit("초")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.CORE)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("팔꿈치-발끝 지지, 몸 일직선 유지 시간(초). 엉덩이 무너지면 종료.")
                 .minValue(new BigDecimal("0")).maxValue(new BigDecimal("1800"))
                 .build());
-
         t.addItem(TemplateItem.builder()
                 .name("1km 러닝").measurementType(MeasurementType.TIME).unit("초")
                 .direction(ScoreDirection.LOWER_BETTER).category(FitnessCategory.CARDIO)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("트레드밀 또는 트랙 1km 완주 시간(초). 낮을수록 우수.")
                 .minValue(new BigDecimal("120")).maxValue(new BigDecimal("1200"))
                 .build());
-
         t.addItem(TemplateItem.builder()
                 .name("앉아윗몸앞으로굽히기").measurementType(MeasurementType.NUMBER).unit("cm")
                 .direction(ScoreDirection.HIGHER_BETTER).category(FitnessCategory.FLEXIBILITY)
-                .sortOrder(order++)
+                .sortOrder(o++)
                 .protocol("좌전굴. 발끝 기준선에서 손끝이 넘어간 거리(cm). 반동 없이.")
                 .minValue(new BigDecimal("-30")).maxValue(new BigDecimal("40"))
                 .build());
-
-        templateRepository.save(t);
-        log.info("표준 측정표 시드 완료: {} ({}개 항목)", t.getName(), t.getItems().size());
+        return t;
     }
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>측정 프로그램</title>
+    <style>
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+            line-height:1.6;padding:32px;max-width:720px;margin:0 auto;letter-spacing:-0.01em;}
+        h1{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-bottom:24px;}
+        .form{display:flex;gap:8px;margin-bottom:24px;padding:16px;background:#fff;
+            border:1px solid var(--line);border-radius:14px;}
+        .form input{padding:11px 14px;border:1px solid var(--line);border-radius:10px;
+            font-size:15px;font-family:inherit;}
+        .form input[name=name]{flex:1;}
+        .form input[name=cadenceDays]{flex:0 0 120px;}
+        .form input:focus{outline:none;border-color:var(--orange);}
+        .form button{padding:11px 22px;background:var(--orange);color:#fff;border:none;
+            border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;}
+        .form button:hover{background:#E64500;}
+        .card{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;
+            padding:18px 20px;margin-bottom:12px;text-decoration:none;color:inherit;transition:border-color .15s;}
+        .card:hover{border-color:var(--orange);}
+        .card .name{font-size:18px;font-weight:700;letter-spacing:-0.02em;}
+        .card .meta{font-size:14px;color:var(--sub);margin-top:4px;}
+        .empty{text-align:center;color:var(--sub);padding:40px;}
+    </style>
+</head>
+<body>
+<h1>측정 프로그램</h1>
+
+<form class="form" method="post" action="/programs">
+    <input type="text" name="name" placeholder="프로그램 이름 (예: 상체 집중)" required>
+    <input type="number" name="cadenceDays" value="28" min="1" title="권장 측정 주기(일)">
+    <button type="submit">새 프로그램</button>
+</form>
+
+<a class="card" th:each="p : ${programs}" th:href="@{/programs/{id}(id=${p.id})}">
+    <div class="name" th:text="${p.name}">3대 측정</div>
+    <div class="meta">
+        항목 <span th:text="${p.itemCount}">3</span>개 ·
+        <span th:text="${p.recommendedCadenceDays}">28</span>일마다 권장
+    </div>
+</a>
+
+<div class="empty" th:if="${programs.isEmpty()}">
+    아직 프로그램이 없습니다. 위에서 첫 프로그램을 만들어보세요.
+</div>
+</body>
+</html>

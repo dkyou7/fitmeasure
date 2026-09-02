@@ -52,13 +52,12 @@ public class ClubSeedInitializer implements ApplicationRunner {
         membershipRepository.save(
                 new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 
-        // 3. 표준 템플릿 복사 → 클럽 기본 측정표
+        // 3. 표준 프로그램 전체를 클럽으로 복사
         List<MeasurementTemplate> standards = templateRepository.findByClubIsNull();
-        if (!standards.isEmpty()) {
-            MeasurementTemplate clubTemplate = standards.get(0).copyForClub(club);
-            templateRepository.save(clubTemplate);
-            log.info("클럽 측정표 복사 완료: {}개 항목", clubTemplate.getItems().size());
+        for (MeasurementTemplate std : standards) {
+            templateRepository.save(std.copyForClub(club));
         }
+        log.info("표준 프로그램 {}개 복사 완료", standards.size());
 
         log.info("데모 클럽 시드 완료: {} (id={})", club.getName(), club.getId());
     }
