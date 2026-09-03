@@ -27,6 +27,9 @@ public class Member extends BaseEntity {
     @Column(length = 50)
     private String name;
 
+    @Column(length = 20)
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private Gender gender;
@@ -35,9 +38,20 @@ public class Member extends BaseEntity {
 
     private LocalDateTime claimedAt;
 
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
     /** 클럽이 등록하는 익명 회원 */
     public static Member anonymous() {
         return new Member();
+    }
+
+    // anonymous 팩토리에 전화번호 받는 버전 추가
+    public static Member anonymousWithPhone(String phone) {
+        Member m = new Member();
+        m.phone = phone;
+        return m;
     }
 
     /**

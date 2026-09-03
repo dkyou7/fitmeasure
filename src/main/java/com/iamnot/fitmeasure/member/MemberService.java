@@ -39,26 +39,19 @@ public class MemberService {
                 .toList();
     }
 
-    /** 트레이너가 회원 등록. nickname 비우면 자동 생성(익명) */
     @Transactional
-    public Membership register(String nickname, String memberNo) {
+    public Membership register(String phone, String memberNo) {
         Long clubId = currentClub.clubId();
         Club club = clubRepository.getReferenceById(clubId);
 
-        // 무료 한도 체크 (FREE 플랜일 때만)
-        var clubEntity = clubRepository.findById(clubId).orElseThrow();
-        if (clubEntity.isFree()) {
-            long claimed = membershipRepository.countClaimedMembers(clubId);
-            if (claimed >= clubEntity.getFreeMemberLimit()) {
-                throw new FreeLimitExceededException(clubEntity.getFreeMemberLimit());
-            }
-        }
+        // 전화번호 있으면 담고, 익명 회원 생성
+        Member person = (phone != null && !phone.isBlank())
+                ? Member.anonymousWithPhone(phone.trim())
+                : Member.anonymous();
+        memberRepository.save(person);
 
-        Member person = memberRepository.save(Member.anonymous());
-        String name = (nickname == null || nickname.isBlank())
-                ? nicknameGenerator.generate()
-                : nickname.trim();
-        Membership membership = new Membership(club, person, MembershipRole.MEMBER, name);
+        String nickname = nicknameGenerator.generate();  // 이름은 항상 익명 자동생성
+        Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);
         if (memberNo != null && !memberNo.isBlank()) {
             membership.assignMemberNo(memberNo.trim());
         }

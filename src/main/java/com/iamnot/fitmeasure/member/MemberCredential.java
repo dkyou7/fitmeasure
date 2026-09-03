@@ -48,12 +48,6 @@ public class MemberCredential extends BaseEntity {
         this.providerId = providerId;
     }
 
-    public static MemberCredential phone(Member member, String phone, String passwordHash) {
-        MemberCredential c = new MemberCredential(member, AuthProvider.PHONE, phone);
-        c.passwordHash = passwordHash;
-        return c;
-    }
-
     public static MemberCredential social(Member member, AuthProvider provider,
                                           String providerId, String email) {
         MemberCredential c = new MemberCredential(member, provider, providerId);
@@ -61,7 +55,10 @@ public class MemberCredential extends BaseEntity {
         return c;
     }
 
-    public boolean isPhone() {
-        return provider == AuthProvider.PHONE;
+    public static MemberCredential username(Member member, String username, String passwordHash) {
+        MemberCredential c = new MemberCredential(member, AuthProvider.USERNAME, username);
+        c.passwordHash = passwordHash;
+        return c;
     }
+
 }

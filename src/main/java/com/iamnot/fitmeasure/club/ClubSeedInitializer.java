@@ -53,7 +53,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         Member ownerPerson = Member.anonymous();
         ownerPerson.claim("사장님");
         memberRepository.save(ownerPerson);
-        credentialRepository.save(MemberCredential.phone(
+        credentialRepository.save(MemberCredential.username(
                 ownerPerson, "01012341234", passwordEncoder.encode("1234")));
         membershipRepository.save(new Membership(club, ownerPerson, MembershipRole.OWNER, "사장님"));
 
@@ -61,7 +61,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         Member trainerPerson = Member.anonymous();
         trainerPerson.claim("김트레이너");
         memberRepository.save(trainerPerson);
-        credentialRepository.save(MemberCredential.phone(
+        credentialRepository.save(MemberCredential.username(
                 trainerPerson, "01023452345", passwordEncoder.encode("2345")));
         membershipRepository.save(new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 

@@ -37,7 +37,7 @@ public class MemberClaimService {
         if (member.isClaimed()) {
             throw new IllegalStateException("이미 계정이 연결된 기록입니다.");
         }
-        if (credentialRepository.findByProviderAndProviderId(AuthProvider.PHONE, phone).isPresent()) {
+        if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, phone).isPresent()) {
             throw new IllegalStateException("이미 가입된 번호입니다. 계정 통합은 준비 중이에요.");
         }
 
@@ -53,7 +53,7 @@ public class MemberClaimService {
 
         member.claim(name);
         credentialRepository.save(
-                MemberCredential.phone(member, phone, passwordEncoder.encode(rawPassword)));
+                MemberCredential.username(member, phone, passwordEncoder.encode(rawPassword)));
 
         if (name != null && !name.isBlank()) {
             membership.rename(name.trim());

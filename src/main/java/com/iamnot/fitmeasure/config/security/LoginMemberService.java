@@ -22,11 +22,11 @@ public class LoginMemberService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 1. 휴대폰 인증수단 찾기
         MemberCredential cred = credentialRepository
-                .findByProviderAndProviderId(AuthProvider.PHONE, phone)
-                .orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 번호입니다."));
+                .findByProviderAndProviderId(AuthProvider.USERNAME, username)
+                .orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 아이디입니다."));
 
         // 2. 그 Member의 로그인 가능한(OWNER/STAFF) 멤버십
         List<Membership> memberships = membershipRepository
@@ -39,6 +39,6 @@ public class LoginMemberService implements UserDetailsService {
                 .findFirst()
                 .orElse(memberships.get(0));
 
-        return new LoginMember(chosen, phone, cred.getPasswordHash());
+        return new LoginMember(chosen, username, cred.getPasswordHash());
     }
 }
