@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${card.nickname} + ' 운동력'">운동력 측정 결과</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Pretendard',sans-serif;background:#F1EFE8;color:var(--ink);
+            line-height:1.6;padding:20px;letter-spacing:-0.01em;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;}
+        .card{background:var(--bg);border-radius:24px;overflow:hidden;max-width:360px;width:100%;
+            box-shadow:0 8px 40px rgba(0,0,0,0.08);}
+        .hd{background:var(--ink);padding:20px 22px;}
+        .hd .club{font-size:12px;color:#B4B2A9;}
+        .hd .who{display:flex;align-items:center;gap:8px;margin-top:2px;}
+        .hd .who .name{font-size:19px;font-weight:700;color:#fff;}
+        .hd .who .anon{font-size:10px;color:#B4B2A9;border:0.5px solid #444;border-radius:100px;padding:2px 8px;}
+        .hd .date{font-size:11px;color:#6B6B66;margin-top:4px;}
+        .bd{padding:22px;}
+        .lead{text-align:center;font-size:13px;color:var(--sub);margin-bottom:18px;}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+        .cell{background:#F1EFE8;border-radius:12px;padding:14px 16px;}
+        .cell .n{font-size:12px;color:var(--sub);}
+        .cell .v{font-size:20px;font-weight:800;}
+        .cell .v .u{font-size:13px;font-weight:600;color:var(--sub);margin-left:2px;}
+        .cell.skip .v{font-size:14px;color:var(--sub);font-weight:600;}
+        .locked{position:relative;border:1px solid var(--line);border-radius:14px;padding:16px;
+            margin-bottom:18px;overflow:hidden;min-height:96px;}
+        .locked .blur{filter:blur(4px);opacity:0.5;}
+        .locked .fake{height:56px;background:linear-gradient(90deg,transparent,var(--tint));
+            border-radius:8px;position:relative;}
+        .locked .fake::after{content:'';position:absolute;left:8px;right:8px;bottom:14px;height:3px;
+            background:var(--orange);border-radius:3px;transform:rotate(-8deg);transform-origin:left;}
+        .locked .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+            justify-content:center;gap:5px;background:rgba(253,253,252,0.35);}
+        .locked .ov .lock{width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;
+            display:flex;align-items:center;justify-content:center;font-size:15px;}
+        .locked .ov .t{font-size:13px;font-weight:700;}
+        .locked .ov .s{font-size:11px;color:var(--sub);}
+        .tease{background:var(--tint);border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:18px;}
+        .tease .t{font-size:13px;font-weight:700;}
+        .tease .s{font-size:12px;color:var(--sub);line-height:1.5;}
+        .cta{display:block;width:100%;padding:13px;background:var(--orange);color:#fff;border:none;
+            border-radius:12px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;}
+        .foot{font-size:11px;color:#B4B2A9;text-align:center;margin-top:12px;}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="hd">
+        <div class="club" th:text="${card.clubName} + ' · 운동력 측정'">스트롱짐 · 운동력 측정</div>
+        <div class="who">
+            <span class="name" th:text="${card.nickname}">이름 없는 곰</span>
+            <span class="anon" th:if="${card.anonymous}">익명</span>
+        </div>
+        <div class="date" th:text="${#temporals.format(card.measuredDate, 'yyyy.MM.dd')}">2026.03.05</div>
+    </div>
+
+    <div class="bd">
+        <div class="lead">오늘 이만큼 해냈어요</div>
+
+        <div class="grid">
+            <div th:each="v : ${card.values}" th:classappend="${v.skipped} ? 'skip'" class="cell">
+                <div class="n" th:text="${v.name}">벤치프레스</div>
+                <div class="v" th:if="${!v.skipped}">
+                    <span th:text="${v.displayValue}">85</span><span class="u" th:if="${v.unit}" th:text="${v.unit}">kg</span>
+                </div>
+                <div class="v" th:if="${v.skipped}">측정 안 함</div>
+            </div>
+        </div>
+
+        <!-- 잠긴 성장 그래프 (갈증 유발) -->
+        <div class="locked">
+            <div class="blur"><div class="fake"></div></div>
+            <div class="ov">
+                <div class="lock">🔒</div>
+                <div class="t">지난 기록과 이어서 보기</div>
+                <div class="s">매달 기록이 여기 쌓여요</div>
+            </div>
+        </div>
+
+        <div class="tease">
+            <div class="t">이 기록은 오늘 하루만 남아요</div>
+            <div class="s">이름을 등록하면 매달 측정 기록이<br>내 히스토리로 계속 이어집니다</div>
+        </div>
+
+        <a class="cta" href="#">내 기록으로 남기기</a>
+        <div class="foot" th:text="${card.clubName} + '이 제공하는 운동력 측정'">제공</div>
+    </div>
+</div>
+</body>
+</html>

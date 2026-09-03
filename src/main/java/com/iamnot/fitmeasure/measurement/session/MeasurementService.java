@@ -24,6 +24,7 @@ public class MeasurementService {
     private final MeasurementTemplateRepository templateRepository;
     private final MeasurementSessionRepository sessionRepository;
     private final MeasurementValueRepository valueRepository;
+    private final ShareTokenGenerator shareTokenGenerator;
 
     /** 측정 화면 데이터 구성: 회원 + 프로그램의 활성 항목 */
     @Transactional(readOnly = true)
@@ -172,5 +173,52 @@ public class MeasurementService {
             unit = v.getTemplateItem().getUnit();
         }
         return new TrendView(itemName, unit, labels, nums);
+    }
+
+    /** 세션 공유 활성화 → 토큰 반환 (트레이너가 "공유하기" 누를 때) */
+    @Transactional
+    public String enableShare(Long sessionId) {
+        MeasurementSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("측정 기록을 찾을 수 없습니다."));
+        if (!session.getMembership().getClub().getId().equals(currentClub.clubId())) {
+            throw new IllegalArgumentException("접근할 수 없는 기록입니다.");
+        }
+        if (session.getShareToken() == null) {
+            session.enableShare(shareTokenGenerator.generate());
+        } else {
+            session.enableShare(session.getShareToken()); // 이미 있으면 재활성만
+        }
+        return session.getShareToken();
+    }
+
+    /** 공개 카드 조회 (로그인 불필요, 토큰으로만) */
+    @Transactional(readOnly = true)
+    public ShareCard getShareCard(String token) {
+        MeasurementSession session = sessionRepository
+                .findByShareTokenAndShareEnabledTrue(token)
+                .orElseThrow(() -> new IllegalArgumentException("공유된 기록을 찾을 수 없습니다."));
+
+        Membership member = session.getMembership();
+        Long membershipId = member.getId();
+
+        List<ShareCard.ShareValueRow> rows = session.getValues().stream().map(v -> {
+            TemplateItem item = v.getTemplateItem();
+            String display = v.isSkipped() ? "-"
+                    : MeasurementFormat.display(item.getMeasurementType(),
+                    v.getValueNumber(), v.getValueText());
+            return new ShareCard.ShareValueRow(item.getName(), display,
+                    item.getUnit(), v.isSkipped());
+        }).toList();
+
+        // 이 회원에게 2회 이상 측정 이력이 있으면 추이가 존재 → 잠긴 그래프 티저
+        boolean hasTrend = sessionRepository
+                .findByMembershipIdOrderByMeasuredAtDesc(membershipId).size() > 1;
+
+        return new ShareCard(
+                member.getClub().getName(),
+                member.getNickname(),
+                !member.getMember().isClaimed(),
+                session.getMeasuredAt().toLocalDate(),
+                rows, hasTrend);
     }
 }

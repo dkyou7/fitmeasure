@@ -56,7 +56,21 @@
     </div>
 </div>
 
+<button class="done" style="background:var(--orange);margin-bottom:8px;" onclick="share()">공유 링크 만들기</button>
 <a class="done" th:href="@{/members}">완료</a>
+
+<script th:inline="javascript">
+    const SESSION_ID = /*[[${result.sessionId}]]*/ 0;
+    function share() {
+        fetch(`/measure/result/${SESSION_ID}/share`, {method:'POST'})
+            .then(r => r.json())
+            .then(d => {
+                const url = location.origin + d.url;
+                navigator.clipboard.writeText(url);
+                alert('공유 링크가 복사되었어요\n' + url);
+            });
+    }
+</script>
 
 <script th:inline="none">
     function toggleChart(row) {

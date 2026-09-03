@@ -61,4 +61,11 @@ public class MeasurementController {
             @PathVariable Long membershipId, @PathVariable Long itemId) {
         return measurementService.getTrend(membershipId, itemId);
     }
+
+    @PostMapping("/result/{sessionId}/share")
+    @ResponseBody
+    public java.util.Map<String, String> share(@PathVariable Long sessionId) {
+        String token = measurementService.enableShare(sessionId);
+        return java.util.Map.of("url", "/s/" + token);
+    }
 }
