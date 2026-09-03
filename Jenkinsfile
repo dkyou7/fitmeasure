@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    triggers { pollSCM('H/2 * * * *') }
+    environment {
+        IMAGE = 'fitmeasure-app'
+        CONTAINER = 'fitmeasure_app'
+    }
+    stages {
+        stage('Build JAR') {
+            steps {
+                sh '''
+                HOST_WS=$(echo "$WORKSPACE" | sed "s|/var/jenkins_home|/volume1/docker/jenkins_home|")
+                docker run --rm \
+                  -v "$HOST_WS":/src \
+                  -v /volume1/docker/maven-repo:/root/.m2 \
+                  -w /src \
+                  maven:3.9-eclipse-temurin-21 \
+                  mvn clean package -DskipTests
+                '''
+            }
+        }
+        stage('Build Image') {
+            steps { sh 'docker build -t $IMAGE .' }
+        }
+        stage('Deploy') {
+            steps {
+                withCredentials([string(credentialsId: 'fitmeasure-db-password', variable: 'DB_PASSWORD')]) {
+                    sh '''
+                    docker rm -f $CONTAINER || true
+                    docker run -d --name $CONTAINER \
+                      --network iamnot-net \
+                      -p 10341:8080 \
+                      -e DB_URL="jdbc:mysql://__MYSQL_HOST__:3306/fitmeasure?serverTimezone=Asia/Seoul&characterEncoding=UTF-8" \
+                      -e DB_USER="fitmeasure" \
+                      -e DB_PASSWORD="$DB_PASSWORD" \
+                      --restart unless-stopped \
+                      $IMAGE
+                    '''
+                }
+            }
+        }
+    }
+}
