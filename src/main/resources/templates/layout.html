@@ -11,6 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
     <style>
         /* 브랜드 색을 Bootstrap 변수에 주입 */
@@ -59,5 +61,14 @@
       layout:fragment="content"></main>
 
 <th:block layout:fragment="scripts"></th:block>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+        document.body.addEventListener('htmx:configRequest', function (evt) {
+            evt.detail.headers[header] = token;
+        });
+    });
+</script>
 </body>
 </html>

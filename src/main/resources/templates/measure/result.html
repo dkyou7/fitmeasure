@@ -62,7 +62,12 @@
 <script th:inline="javascript">
     const SESSION_ID = /*[[${result.sessionId}]]*/ 0;
     function share() {
-        fetch(`/measure/result/${SESSION_ID}/share`, {method:'POST'})
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+        fetch(`/measure/result/${SESSION_ID}/share`, {
+            method: 'POST',
+            headers: { [header]: token }
+        })
             .then(r => r.json())
             .then(d => {
                 const url = location.origin + d.url;

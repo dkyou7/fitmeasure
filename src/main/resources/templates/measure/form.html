@@ -30,6 +30,7 @@
 <body>
 <form th:action="@{/measure/{mid}/program/{pid}(mid=${form.membershipId},pid=${form.programId})}"
       method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     <div class="head">
         <div class="who" th:text="${form.memberNickname}">이름 없는 곰</div>
         <div class="prog" th:text="${form.programName}">3대 측정</div>

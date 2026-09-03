@@ -32,6 +32,7 @@
 <h1>측정 프로그램</h1>
 
 <form class="form" method="post" action="/programs">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     <input type="text" name="name" placeholder="프로그램 이름 (예: 상체 집중)" required>
     <input type="number" name="cadenceDays" value="28" min="1" title="권장 측정 주기(일)">
     <button type="submit">새 프로그램</button>
