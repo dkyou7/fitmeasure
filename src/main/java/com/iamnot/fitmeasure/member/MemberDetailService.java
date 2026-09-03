@@ -71,7 +71,7 @@ public class MemberDetailService {
         }
 
         return new MemberDetail(
-                m.getId(), m.getNickname(), m.getMemberNo(),
+                m.getId(), m.getNickname(),
                 !m.getMember().isClaimed(),
                 m.getStatus() == MembershipStatus.ACTIVE,
                 m.getJoinedAt(),

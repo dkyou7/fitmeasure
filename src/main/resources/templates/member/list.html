@@ -9,18 +9,34 @@
     <h1 class="mb-4">회원 관리</h1>
 
     <div class="card p-3 mb-4">
-        <div class="row g-2">
-            <div class="col"><input class="form-control" name="nickname" id="nickname" placeholder="이름 (비우면 자동 생성)"></div>
-            <div class="col-auto"><input class="form-control" name="memberNo" id="memberNo" placeholder="회원번호" style="width:140px;"></div>
-            <div class="col-auto">
-                <button class="btn btn-primary" hx-post="/members" hx-include="#nickname,#memberNo"
-                        hx-target="#memberTable" hx-swap="outerHTML"
-                        hx-on::after-request="nickname.value='';memberNo.value='';">회원 등록</button>
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <input class="form-control" type="tel" name="phone" id="phone"
+                       placeholder="전화번호 (필수)">
             </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" hx-post="/members"
+                        hx-include="#phone,#consent"
+                        hx-target="#memberTable" hx-swap="outerHTML"
+                        hx-on::after-request="phone.value='';">
+                    회원 등록
+                </button>
+            </div>
+        </div>
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="consent" id="consent" value="true">
+            <label class="form-check-label text-secondary" for="consent" style="font-size:13px;">
+                회원에게 측정 서비스 이용 및 전화번호 수집에 대한 동의를 받았습니다.
+                측정 결과는 이 번호로 전달·공유됩니다.
+            </label>
         </div>
     </div>
 
     <div th:fragment="memberTable" id="memberTable">
+        <div class="alert" style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:12px 16px;margin-bottom:12px;"
+             th:if="${regError}">
+            <span class="text-primary fw-semibold" th:text="${regError}">오류</span>
+        </div>
         <div class="alert d-flex justify-content-between align-items-center mb-3"
              style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:14px 18px;"
              th:if="${limitMessage}">
@@ -28,18 +44,19 @@
             <a class="btn btn-primary btn-sm" href="/owner/plans" sec:authorize="hasRole('OWNER')">요금제 보기</a>
         </div>
         <table class="table table-hover align-middle mb-0" th:if="${!members.isEmpty()}">
-            <thead><tr><th>이름</th><th>회원번호</th><th>등록일</th><th></th></tr></thead>
+            <thead><tr><th>이름</th><th>전화번호</th><th>등록일</th><th></th></tr></thead>
             <tbody>
             <tr th:each="m : ${members}">
                 <td>
-                    <a class="fw-semibold text-decoration-none text-body"
-                       th:href="@{/members/{id}(id=${m.membershipId})}" th:text="${m.nickname}">이름 없는 곰</a>
-                    <span class="badge bg-tint ms-1" th:if="${m.anonymous}">익명</span>
+                    <a th:href="@{/members/{id}(id=${m.membershipId})}" th:text="${m.nickname}"
+                       style="color:inherit;text-decoration:none;font-weight:600;">이름 없는 곰</a>
+                    <span class="badge bg-tint ms-1" th:if="${m.anonymous}">미가입</span>
                 </td>
-                <td th:text="${m.memberNo} ?: '-'">-</td>
-                <td th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
-                <td><a class="text-primary fw-semibold text-decoration-none"
-                       th:href="@{/measure/{id}(id=${m.membershipId})}">측정하기 →</a></td>
+                <td class="text-secondary" style="font-size:14px;" th:text="${m.phone} ?: '-'">010...</td>
+                <td class="text-secondary" style="font-size:14px;"
+                    th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
+                <td><a th:href="@{/measure/{id}(id=${m.membershipId})}"
+                       class="text-primary fw-semibold text-decoration-none">측정하기 →</a></td>
             </tr>
             </tbody>
         </table>

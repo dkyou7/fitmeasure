@@ -9,7 +9,6 @@ import java.util.List;
 public record MemberDetail(
         Long membershipId,
         String nickname,
-        String memberNo,
         boolean anonymous,
         boolean active,
         LocalDate joinedAt,

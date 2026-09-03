@@ -33,28 +33,34 @@ public class MemberService {
                 .map(m -> new MemberRow(
                         m.getId(),
                         m.getNickname(),
-                        m.getMemberNo(),
-                        !m.getMember().isClaimed(),   // 트랜잭션 안에서 접근 → OK
+                        m.getMember().getPhone(),
+                        !m.getMember().isClaimed(),
                         m.getJoinedAt()))
                 .toList();
     }
 
     @Transactional
-    public Membership register(String phone, String memberNo) {
+    public Membership register(String phone, boolean consent) {
+        if (phone == null || phone.isBlank()) {
+            throw new IllegalArgumentException("전화번호는 필수입니다.");
+        }
+        if (!consent) {
+            throw new IllegalArgumentException("회원 동의 확인이 필요합니다.");
+        }
+
         Long clubId = currentClub.clubId();
         Club club = clubRepository.getReferenceById(clubId);
+        String normalizedPhone = phone.replaceAll("[^0-9]", "");
 
-        // 전화번호 있으면 담고, 익명 회원 생성
-        Member person = (phone != null && !phone.isBlank())
-                ? Member.anonymousWithPhone(phone.trim())
-                : Member.anonymous();
-        memberRepository.save(person);
+        Member person = memberRepository.findByPhone(normalizedPhone)
+                .orElseGet(() -> memberRepository.save(Member.withPhone(normalizedPhone)));
 
-        String nickname = nicknameGenerator.generate();  // 이름은 항상 익명 자동생성
-        Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);
-        if (memberNo != null && !memberNo.isBlank()) {
-            membership.assignMemberNo(memberNo.trim());
+        if (membershipRepository.existsByClubIdAndMemberId(clubId, person.getId())) {
+            throw new IllegalStateException("이미 이 회원이 등록되어 있어요.");
         }
+
+        String nickname = nicknameGenerator.generate();
+        Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);
         return membershipRepository.save(membership);
     }
 }

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member")
+@Table(name = "member", uniqueConstraints = @UniqueConstraint(columnNames = "phone"))
 public class Member extends BaseEntity {
 
     @Id
@@ -84,5 +84,11 @@ public class Member extends BaseEntity {
         this.name = name;
         this.gender = gender;
         this.birthYear = birthYear;
+    }
+
+    public static Member withPhone(String phone) {
+        Member m = new Member();
+        m.phone = phone;
+        return m;
     }
 }

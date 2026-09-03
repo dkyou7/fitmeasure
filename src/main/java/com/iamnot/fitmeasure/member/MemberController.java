@@ -19,15 +19,14 @@ public class MemberController {
         return "member/list";
     }
 
-    /** htmx: 회원 등록 후 목록 프래그먼트만 갱신 */
     @PostMapping
-    public String register(@RequestParam(required = false) String nickname,
-                           @RequestParam(required = false) String memberNo,
+    public String register(@RequestParam String phone,
+                           @RequestParam(defaultValue = "false") boolean consent,
                            Model model) {
         try {
-            memberService.register(nickname, memberNo);
-        } catch (FreeLimitExceededException e) {
-            model.addAttribute("limitMessage", e.getMessage());
+            memberService.register(phone, consent);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            model.addAttribute("regError", e.getMessage());
         }
         model.addAttribute("members", memberService.listMembers());
         return "member/list :: memberTable";

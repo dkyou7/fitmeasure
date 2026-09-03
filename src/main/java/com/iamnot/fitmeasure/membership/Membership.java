@@ -48,10 +48,6 @@ public class Membership extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String nickname;
 
-    /** 클럽 자체 회원번호 (선택) */
-    @Column(length = 30)
-    private String memberNo;
-
     @Column(nullable = false)
     private LocalDate joinedAt;
 
@@ -81,8 +77,6 @@ public class Membership extends BaseEntity {
     public void activate() {
         this.status = MembershipStatus.ACTIVE;
     }
-
-    public void assignMemberNo(String memberNo) { this.memberNo = memberNo; }
 
     public void rename(String nickname) { this.nickname = nickname; }
 }
