@@ -9,32 +9,72 @@
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Pretendard',sans-serif;background:#F1EFE8;color:var(--ink);line-height:1.6;
             padding:20px;min-height:100vh;display:flex;align-items:center;justify-content:center;letter-spacing:-0.01em;}
-        .card{background:var(--bg);border-radius:24px;padding:32px 28px;max-width:360px;width:100%;
+        .card{background:var(--bg);border-radius:24px;padding:32px 28px;max-width:380px;width:100%;
             box-shadow:0 8px 40px rgba(0,0,0,0.08);}
-        .logo{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:24px;}
-        .logo .dot{color:var(--orange);}
-        label{font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:6px;}
-        input{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;
-            font-family:inherit;margin-bottom:16px;}
-        input:focus{outline:none;border-color:var(--orange);}
-        .btn{width:100%;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:12px;
-            font-size:16px;font-weight:700;cursor:pointer;}
-        .btn:hover{background:#E64500;}
+        h1{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:24px;}
         .err{background:var(--tint);color:#E64500;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:16px;}
+        input.field{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;font-size:15px;
+            font-family:inherit;margin-bottom:10px;}
+        input.field:focus{outline:none;border-color:var(--orange);}
+        .options{display:flex;align-items:center;justify-content:space-between;margin:8px 0 20px;font-size:13px;}
+        .options .save{display:flex;align-items:center;gap:6px;color:var(--sub);cursor:pointer;}
+        .options .links a{color:var(--sub);text-decoration:none;}
+        .options .links a:hover{color:var(--orange);}
+        .options .links a.signup{color:var(--orange);font-weight:600;}
+        .options .links .bar{color:var(--line);margin:0 6px;}
+        .btn{width:100%;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:10px;
+            font-size:16px;font-weight:700;cursor:pointer;margin-bottom:28px;}
+        .btn:hover{background:#E64500;}
+        .socials{display:flex;justify-content:center;gap:20px;}
+        .social{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
+        .social .circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:20px;font-weight:800;}
+        .social .label{font-size:11px;color:var(--sub);}
+        .circle.naver{background:#03C75A;color:#fff;}
+        .circle.kakao{background:#FEE500;color:#191600;}
+        .circle.apple{background:#000;color:#fff;}
+        .circle.google{background:#fff;color:#1A1A18;border:1px solid var(--line);}
     </style>
 </head>
 <body>
 <div class="card">
-    <div class="logo">측정<span class="dot">.</span></div>
+    <h1>로그인</h1>
+
     <div class="err" th:if="${param.error}">번호 또는 비밀번호를 확인해주세요.</div>
+
     <form th:action="@{/login}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <label>휴대폰 번호</label>
-        <input type="tel" name="phone" placeholder="01012345678" required autofocus>
-        <label>비밀번호</label>
-        <input type="password" name="password" required>
+        <input class="field" type="tel" name="phone" placeholder="휴대폰 번호" required autofocus>
+        <input class="field" type="password" name="password" placeholder="비밀번호" required>
+
+        <div class="options">
+            <label class="save">
+                <input type="checkbox" name="remember-me"> 로그인 유지
+            </label>
+            <span class="links">
+                    <a href="#">비밀번호 찾기</a>
+                    <span class="bar">|</span>
+                    <a class="signup" href="/signup">회원가입</a>
+                </span>
+        </div>
+
         <button type="submit" class="btn">로그인</button>
     </form>
+
+    <div class="socials">
+        <div class="social" onclick="alert('네이버 로그인 준비 중이에요')">
+            <div class="circle naver">N</div><span class="label">네이버</span>
+        </div>
+        <div class="social" onclick="alert('카카오 로그인 준비 중이에요')">
+            <div class="circle kakao">💬</div><span class="label">카카오</span>
+        </div>
+        <div class="social" onclick="alert('애플 로그인 준비 중이에요')">
+            <div class="circle apple"></div><span class="label">애플</span>
+        </div>
+        <div class="social" onclick="alert('구글 로그인 준비 중이에요')">
+            <div class="circle google">G</div><span class="label">구글</span>
+        </div>
+    </div>
 </div>
 </body>
 </html>
