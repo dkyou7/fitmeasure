@@ -4,7 +4,7 @@ import com.iamnot.fitmeasure.config.CurrentClub;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
-import com.iamnot.fitmeasure.measurement.MeasurementTemplateRepository;
+import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,7 +1,7 @@
 package com.iamnot.fitmeasure.member.dto;
 
-import com.iamnot.fitmeasure.measurement.dto.SessionSummary;
-import com.iamnot.fitmeasure.measurement.dto.TrackedItem;
+import com.iamnot.fitmeasure.measurement.session.dto.SessionSummary;
+import com.iamnot.fitmeasure.measurement.session.dto.TrackedItem;
 
 import java.time.LocalDate;
 import java.util.List;

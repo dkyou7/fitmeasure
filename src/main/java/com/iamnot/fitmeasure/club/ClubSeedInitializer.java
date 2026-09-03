@@ -1,7 +1,7 @@
 package com.iamnot.fitmeasure.club;
 
-import com.iamnot.fitmeasure.measurement.MeasurementTemplate;
-import com.iamnot.fitmeasure.measurement.MeasurementTemplateRepository;
+import com.iamnot.fitmeasure.measurement.template.MeasurementTemplate;
+import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
 import com.iamnot.fitmeasure.member.Member;
 import com.iamnot.fitmeasure.member.MemberRepository;
 import com.iamnot.fitmeasure.membership.Membership;

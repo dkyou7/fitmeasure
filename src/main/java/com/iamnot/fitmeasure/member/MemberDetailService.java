@@ -1,12 +1,12 @@
 package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.config.CurrentClub;
-import com.iamnot.fitmeasure.measurement.MeasurementSession;
-import com.iamnot.fitmeasure.measurement.MeasurementSessionRepository;
-import com.iamnot.fitmeasure.measurement.MeasurementValue;
-import com.iamnot.fitmeasure.measurement.TemplateItem;
-import com.iamnot.fitmeasure.measurement.dto.SessionSummary;
-import com.iamnot.fitmeasure.measurement.dto.TrackedItem;
+import com.iamnot.fitmeasure.measurement.session.MeasurementSession;
+import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
+import com.iamnot.fitmeasure.measurement.session.MeasurementValue;
+import com.iamnot.fitmeasure.measurement.template.TemplateItem;
+import com.iamnot.fitmeasure.measurement.session.dto.SessionSummary;
+import com.iamnot.fitmeasure.measurement.session.dto.TrackedItem;
 import com.iamnot.fitmeasure.member.dto.MemberDetail;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;

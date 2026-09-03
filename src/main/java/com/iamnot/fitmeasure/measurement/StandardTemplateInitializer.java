@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.measurement;
 
+import com.iamnot.fitmeasure.measurement.template.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
