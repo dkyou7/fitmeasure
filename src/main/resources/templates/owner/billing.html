@@ -21,7 +21,7 @@
                     <span class="badge bg-tint" th:if="${plan == 'FREE'}">10명까지 무료</span>
                 </div>
             </div>
-            <button class="btn btn-primary" th:if="${plan == 'FREE'}">유료 전환 문의</button>
+            <a class="btn btn-primary" href="/owner/plans" th:if="${plan == 'FREE'}">유료 전환하기</a>
         </div>
     </div>
 

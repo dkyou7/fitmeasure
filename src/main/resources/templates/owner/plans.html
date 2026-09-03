@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>요금제</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .plan{border:1px solid var(--bs-border-color,#ECEBE7);border-radius:16px;padding:24px;height:100%;
+                display:flex;flex-direction:column;transition:border-color .15s;}
+            .plan:hover{border-color:#FF5A1F;}
+            .plan.featured{border-color:#FF5A1F;border-width:2px;position:relative;}
+            .plan .tag{position:absolute;top:-11px;left:24px;background:#FF5A1F;color:#fff;
+                font-size:12px;font-weight:600;padding:3px 12px;border-radius:100px;}
+            .plan .range{font-size:14px;color:#6B6B66;}
+            .plan .price{font-size:30px;font-weight:800;letter-spacing:-0.03em;margin:6px 0 2px;}
+            .plan .price .won{font-size:15px;font-weight:600;color:#6B6B66;}
+            .plan .per{font-size:13px;color:#6B6B66;margin-bottom:16px;}
+            .plan ul{list-style:none;padding:0;margin:0 0 20px;flex:1;}
+            .plan li{font-size:14px;padding:5px 0;color:#1A1A18;}
+            .plan li::before{content:'✓';color:#FF5A1F;font-weight:700;margin-right:8px;}
+            .plan .cur{font-size:13px;color:#6B6B66;text-align:center;padding:11px;}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="mb-4">
+        <h1 class="mb-1">요금제</h1>
+        <p class="text-secondary mb-0">
+            현재 회원 <span class="fw-semibold text-primary" th:text="${memberCount}">0</span>명 ·
+            측정 기록이 있는 활성 회원 수 기준으로 매달 청구됩니다.
+        </p>
+    </div>
+
+    <div class="row g-3">
+        <!-- 무료 -->
+        <div class="col-md-3">
+            <div class="plan" th:classappend="${currentPlan == 'FREE'} ? 'featured'">
+                <span class="tag" th:if="${currentPlan == 'FREE'}">현재 플랜</span>
+                <div class="range">~10명</div>
+                <div class="price">무료</div>
+                <div class="per">회원 10명까지</div>
+                <ul>
+                    <li>측정·기록 무제한</li>
+                    <li>결과 카드 공유</li>
+                    <li>트레이너 1명</li>
+                </ul>
+                <div class="cur" th:if="${currentPlan == 'FREE'}">사용 중</div>
+                <button class="btn btn-outline-secondary w-100" th:unless="${currentPlan == 'FREE'}" disabled>기본 제공</button>
+            </div>
+        </div>
+        <!-- 스타터 -->
+        <div class="col-md-3">
+            <div class="plan">
+                <div class="range">~50명</div>
+                <div class="price">5<span class="won">만원</span></div>
+                <div class="per">월 · 부가세 별도</div>
+                <ul>
+                    <li>무료의 모든 기능</li>
+                    <li>누적 히스토리</li>
+                    <li>성장 추이 그래프</li>
+                    <li>트레이너 무제한</li>
+                </ul>
+                <button class="btn btn-primary w-100">문의하기</button>
+            </div>
+        </div>
+        <!-- 그로스 (추천) -->
+        <div class="col-md-3">
+            <div class="plan featured">
+                <span class="tag">가장 인기</span>
+                <div class="range">~100명</div>
+                <div class="price">9<span class="won">만원</span></div>
+                <div class="per">월 · 부가세 별도</div>
+                <ul>
+                    <li>스타터의 모든 기능</li>
+                    <li>측정 명단 대시보드</li>
+                    <li>회원 리포트</li>
+                    <li>우선 지원</li>
+                </ul>
+                <button class="btn btn-primary w-100">문의하기</button>
+            </div>
+        </div>
+        <!-- 프로 -->
+        <div class="col-md-3">
+            <div class="plan">
+                <div class="range">~200명</div>
+                <div class="price">15<span class="won">만원</span></div>
+                <div class="per">월 · 부가세 별도</div>
+                <ul>
+                    <li>그로스의 모든 기능</li>
+                    <li>다중 지점 관리</li>
+                    <li>데이터 내보내기</li>
+                    <li>전담 매니저</li>
+                </ul>
+                <button class="btn btn-primary w-100">문의하기</button>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-secondary mt-4" style="font-size:13px;">
+        * 200명 이상은 별도 문의 · 가격은 목업이며 실제 요금은 협의로 정해집니다.
+        결제 기능은 준비 중입니다.
+    </p>
+</div>
+</body>
+</html>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head><title>회원 관리</title></head>
 <body>
 <div layout:fragment="content">
@@ -20,6 +21,12 @@
     </div>
 
     <div th:fragment="memberTable" id="memberTable">
+        <div class="alert d-flex justify-content-between align-items-center mb-3"
+             style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:14px 18px;"
+             th:if="${limitMessage}">
+            <span class="text-primary fw-semibold" th:text="${limitMessage}">무료 한도 초과</span>
+            <a class="btn btn-primary btn-sm" href="/owner/plans" sec:authorize="hasRole('OWNER')">요금제 보기</a>
+        </div>
         <table class="table table-hover align-middle mb-0" th:if="${!members.isEmpty()}">
             <thead><tr><th>이름</th><th>회원번호</th><th>등록일</th><th></th></tr></thead>
             <tbody>

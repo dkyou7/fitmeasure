@@ -24,7 +24,11 @@ public class MemberController {
     public String register(@RequestParam(required = false) String nickname,
                            @RequestParam(required = false) String memberNo,
                            Model model) {
-        memberService.register(nickname, memberNo);
+        try {
+            memberService.register(nickname, memberNo);
+        } catch (FreeLimitExceededException e) {
+            model.addAttribute("limitMessage", e.getMessage());
+        }
         model.addAttribute("members", memberService.listMembers());
         return "member/list :: memberTable";
     }

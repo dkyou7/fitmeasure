@@ -41,4 +41,15 @@ public class OwnerController {
         model.addAttribute("nextBillingDate", LocalDate.now().withDayOfMonth(1).plusMonths(1));
         return "owner/billing";
     }
+
+    @GetMapping("/plans")
+    public String plans(Model model) {
+        Long clubId = currentClub.clubId();
+        var club = clubRepository.findById(clubId).orElseThrow();
+        long memberCount = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
+
+        model.addAttribute("currentPlan", club.getPlan().name());
+        model.addAttribute("memberCount", memberCount);
+        return "owner/plans";
+    }
 }
