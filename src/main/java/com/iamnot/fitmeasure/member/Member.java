@@ -2,6 +2,8 @@ package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.config.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
 /**
@@ -9,6 +11,7 @@ import java.time.LocalDateTime;
  * phone이 채워지면 본인이 claim한 계정이다.
  */
 @Entity
+@Getter
 @Table(name = "member", uniqueConstraints = @UniqueConstraint(columnNames = "phone"))
 public class Member extends BaseEntity {
 
@@ -62,11 +65,7 @@ public class Member extends BaseEntity {
         this.birthYear = birthYear;
     }
 
-    public Long getId() { return id; }
-    public String getPhone() { return phone; }
-    public String getPasswordHash() { return passwordHash; }
-    public String getName() { return name; }
-    public Gender getGender() { return gender; }
-    public Short getBirthYear() { return birthYear; }
-    public LocalDateTime getClaimedAt() { return claimedAt; }
+    public void setPassword(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 }

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
     private final MemberRepository memberRepository;
     private final MembershipRepository membershipRepository;
     private final MeasurementTemplateRepository templateRepository;
+    private final PasswordEncoder passwordEncoder;  // 필드 추가
 
     @Override
     @Transactional
@@ -44,13 +46,15 @@ public class ClubSeedInitializer implements ApplicationRunner {
         Club club = clubRepository.save(new Club("데모 헬스장", "demo-gym", ClubType.GYM));
 
         // 2. 오너(사장) + 트레이너 — 자연인 + 멤버십
-        Member ownerPerson = memberRepository.save(Member.anonymous());
-        membershipRepository.save(
-                new Membership(club, ownerPerson, MembershipRole.OWNER, "사장님"));
+        Member ownerPerson = Member.anonymous();
+        ownerPerson.claim("01012341234", passwordEncoder.encode("1234"), "사장님");
+        memberRepository.save(ownerPerson);
+        membershipRepository.save(new Membership(club, ownerPerson, MembershipRole.OWNER, "사장님"));
 
-        Member trainerPerson = memberRepository.save(Member.anonymous());
-        membershipRepository.save(
-                new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
+        Member trainerPerson = Member.anonymous();
+        trainerPerson.claim("01023452345", passwordEncoder.encode("2345"), "김트레이너");
+        memberRepository.save(trainerPerson);
+        membershipRepository.save(new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 
         // 3. 표준 프로그램 전체를 클럽으로 복사
         List<MeasurementTemplate> standards = templateRepository.findByClubIsNull();
