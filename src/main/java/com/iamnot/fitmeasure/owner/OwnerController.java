@@ -7,8 +7,7 @@ import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -20,6 +19,7 @@ public class OwnerController {
     private final CurrentClub currentClub;
     private final ClubRepository clubRepository;
     private final MembershipRepository membershipRepository;
+    private final StaffService staffService;  // 필드 추가
 
     @GetMapping("/billing")
     public String billing(Model model) {
@@ -51,5 +51,25 @@ public class OwnerController {
         model.addAttribute("currentPlan", club.getPlan().name());
         model.addAttribute("memberCount", memberCount);
         return "owner/plans";
+    }
+
+    @GetMapping("/staff")
+    public String staff(Model model) {
+        model.addAttribute("staff", staffService.listStaff());
+        return "owner/staff";
+    }
+
+    @PostMapping("/staff")
+    public String addStaff(@RequestParam(required = false) String nickname, Model model) {
+        staffService.addStaff(nickname);
+        model.addAttribute("staff", staffService.listStaff());
+        return "owner/staff :: staffTable";
+    }
+
+    @PostMapping("/staff/{id}/toggle")
+    public String toggleStaff(@PathVariable Long id, Model model) {
+        staffService.toggleStaff(id);
+        model.addAttribute("staff", staffService.listStaff());
+        return "owner/staff :: staffTable";
     }
 }
