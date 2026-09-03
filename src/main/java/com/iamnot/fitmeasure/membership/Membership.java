@@ -83,4 +83,6 @@ public class Membership extends BaseEntity {
     }
 
     public void assignMemberNo(String memberNo) { this.memberNo = memberNo; }
+
+    public void rename(String nickname) { this.nickname = nickname; }
 }

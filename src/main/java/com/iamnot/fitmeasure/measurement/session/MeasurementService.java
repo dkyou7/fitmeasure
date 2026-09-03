@@ -215,6 +215,7 @@ public class MeasurementService {
                 .findByMembershipIdOrderByMeasuredAtDesc(membershipId).size() > 1;
 
         return new ShareCard(
+                token,
                 member.getClub().getName(),
                 member.getNickname(),
                 !member.getMember().isClaimed(),

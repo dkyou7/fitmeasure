@@ -5,6 +5,7 @@ import java.util.List;
 
 /** 회원이 공유받는 일회성 결과 카드 */
 public record ShareCard(
+        String shareToken,
         String clubName,
         String nickname,
         boolean anonymous,
