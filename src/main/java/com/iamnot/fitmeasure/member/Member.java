@@ -91,4 +91,8 @@ public class Member extends BaseEntity {
         m.phone = phone;
         return m;
     }
+
+    public void updateName(String name) {
+        this.name = (name == null || name.isBlank()) ? null : name.trim();
+    }
 }
