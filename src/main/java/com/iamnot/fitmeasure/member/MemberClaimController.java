@@ -19,15 +19,13 @@ public class MemberClaimController {
         return "share/claim";
     }
 
-    /** claim 제출 */
     @PostMapping("/s/{token}/claim")
     public String submit(@PathVariable String token,
-                         @RequestParam String phone,
+                         @RequestParam String username,
                          @RequestParam String password,
-                         @RequestParam(required = false) String name,
                          Model model) {
         try {
-            claimService.claimByPhone(token, phone.trim(), password, name);
+            claimService.claimByUsername(token, username, password);
         } catch (IllegalStateException e) {
             model.addAttribute("form", claimService.prepareForm(token));
             model.addAttribute("error", e.getMessage());

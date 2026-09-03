@@ -27,9 +27,8 @@ public class MemberClaimService {
         return new ClaimForm(token, m.getNickname(), m.getClub().getName());
     }
 
-    /** 휴대폰으로 익명 회원을 계정으로 전환 */
     @Transactional
-    public void claimByPhone(String token, String phone, String rawPassword, String name) {
+    public void claimByUsername(String token, String username, String rawPassword) {
         MeasurementSession session = loadByToken(token);
         Membership membership = session.getMembership();
         Member member = membership.getMember();
@@ -37,27 +36,23 @@ public class MemberClaimService {
         if (member.isClaimed()) {
             throw new IllegalStateException("이미 계정이 연결된 기록입니다.");
         }
-        if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, phone).isPresent()) {
-            throw new IllegalStateException("이미 가입된 번호입니다. 계정 통합은 준비 중이에요.");
+        String id = username.trim();
+        if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, id).isPresent()) {
+            throw new IllegalStateException("이미 사용 중인 아이디예요.");
         }
 
-        // 무료 한도 체크: 이 claim이 한도를 넘기는가
+        // 무료 한도 체크
         Club club = membership.getClub();
         if (club.isFree()) {
             long claimed = membershipRepository.countClaimedMembers(club.getId());
             if (claimed >= club.getFreeMemberLimit()) {
-                throw new IllegalStateException(
-                        "이 헬스장은 무료 회원 한도가 찼어요. 헬스장에 문의해주세요.");
+                throw new IllegalStateException("이 헬스장은 무료 회원 한도가 찼어요. 헬스장에 문의해주세요.");
             }
         }
 
-        member.claim(name);
+        member.claim(membership.getNickname());  // 기존 닉네임 유지
         credentialRepository.save(
-                MemberCredential.username(member, phone, passwordEncoder.encode(rawPassword)));
-
-        if (name != null && !name.isBlank()) {
-            membership.rename(name.trim());
-        }
+                MemberCredential.username(member, id, passwordEncoder.encode(rawPassword)));
     }
 
     private MeasurementSession loadByToken(String token) {

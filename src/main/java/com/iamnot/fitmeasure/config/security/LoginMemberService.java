@@ -23,22 +23,20 @@ public class LoginMemberService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. 휴대폰 인증수단 찾기
         MemberCredential cred = credentialRepository
                 .findByProviderAndProviderId(AuthProvider.USERNAME, username)
                 .orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 아이디입니다."));
 
-        // 2. 그 Member의 로그인 가능한(OWNER/STAFF) 멤버십
+        // 로그인 가능한 클럽 소속이 있으면 그걸로, 없으면 떠도는 계정
         List<Membership> memberships = membershipRepository
                 .findLoginableByMemberId(cred.getMember().getId());
-        if (memberships.isEmpty()) {
-            throw new UsernameNotFoundException("로그인 권한이 있는 소속이 없습니다.");
-        }
+
         Membership chosen = memberships.stream()
                 .filter(m -> m.getRole() == MembershipRole.OWNER)
                 .findFirst()
-                .orElse(memberships.get(0));
+                .orElse(memberships.isEmpty() ? null : memberships.get(0));
 
-        return new LoginMember(chosen, username, cred.getPasswordHash());
+        // 클럽 소속 여부와 무관하게 인증은 성공
+        return new LoginMember(cred.getMember(), username, cred.getPasswordHash(), chosen);
     }
 }

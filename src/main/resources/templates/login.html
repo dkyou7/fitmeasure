@@ -40,10 +40,7 @@
 <div class="card">
     <h1>로그인</h1>
 
-    <div class="err" th:if="${param.error}">번호 또는 비밀번호를 확인해주세요.</div>
-    <div class="err" th:if="${param.error}" style="background:var(--tint);color:#E64500;">
-        아이디 또는 비밀번호를 확인해주세요.
-    </div>
+    <div class="err" th:if="${param.error}">아이디 또는 비밀번호를 확인해주세요.</div>
     <div th:if="${param.signup}"
          style="background:#F1EFE8;color:#1A1A18;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:16px;">
         가입이 완료됐어요. 로그인해주세요.
@@ -51,7 +48,7 @@
 
     <form th:action="@{/login}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <input class="field" type="tel" name="phone" placeholder="휴대폰 번호" required autofocus>
+        <input class="field" type="tel" name="username" placeholder="휴대폰 번호" required autofocus>
         <input class="field" type="password" name="password" placeholder="비밀번호" required>
 
         <div class="options">
