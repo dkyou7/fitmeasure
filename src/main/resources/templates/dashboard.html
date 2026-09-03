@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>측정 명단</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .st{font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px;white-space:nowrap;}
+            .st-risk{background:#FFF4EF;color:#E64500;}
+            .st-over{background:#FFF4EF;color:#FF5A1F;}
+            .st-soon{background:#F1EFE8;color:#6B6B66;}
+            .st-never{background:#F1EFE8;color:#6B6B66;}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="mb-1">측정 명단</h1>
+    <p class="text-secondary mb-4">
+        전체 <span th:text="${view.total}">0</span>명 중
+        <span class="text-primary fw-semibold" th:text="${view.attentionCount}">0</span>명에게 측정을 권할 때예요.
+    </p>
+
+    <!-- 측정 권할 회원 -->
+    <h2 class="text-secondary mb-2" style="font-size:15px;font-weight:600;">지금 챙길 회원</h2>
+    <div class="card mb-4" th:if="${!view.attention.isEmpty()}">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>회원</th><th>상태</th><th>마지막 측정</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${view.attention}">
+                <td>
+                    <a class="fw-semibold text-decoration-none text-body"
+                       th:href="@{/members/{id}(id=${r.membershipId})}" th:text="${r.nickname}">회원</a>
+                </td>
+                <td>
+                        <span th:switch="${r.status.name()}">
+                            <span th:case="'AT_RISK'" class="st st-risk">이탈 위험</span>
+                            <span th:case="'OVERDUE'" class="st st-over"
+                                  th:text="${r.daysOverdue} + '일 지남'">지남</span>
+                            <span th:case="'DUE_SOON'" class="st st-soon">곧 예정</span>
+                        </span>
+                </td>
+                <td class="text-secondary" style="font-size:14px;"
+                    th:text="${r.lastMeasuredDate != null} ? ${#temporals.format(r.lastMeasuredDate,'yyyy.MM.dd')} : '-'">-</td>
+                <td>
+                    <a class="btn btn-primary btn-sm"
+                       th:href="@{/measure/{id}(id=${r.membershipId})}">측정하기</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center text-secondary py-4" th:if="${view.attention.isEmpty()}">
+        지금 챙길 회원이 없어요. 모두 최근에 측정했네요 👍
+    </div>
+
+    <!-- 정상/신규 -->
+    <h2 class="text-secondary mb-2" style="font-size:15px;font-weight:600;">그 외 회원</h2>
+    <div class="card" th:if="${!view.normal.isEmpty()}">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>회원</th><th>상태</th><th>마지막 측정</th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${view.normal}">
+                <td>
+                    <a class="fw-semibold text-decoration-none text-body"
+                       th:href="@{/members/{id}(id=${r.membershipId})}" th:text="${r.nickname}">회원</a>
+                </td>
+                <td>
+                    <span th:if="${r.status.name() == 'NEVER'}" class="st st-never">측정 전</span>
+                    <span th:if="${r.status.name() == 'NORMAL'}" class="text-secondary" style="font-size:13px;">정상</span>
+                </td>
+                <td class="text-secondary" style="font-size:14px;"
+                    th:text="${r.lastMeasuredDate != null} ? ${#temporals.format(r.lastMeasuredDate,'yyyy.MM.dd')} : '-'">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center text-secondary py-4" th:if="${view.normal.isEmpty()}">해당 회원이 없습니다.</div>
+</div>
+</body>
+</html>
