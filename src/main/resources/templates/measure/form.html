@@ -10,20 +10,20 @@
             .mhead{margin-bottom:20px;}
             .mhead .who{font-size:24px;font-weight:800;letter-spacing:-0.03em;}
             .mhead .prog{font-size:14px;color:var(--orange);font-weight:600;margin-top:2px;}
-            .item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;}
-            .item .name{font-size:17px;font-weight:700;margin-bottom:2px;}
-            .item .proto{font-size:13px;color:var(--sub);margin-bottom:12px;line-height:1.45;}
-            .inrow{display:flex;align-items:center;gap:10px;}
-            .inrow input,.inrow select{flex:1;padding:14px;border:1px solid var(--line);border-radius:10px;
+            .mitem{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;}
+            .mitem .mname{font-size:17px;font-weight:700;margin-bottom:2px;}
+            .mitem .mproto{font-size:13px;color:var(--sub);margin-bottom:12px;line-height:1.45;}
+            .minrow{display:flex;align-items:center;gap:10px;}
+            .minrow input,.minrow select{flex:1;padding:14px;border:1px solid var(--line);border-radius:10px;
                 font-size:18px;font-family:inherit;font-weight:600;}
-            .inrow input:focus,.inrow select:focus{outline:none;border-color:var(--orange);}
-            .inrow .unit{font-size:15px;color:var(--sub);min-width:36px;}
-            .timehint{font-size:12px;color:var(--sub);margin-top:6px;}
+            .minrow input:focus,.minrow select:focus{outline:none;border-color:var(--orange);}
+            .minrow .munit{font-size:15px;color:var(--sub);min-width:36px;}
+            .mtimehint{font-size:12px;color:var(--sub);margin-top:6px;}
             .mnote{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;
                 font-family:inherit;font-size:14px;margin-bottom:16px;resize:vertical;}
-            .save{width:100%;padding:16px;background:var(--orange);color:#fff;border:none;border-radius:12px;
-                font-size:17px;font-weight:700;cursor:pointer;}
-            .save:hover{background:#E64500;}
+            .msave{width:100%;padding:16px;background:var(--orange);color:#fff;border:none;border-radius:12px;
+                font-size:17px;font-weight:700;cursor:pointer;display:block;}
+            .msave:hover{background:var(--orange-deep,#E64500);}
         </style>
     </th:block>
 </head>
@@ -38,10 +38,10 @@
                 <div class="prog" th:text="${form.programName}">3대 측정</div>
             </div>
 
-            <div class="item" th:each="it : ${form.items}">
-                <div class="name" th:text="${it.name}">벤치프레스 1RM</div>
-                <div class="proto" th:if="${it.protocol}" th:text="${it.protocol}">측정 가이드</div>
-                <div class="inrow">
+            <div class="mitem" th:each="it : ${form.items}">
+                <div class="mname" th:text="${it.name}">벤치프레스 1RM</div>
+                <div class="mproto" th:if="${it.protocol}" th:text="${it.protocol}">측정 가이드</div>
+                <div class="minrow">
                     <select th:if="${it.measurementType.name() == 'SELECT'}"
                             th:name="'item_' + ${it.itemId}">
                         <option value="">선택 안 함</option>
@@ -52,15 +52,15 @@
                            type="number" step="any" inputmode="decimal"
                            th:name="'item_' + ${it.itemId}"
                            placeholder="측정값 (비우면 건너뜀)">
-                    <span class="unit" th:if="${it.unit}" th:text="${it.unit}">kg</span>
+                    <span class="munit" th:if="${it.unit}" th:text="${it.unit}">kg</span>
                 </div>
-                <div class="timehint" th:if="${it.measurementType.name() == 'TIME'}">
+                <div class="mtimehint" th:if="${it.measurementType.name() == 'TIME'}">
                     초 단위로 입력하세요 (예: 2분 10초 → 130)
                 </div>
             </div>
 
             <textarea name="note" rows="2" class="mnote" placeholder="컨디션 메모 (선택)"></textarea>
-            <button type="submit" class="save">측정 저장</button>
+            <button type="submit" class="msave">측정 저장</button>
         </form>
     </div>
 </div>
