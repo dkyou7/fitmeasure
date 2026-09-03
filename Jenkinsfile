@@ -30,7 +30,7 @@ pipeline {
                     docker run -d --name $CONTAINER \
                       --network iamnot-net \
                       -p 10341:8080 \
-                      -e DB_URL="jdbc:mysql://__MYSQL_HOST__:3306/fitmeasure?serverTimezone=Asia/Seoul&characterEncoding=UTF-8" \
+                      -e DB_URL="jdbc:mysql://iamnotmeeting-mysql:3306/fitmeasure?serverTimezone=Asia/Seoul&characterEncoding=UTF-8" \
                       -e DB_USER="fitmeasure" \
                       -e DB_PASSWORD="$DB_PASSWORD" \
                       --restart unless-stopped \
