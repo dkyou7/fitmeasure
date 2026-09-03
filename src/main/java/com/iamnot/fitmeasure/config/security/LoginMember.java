@@ -19,33 +19,42 @@ public class LoginMember implements UserDetails {
     private final String passwordHash;
     private final MembershipRole role;
     private final String nickname;
+    private final boolean platformAdmin;
 
     public LoginMember(Member member, String username, String passwordHash, Membership membership) {
         this.memberId = member.getId();
         this.username = username;
         this.passwordHash = passwordHash;
+        this.platformAdmin = member.isPlatformAdmin();
         if (membership != null) {
             this.clubId = membership.getClub().getId();
             this.role = membership.getRole();
             this.nickname = membership.getNickname();
         } else {
-            this.clubId = null;          // 떠도는 계정
+            this.clubId = null;
             this.role = null;
             this.nickname = member.getName() != null ? member.getName() : "회원";
         }
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> auths = new java.util.ArrayList<>();
+        if (platformAdmin) {
+            auths.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        if (role != null) {
+            auths.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        } else {
+            auths.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        return auths;
+    }
+
+    public boolean isPlatformAdmin() { return platformAdmin; }
     public Long clubId() { return clubId; }
     public Long memberId() { return memberId; }
     public String nickname() { return nickname; }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role == null) {
-            return List.of(new SimpleGrantedAuthority("ROLE_USER"));  // 떠도는 계정 기본 권한
-        }
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
     @Override public String getPassword() { return passwordHash; }
     @Override public String getUsername() { return username; }
     @Override public boolean isAccountNonExpired() { return true; }

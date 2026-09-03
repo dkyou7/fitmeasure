@@ -2,10 +2,7 @@ package com.iamnot.fitmeasure.club;
 
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplate;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
-import com.iamnot.fitmeasure.member.Member;
-import com.iamnot.fitmeasure.member.MemberCredential;
-import com.iamnot.fitmeasure.member.MemberCredentialRepository;
-import com.iamnot.fitmeasure.member.MemberRepository;
+import com.iamnot.fitmeasure.member.*;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
@@ -48,7 +45,17 @@ public class ClubSeedInitializer implements ApplicationRunner {
         // 1. 클럽
         Club club = clubRepository.save(new Club("데모 헬스장", "demo-gym", ClubType.GYM));
 
-        // 2. 오너(사장) + 트레이너 — 자연인 + 멤버십
+        // 플랫폼 운영자 (클럽 없음)
+        if (memberRepository.count() == 0 || credentialRepository
+                .findByProviderAndProviderId(AuthProvider.USERNAME, "admin").isEmpty()) {
+            Member admin = Member.anonymous();
+            admin.claim("운영자");
+            admin.grantPlatformAdmin();
+            memberRepository.save(admin);
+            credentialRepository.save(MemberCredential.username(
+                    admin, "dkyou7@ktnet.co.kr", passwordEncoder.encode("1q2w3e!@")));
+        }
+
         // 오너
         Member ownerPerson = Member.anonymous();
         ownerPerson.claim("사장님");

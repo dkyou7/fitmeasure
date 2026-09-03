@@ -66,4 +66,5 @@ public class Club extends BaseEntity {
     public int getFreeMemberLimit() { return freeMemberLimit; }
     public String getPhone() { return phone; }
     public String getAddress() { return address; }
+    public void downgradeToFree() { this.plan = ClubPlan.FREE; }
 }

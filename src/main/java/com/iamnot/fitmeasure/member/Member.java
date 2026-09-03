@@ -38,6 +38,13 @@ public class Member extends BaseEntity {
 
     private LocalDateTime claimedAt;
 
+    @Column(nullable = false)
+    private boolean platformAdmin = false;
+
+    public boolean isPlatformAdmin() { return platformAdmin; }
+
+    public void grantPlatformAdmin() { this.platformAdmin = true; }
+
     public void updatePhone(String phone) {
         this.phone = phone;
     }

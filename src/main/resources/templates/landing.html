@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,8 +90,13 @@
     <div class="wrap nav-in">
         <div class="logo">측정<span class="dot">.</span></div>
         <div class="nav-actions">
-            <a class="login" href="/login">로그인</a>
-            <a class="signup" href="/signup">시작하기</a>
+            <a sec:authorize="!isAuthenticated()" class="login" href="/login">로그인</a>
+            <a sec:authorize="!isAuthenticated()" class="signup" href="/signup">시작하기</a>
+            <a sec:authorize="isAuthenticated()" class="login" href="/logout"
+               onclick="event.preventDefault();document.getElementById('lo').submit();">로그아웃</a>
+            <form sec:authorize="isAuthenticated()" id="lo" th:action="@{/logout}" method="post" style="display:none;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
         </div>
     </div>
 </nav>

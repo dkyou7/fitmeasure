@@ -26,10 +26,11 @@ public class HomeController {
             return "landing";
         }
 
-        Long clubId = lm.clubId();
-        if (clubId == null) {
-            return "landing";  // 클럽 없는 계정 → 소개 페이지
+        if (lm.isPlatformAdmin()) {
+            return "redirect:/admin";
         }
+        Long clubId = lm.clubId();
+        if (clubId == null) return "landing";
         var club = clubRepository.findById(clubId).orElse(null);
         long memberCount = membershipRepository.countClaimedMembers(clubId);
         long programCount = templateRepository.findByClubId(clubId).size();

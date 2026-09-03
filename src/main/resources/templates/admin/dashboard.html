@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head><title>운영 관리자</title></head>
+<body>
+<div layout:fragment="content">
+    <h1 class="mb-4">플랫폼 관리</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card p-3">
+                <div class="text-secondary" style="font-size:13px;">전체 클럽</div>
+                <span class="fw-bold" style="font-size:26px;" th:text="${stats.totalClubs}">0</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3">
+                <div class="text-secondary" style="font-size:13px;">유료 클럽</div>
+                <span class="fw-bold text-primary" style="font-size:26px;" th:text="${stats.paidClubs}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="clubTable" id="clubTable" class="card">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>클럽</th><th>유형</th><th>플랜</th><th>회원</th><th>트레이너</th><th>생성일</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="c : ${clubs}">
+                <td class="fw-semibold" th:text="${c.name}">데모 헬스장</td>
+                <td class="text-secondary" style="font-size:13px;" th:text="${c.type}">GYM</td>
+                <td>
+                        <span th:class="${c.plan == 'PAID'} ? 'badge bg-primary' : 'badge bg-tint'"
+                              th:text="${c.plan == 'PAID'} ? '유료' : '무료'">무료</span>
+                </td>
+                <td th:text="${c.memberCount}">0</td>
+                <td th:text="${c.staffCount}">0</td>
+                <td class="text-secondary" style="font-size:13px;"
+                    th:text="${#temporals.format(c.createdAt, 'yyyy.MM.dd')}">2026.03.05</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-secondary"
+                            th:hx-post="@{/admin/clubs/{id}/toggle-plan(id=${c.clubId})}"
+                            hx-target="#clubTable" hx-swap="outerHTML"
+                            th:text="${c.plan == 'PAID'} ? '무료로' : '유료로'">유료로</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
