@@ -1,41 +1,126 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>헬스장 만들기</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 헬스장 만들기</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
     <style>
-        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;}
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Pretendard',sans-serif;background:#F1EFE8;color:var(--ink);line-height:1.6;
-            padding:20px;min-height:100vh;display:flex;align-items:center;justify-content:center;letter-spacing:-0.01em;}
-        .card{background:var(--bg);border-radius:24px;padding:32px 28px;max-width:400px;width:100%;
-            box-shadow:0 8px 40px rgba(0,0,0,0.08);}
-        h1{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;}
-        .sub{font-size:14px;color:var(--sub);margin-bottom:24px;}
-        label{font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:6px;}
-        input,select{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:15px;
-            font-family:inherit;margin-bottom:16px;}
-        input:focus,select:focus{outline:none;border-color:var(--orange);}
-        .btn{width:100%;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:12px;
-            font-size:16px;font-weight:700;cursor:pointer;}
-        .btn:hover{background:#E64500;}
+        html{scroll-behavior:smooth}
+        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+            line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em;}
+        .wrap{max-width:640px;margin:0 auto;padding:0 24px}
+        .topbar{height:56px;display:flex;align-items:center;border-bottom:1px solid var(--line);}
+        .topbar .logo{font-weight:800;font-size:18px;letter-spacing:-0.03em;text-decoration:none;color:var(--ink);}
+        .topbar .logo .dot{color:var(--orange);}
+
+        .hero{padding:72px 0 56px;text-align:center}
+        .eyebrow{display:inline-block;font-size:13px;font-weight:600;color:var(--orange-deep);
+            background:var(--tint);padding:6px 14px;border-radius:100px;margin-bottom:22px}
+        .hero h1{font-size:40px;font-weight:800;line-height:1.14;letter-spacing:-0.04em;margin-bottom:18px}
+        .hero h1 .hl{color:var(--orange)}
+        .hero p{font-size:18px;color:var(--sub);margin:0 auto 32px;line-height:1.55}
+        .hero .cta{font-size:16px;font-weight:700;color:#fff;background:var(--orange);
+            padding:15px 32px;border-radius:12px;text-decoration:none;display:inline-block;
+            box-shadow:0 6px 20px rgba(255,90,31,0.28);transition:transform .12s,background .15s}
+        .hero .cta:hover{background:var(--orange-deep);transform:translateY(-1px)}
+        .hero .note{margin-top:16px;font-size:14px;color:var(--sub)}
+
+        .wins{padding:16px 0 48px}
+        .win{display:flex;gap:16px;align-items:flex-start;padding:20px;background:#fff;
+            border:1px solid var(--line);border-radius:16px;margin-bottom:12px}
+        .win .ic{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--tint);
+            display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--orange);font-weight:800}
+        .win h3{font-size:17px;font-weight:700;margin-bottom:3px;letter-spacing:-0.02em}
+        .win p{font-size:14px;color:var(--sub);line-height:1.5}
+
+        .pricing{background:var(--ink);color:#fff;border-radius:20px;padding:36px 28px;text-align:center;margin-bottom:48px}
+        .pricing .tag{font-size:13px;font-weight:600;color:var(--orange);margin-bottom:10px}
+        .pricing h2{font-size:30px;font-weight:800;letter-spacing:-0.03em;line-height:1.2;margin-bottom:8px}
+        .pricing h2 .hl{color:var(--orange)}
+        .pricing p{font-size:15px;color:#B4B2A9;margin-bottom:0}
+
+        .formsec{padding:8px 0 72px}
+        .formsec .card{background:#fff;border:2px solid var(--orange);border-radius:20px;padding:32px 28px}
+        .formsec h2{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;text-align:center}
+        .formsec .sub{font-size:14px;color:var(--sub);text-align:center;margin-bottom:24px}
+        .formsec label{font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:6px}
+        .formsec input,.formsec select{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;
+            font-size:15px;font-family:inherit;margin-bottom:16px}
+        .formsec input:focus,.formsec select:focus{outline:none;border-color:var(--orange)}
+        .formsec .submit{width:100%;padding:16px;background:var(--orange);color:#fff;border:none;border-radius:12px;
+            font-size:16px;font-weight:700;cursor:pointer}
+        .formsec .submit:hover{background:var(--orange-deep)}
+
+        @media(max-width:520px){.hero h1{font-size:32px}}
     </style>
 </head>
 <body>
-<div class="card">
-    <h1>헬스장 만들기</h1>
-    <div class="sub">내 헬스장을 만들고 회원 측정을 시작하세요</div>
-    <form th:action="@{/clubs}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <label>이름</label>
-        <input type="text" name="name" placeholder="예: 스트롱짐 강남점" required autofocus>
-        <label>유형</label>
-        <select name="type">
-            <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
-        </select>
-        <button type="submit" class="btn">만들기</button>
-    </form>
+
+<div class="topbar">
+    <div class="wrap" style="width:100%;">
+        <a class="logo" href="/">측정<span class="dot">.</span></a>
+    </div>
 </div>
+
+<header class="hero">
+    <div class="wrap">
+        <span class="eyebrow">회원 10명까지 완전 무료</span>
+        <h1>회원이 다시 등록하는<br><span class="hl">이유</span>를 만드세요</h1>
+        <p>운동력을 매달 측정하고 성장을 숫자로 보여주면, 회원은 계속 옵니다. 지금 3분이면 시작할 수 있어요.</p>
+        <a href="#create" class="cta">내 헬스장 만들기</a>
+        <div class="note">설치 없음 · 카드 등록 없음 · 지금 바로</div>
+    </div>
+</header>
+
+<section class="wins">
+    <div class="wrap">
+        <div class="win">
+            <div class="ic">↗</div>
+            <div><h3>재등록으로 이어집니다</h3>
+                <p>회원이 자기 성장을 눈으로 확인하는 순간, 다음 달 등록의 이유가 생깁니다.</p></div>
+        </div>
+        <div class="win">
+            <div class="ic">◷</div>
+            <div><h3>미용실처럼 정기 방문</h3>
+                <p>"측정할 때 됐어요" 한마디가 회원을 다시 부릅니다. 측정 주기가 방문 주기가 됩니다.</p></div>
+        </div>
+        <div class="win">
+            <div class="ic">◆</div>
+            <div><h3>측정은 3분, 준비는 0분</h3>
+                <p>3대 측정·기초 체력 프로그램이 기본 제공됩니다. 만들자마자 회원을 측정할 수 있어요.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="wrap">
+    <div class="pricing">
+        <div class="tag">부담 없는 시작</div>
+        <h2>회원 <span class="hl">10명까지 무료</span></h2>
+        <p>먼저 써보고, 회원이 늘면 그때 이야기해요. 측정은 언제나 무제한입니다.</p>
+    </div>
+</section>
+
+<section id="create" class="formsec">
+    <div class="wrap">
+        <div class="card">
+            <h2>내 헬스장 만들기</h2>
+            <div class="sub">이름만 정하면 바로 시작할 수 있어요</div>
+            <form th:action="@{/clubs}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <label>헬스장 이름</label>
+                <input type="text" name="name" placeholder="예: 스트롱짐 강남점" required>
+                <label>유형</label>
+                <select name="type">
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+                </select>
+                <button type="submit" class="submit">무료로 시작하기</button>
+            </form>
+        </div>
+    </div>
+</section>
+
 </body>
 </html>

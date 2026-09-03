@@ -13,12 +13,31 @@
             .feed-item .prog{font-size:18px;font-weight:700;margin:2px 0;letter-spacing:-0.02em;}
             .feed-item .meta{font-size:13px;color:var(--sub);}
             .empty{text-align:center;color:var(--sub);padding:48px 20px;}
+            .promo{display:block;background:linear-gradient(135deg, #ff8e64, #da6735);border-radius:16px;
+                padding:22px 20px;margin-bottom:20px;text-decoration:none;color:#fff;position:relative;overflow:hidden;
+                box-shadow:0 6px 24px rgba(255,90,31,0.28);transition:transform .12s;}
+            .promo:hover{transform:translateY(-2px);}
+            .promo::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;
+                background:rgba(255,255,255,0.12);border-radius:50%;}
+            .promo-badge{display:inline-block;background:rgba(255,255,255,0.22);font-size:12px;font-weight:700;
+                padding:3px 12px;border-radius:100px;margin-bottom:10px;letter-spacing:0.02em;}
+            .promo-title{font-size:20px;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px;}
+            .promo-sub{font-size:13px;opacity:0.92;line-height:1.5;margin-bottom:14px;}
+            .promo-cta{font-size:15px;font-weight:700;}
         </style>
     </th:block>
 </head>
 <body>
 <div layout:fragment="content">
     <h1 class="mb-4" style="font-size:24px;font-weight:800;letter-spacing:-0.03em;">내 측정 기록</h1>
+
+    <!-- 프로모션 배너 -->
+    <a href="/clubs/new" class="promo">
+        <div class="promo-badge">전격 모집</div>
+        <div class="promo-title">내 헬스장, 지금 시작하세요</div>
+        <div class="promo-sub">회원 10명까지 무료 · 3분이면 오픈 · 측정 도구 바로 제공</div>
+        <div class="promo-cta">헬스장 만들기 →</div>
+    </a>
 
     <a class="feed-item" th:each="f : ${feed}"
        th:href="@{/measure/result/{sid}(sid=${f.sessionId})}">
