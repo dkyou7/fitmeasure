@@ -51,7 +51,9 @@
         <tbody>
         <tr th:each="m : ${members}">
             <td>
-                <span th:text="${m.nickname}">이름 없는 곰</span>
+                <a th:href="@{/members/{id}(id=${m.membershipId})}"
+                   th:text="${m.nickname}"
+                   style="color:inherit;text-decoration:none;font-weight:600;">이름 없는 곰</a>
                 <span class="badge" th:if="${m.anonymous}">익명</span>
             </td>
             <td th:text="${m.memberNo} ?: '-'">-</td>

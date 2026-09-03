@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberDetailService memberDetailService;  // 필드 추가
 
     @GetMapping
     public String list(Model model) {
@@ -26,5 +27,11 @@ public class MemberController {
         memberService.register(nickname, memberNo);
         model.addAttribute("members", memberService.listMembers());
         return "member/list :: memberTable";
+    }
+
+    @GetMapping("/{membershipId}")
+    public String detail(@PathVariable Long membershipId, Model model) {
+        model.addAttribute("detail", memberDetailService.getDetail(membershipId));
+        return "member/detail";
     }
 }
