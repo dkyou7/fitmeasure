@@ -23,10 +23,11 @@ public class MemberClaimController {
     @PostMapping("/s/{token}/claim")
     public String submit(@PathVariable String token,
                          @RequestParam String phone,
+                         @RequestParam String password,
                          @RequestParam(required = false) String name,
                          Model model) {
         try {
-            claimService.claim(token, phone.trim(), name);
+            claimService.claimByPhone(token, phone.trim(), password, name);
         } catch (IllegalStateException e) {
             model.addAttribute("form", claimService.prepareForm(token));
             model.addAttribute("error", e.getMessage());

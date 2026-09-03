@@ -9,21 +9,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-/** 로그인한 트레이너/사장. 어느 클럽 소속인지 함께 들고 있다. */
+/** 로그인한 트레이너/사장. 소속 클럽을 함께 들고 있다. */
 public class LoginMember implements UserDetails {
 
     private final Long memberId;
     private final Long clubId;
-    private final String phone;
+    private final String username;      // 휴대폰번호
     private final String passwordHash;
     private final MembershipRole role;
     private final String nickname;
 
-    public LoginMember(Membership membership) {
+    public LoginMember(Membership membership, String username, String passwordHash) {
         this.memberId = membership.getMember().getId();
         this.clubId = membership.getClub().getId();
-        this.phone = membership.getMember().getPhone();
-        this.passwordHash = membership.getMember().getPasswordHash();
+        this.username = username;
+        this.passwordHash = passwordHash;
         this.role = membership.getRole();
         this.nickname = membership.getNickname();
     }
@@ -37,7 +37,7 @@ public class LoginMember implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
     @Override public String getPassword() { return passwordHash; }
-    @Override public String getUsername() { return phone; }
+    @Override public String getUsername() { return username; }
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }

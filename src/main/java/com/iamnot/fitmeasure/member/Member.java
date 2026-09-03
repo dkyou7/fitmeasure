@@ -2,28 +2,27 @@ package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.config.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 /**
- * 자연인. phone이 null이면 클럽이 만들어둔 익명 회원,
- * phone이 채워지면 본인이 claim한 계정이다.
+ * 자연인. claimedAt이 null이면 클럽이 만들어둔 익명 회원,
+ * 채워지면 본인이 계정으로 전환(claim)한 상태다.
+ * 인증 수단(휴대폰/카카오/애플/구글)은 MemberCredential이 이 Member를
+ * 단방향으로 참조한다. 관계 탐색은 MemberCredentialRepository로 한다.
  */
 @Entity
 @Getter
-@Table(name = "member", uniqueConstraints = @UniqueConstraint(columnNames = "phone"))
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "member")
 public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 20)
-    private String phone;
-
-    @Column(length = 255)
-    private String passwordHash;
 
     @Column(length = 50)
     private String name;
@@ -36,36 +35,33 @@ public class Member extends BaseEntity {
 
     private LocalDateTime claimedAt;
 
-    protected Member() {
-    }
-
     /** 클럽이 등록하는 익명 회원 */
     public static Member anonymous() {
         return new Member();
     }
 
-    /** 익명 회원을 본인이 계정으로 전환 */
-    public void claim(String phone, String passwordHash, String name) {
+    /**
+     * 익명 회원을 계정으로 전환.
+     * 인증 수단(MemberCredential)은 이 메서드 호출 후 별도로 저장한다
+     * (credential.of***(member, ...) → credentialRepository.save).
+     */
+    public void claim(String name) {
         if (isClaimed()) {
             throw new IllegalStateException("이미 계정이 연결된 회원입니다.");
         }
-        this.phone = phone;
-        this.passwordHash = passwordHash;
-        this.name = name;
+        if (name != null && !name.isBlank()) {
+            this.name = name.trim();
+        }
         this.claimedAt = LocalDateTime.now();
     }
 
     public boolean isClaimed() {
-        return phone != null;
+        return claimedAt != null;
     }
 
     public void updateProfile(String name, Gender gender, Short birthYear) {
         this.name = name;
         this.gender = gender;
         this.birthYear = birthYear;
-    }
-
-    public void setPassword(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 }

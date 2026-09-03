@@ -37,4 +37,9 @@ public class HomeController {
         model.addAttribute("overLimit", memberCount > freeLimit);
         return "index";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 }

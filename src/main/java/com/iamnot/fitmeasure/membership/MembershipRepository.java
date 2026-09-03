@@ -19,11 +19,9 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     @Query("""
         select m from Membership m
-        join m.member mb
-        where mb.phone = :phone
-          and mb.passwordHash is not null
+        where m.member.id = :memberId
           and m.role in (com.iamnot.fitmeasure.membership.MembershipRole.OWNER,
                          com.iamnot.fitmeasure.membership.MembershipRole.STAFF)
     """)
-    List<Membership> findLoginableByPhone(@Param("phone") String phone);
+    List<Membership> findLoginableByMemberId(@Param("memberId") Long memberId);
 }

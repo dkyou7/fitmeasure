@@ -3,6 +3,8 @@ package com.iamnot.fitmeasure.club;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplate;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
 import com.iamnot.fitmeasure.member.Member;
+import com.iamnot.fitmeasure.member.MemberCredential;
+import com.iamnot.fitmeasure.member.MemberCredentialRepository;
 import com.iamnot.fitmeasure.member.MemberRepository;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
@@ -32,7 +34,8 @@ public class ClubSeedInitializer implements ApplicationRunner {
     private final MemberRepository memberRepository;
     private final MembershipRepository membershipRepository;
     private final MeasurementTemplateRepository templateRepository;
-    private final PasswordEncoder passwordEncoder;  // 필드 추가
+    private final PasswordEncoder passwordEncoder;
+    private final MemberCredentialRepository credentialRepository;
 
     @Override
     @Transactional
@@ -46,14 +49,20 @@ public class ClubSeedInitializer implements ApplicationRunner {
         Club club = clubRepository.save(new Club("데모 헬스장", "demo-gym", ClubType.GYM));
 
         // 2. 오너(사장) + 트레이너 — 자연인 + 멤버십
+        // 오너
         Member ownerPerson = Member.anonymous();
-        ownerPerson.claim("01012341234", passwordEncoder.encode("1234"), "사장님");
+        ownerPerson.claim("사장님");
         memberRepository.save(ownerPerson);
+        credentialRepository.save(MemberCredential.phone(
+                ownerPerson, "01012341234", passwordEncoder.encode("1234")));
         membershipRepository.save(new Membership(club, ownerPerson, MembershipRole.OWNER, "사장님"));
 
+        // 트레이너
         Member trainerPerson = Member.anonymous();
-        trainerPerson.claim("01023452345", passwordEncoder.encode("2345"), "김트레이너");
+        trainerPerson.claim("김트레이너");
         memberRepository.save(trainerPerson);
+        credentialRepository.save(MemberCredential.phone(
+                trainerPerson, "01023452345", passwordEncoder.encode("2345")));
         membershipRepository.save(new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 
         // 3. 표준 프로그램 전체를 클럽으로 복사
