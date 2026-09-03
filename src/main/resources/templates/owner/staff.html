@@ -28,19 +28,13 @@
                     <span class="badge bg-tint" th:if="${s.isOwner}">사장</span>
                     <span class="text-secondary" style="font-size:13px;" th:unless="${s.isOwner}">트레이너</span>
                 </td>
+                <td class="text-secondary" style="font-size:14px;"
+                    th:text="${#temporals.format(s.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
                 <td>
                     <button th:if="${!s.isOwner}"
                             th:class="${s.status.name() == 'ACTIVE'} ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-primary'"
                             th:text="${s.status.name() == 'ACTIVE'} ? '비활성' : '활성화'"
                             th:hx-post="@{/owner/staff/{id}/toggle(id=${s.membershipId})}"
-                            hx-target="#staffTable" hx-swap="outerHTML">비활성</button>
-                </td>
-                <td class="text-secondary" style="font-size:14px;"
-                    th:text="${#temporals.format(s.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
-                <td>
-                    <button th:if="${!s.isOwner and s.status.name() == 'ACTIVE'}"
-                            class="btn btn-sm btn-outline-secondary"
-                            th:hx-post="@{/owner/staff/{id}/deactivate(id=${s.membershipId})}"
                             hx-target="#staffTable" hx-swap="outerHTML">비활성</button>
                 </td>
             </tr>

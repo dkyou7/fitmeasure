@@ -48,8 +48,8 @@ public class MemberService {
         // 무료 한도 체크 (FREE 플랜일 때만)
         var clubEntity = clubRepository.findById(clubId).orElseThrow();
         if (clubEntity.isFree()) {
-            long current = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
-            if (current >= clubEntity.getFreeMemberLimit()) {
+            long claimed = membershipRepository.countClaimedMembers(clubId);
+            if (claimed >= clubEntity.getFreeMemberLimit()) {
                 throw new FreeLimitExceededException(clubEntity.getFreeMemberLimit());
             }
         }

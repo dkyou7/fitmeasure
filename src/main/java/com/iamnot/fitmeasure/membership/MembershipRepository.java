@@ -24,4 +24,12 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
                          com.iamnot.fitmeasure.membership.MembershipRole.STAFF)
     """)
     List<Membership> findLoginableByMemberId(@Param("memberId") Long memberId);
+
+    @Query("""
+    select count(m) from Membership m
+    where m.club.id = :clubId
+      and m.role = com.iamnot.fitmeasure.membership.MembershipRole.MEMBER
+      and m.member.claimedAt is not null
+""")
+    long countClaimedMembers(@Param("clubId") Long clubId);
 }

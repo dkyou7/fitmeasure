@@ -11,10 +11,11 @@ public record MemberDetail(
         String nickname,
         String memberNo,
         boolean anonymous,
+        boolean active,
         LocalDate joinedAt,
-        LocalDate lastMeasuredDate,   // null이면 측정 이력 없음
-        LocalDate nextDueDate,        // null이면 계산 불가
-        boolean overdue,              // 예정일 지남
+        LocalDate lastMeasuredDate,
+        LocalDate nextDueDate,
+        boolean overdue,
         List<SessionSummary> sessions,
         List<TrackedItem> trackedItems
 ) {}
