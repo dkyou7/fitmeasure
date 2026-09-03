@@ -1,72 +1,49 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 관리</title>
-    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
-    <style>
-        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-            line-height:1.6;padding:32px;max-width:720px;margin:0 auto;letter-spacing:-0.01em;}
-        h1{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-bottom:24px;}
-        .form{display:flex;gap:8px;margin-bottom:24px;padding:16px;background:#fff;
-            border:1px solid var(--line);border-radius:14px;}
-        .form input{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:10px;
-            font-size:15px;font-family:inherit;}
-        .form input:focus{outline:none;border-color:var(--orange);}
-        .form button{padding:11px 22px;background:var(--orange);color:#fff;border:none;
-            border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;}
-        .form button:hover{background:#E64500;}
-        table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);
-            border-radius:14px;overflow:hidden;}
-        th,td{text-align:left;padding:14px 16px;font-size:15px;border-bottom:1px solid var(--line);}
-        th{font-size:13px;color:var(--sub);font-weight:600;background:#fff;}
-        tr:last-child td{border-bottom:none;}
-        .badge{font-size:12px;color:#E64500;background:var(--tint);padding:2px 10px;border-radius:100px;}
-        .empty{text-align:center;color:var(--sub);padding:40px;}
-    </style>
+    <th:block layout:fragment="styles">
+        <style>
+            .form{display:flex;gap:8px;margin-bottom:24px;padding:16px;}
+            .form input[name=nickname]{flex:1;}
+            .form input[name=memberNo]{flex:0 0 140px;}
+        </style>
+    </th:block>
 </head>
 <body>
-<h1>회원 관리</h1>
+<div layout:fragment="content">
+    <h1>회원 관리</h1>
 
-<div class="form">
-    <input type="text" name="nickname" id="nickname" placeholder="이름 (비우면 자동 생성)">
-    <input type="text" name="memberNo" id="memberNo" placeholder="회원번호 (선택)" style="flex:0 0 140px;">
-    <button hx-post="/members"
-            hx-include="#nickname, #memberNo"
-            hx-target="#memberTable"
-            hx-swap="outerHTML"
-            hx-on::after-request="document.getElementById('nickname').value='';document.getElementById('memberNo').value='';">
-        회원 등록
-    </button>
-</div>
+    <div class="form card">
+        <input type="text" name="nickname" id="nickname" placeholder="이름 (비우면 자동 생성)">
+        <input type="text" name="memberNo" id="memberNo" placeholder="회원번호 (선택)">
+        <button class="btn" hx-post="/members" hx-include="#nickname, #memberNo"
+                hx-target="#memberTable" hx-swap="outerHTML"
+                hx-on::after-request="document.getElementById('nickname').value='';document.getElementById('memberNo').value='';">
+            회원 등록
+        </button>
+    </div>
 
-<div th:fragment="memberTable" id="memberTable">
-    <table th:if="${!members.isEmpty()}">
-        <thead>
-        <tr><th>이름</th><th>회원번호</th><th>등록일</th><th></th></tr>
-        </thead>
-        <tbody>
-        <tr th:each="m : ${members}">
-            <td>
-                <a th:href="@{/members/{id}(id=${m.membershipId})}"
-                   th:text="${m.nickname}"
-                   style="color:inherit;text-decoration:none;font-weight:600;">이름 없는 곰</a>
-                <span class="badge" th:if="${m.anonymous}">익명</span>
-            </td>
-            <td th:text="${m.memberNo} ?: '-'">-</td>
-            <td th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
-            <td>
-                <a th:href="@{/measure/{id}(id=${m.membershipId})}"
-                   style="color:var(--orange);font-weight:600;text-decoration:none;font-size:14px;">측정하기 →</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="empty" th:if="${members.isEmpty()}">
-        아직 등록된 회원이 없습니다. 위에서 첫 회원을 등록해보세요.
+    <div th:fragment="memberTable" id="memberTable">
+        <table th:if="${!members.isEmpty()}">
+            <thead><tr><th>이름</th><th>회원번호</th><th>등록일</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${members}">
+                <td>
+                    <a th:href="@{/members/{id}(id=${m.membershipId})}" th:text="${m.nickname}"
+                       style="color:inherit;text-decoration:none;font-weight:600;">이름 없는 곰</a>
+                    <span class="badge" th:if="${m.anonymous}">익명</span>
+                </td>
+                <td th:text="${m.memberNo} ?: '-'">-</td>
+                <td th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
+                <td><a th:href="@{/measure/{id}(id=${m.membershipId})}"
+                       style="color:var(--orange);font-weight:600;text-decoration:none;">측정하기 →</a></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty" th:if="${members.isEmpty()}">아직 등록된 회원이 없습니다.</div>
     </div>
 </div>
 </body>
