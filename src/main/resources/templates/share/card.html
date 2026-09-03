@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,7 +86,11 @@
             <div class="s">회원가입하면 매달 측정 기록이<br>내 히스토리로 계속 이어집니다</div>
         </div>
 
-        <a class="cta" th:href="@{/s/{token}/claim(token=${card.shareToken})}">내 기록으로 남기기</a>
+        <!-- 비로그인 -->
+        <a sec:authorize="!isAuthenticated()" class="cta"
+           th:href="@{/s/{token}/claim(token=${card.shareToken})}">내 기록으로 남기기</a>
+        <!-- 로그인 -->
+        <a sec:authorize="isAuthenticated()" class="cta" href="/me">내 전체 기록 보기</a>
         <div class="foot" th:text="${card.clubName} + '이 제공하는 운동력 측정'">제공</div>
     </div>
 </div>

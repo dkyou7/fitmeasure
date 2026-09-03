@@ -32,4 +32,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
       and m.member.claimedAt is not null
 """)
     long countClaimedMembers(@Param("clubId") Long clubId);
+
+    List<Membership> findByMemberIdAndRole(Long memberId, MembershipRole role);
 }

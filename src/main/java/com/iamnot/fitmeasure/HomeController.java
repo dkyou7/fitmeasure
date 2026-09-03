@@ -30,7 +30,10 @@ public class HomeController {
             return "redirect:/admin";
         }
         Long clubId = lm.clubId();
-        if (clubId == null) return "landing";
+        if (lm.clubId() == null) {
+            // 클럽 소속 없음. MEMBER 기록이 있으면 피드로, 없으면 랜딩
+            return "redirect:/me";
+        }
         var club = clubRepository.findById(clubId).orElse(null);
         long memberCount = membershipRepository.countClaimedMembers(clubId);
         long programCount = templateRepository.findByClubId(clubId).size();
