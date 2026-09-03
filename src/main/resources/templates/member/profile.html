@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>내 정보</title>
@@ -28,7 +29,9 @@
 </head>
 <body>
 <div class="card">
-    <a class="back" href="/me">← 돌아가기</a>
+    <a sec:authorize="hasRole('ADMIN')" class="back" href="/admin">← 돌아가기</a>
+    <a sec:authorize="hasAnyRole('OWNER','STAFF')" class="back" href="/">← 돌아가기</a>
+    <a sec:authorize="!hasAnyRole('ADMIN','OWNER','STAFF')" class="back" href="/me">← 돌아가기</a>
     <h1>내 정보</h1>
 
     <div class="saved" th:if="${param.saved}">저장됐어요.</div>
