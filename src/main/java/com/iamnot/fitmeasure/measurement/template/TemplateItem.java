@@ -111,4 +111,20 @@ public class TemplateItem extends BaseEntity {
     public void updateSortOrder(int sortOrder) {
         this.sortOrder = sortOrder;
     }
+
+    /** 측정값 없을 때: 전부 수정 */
+    public void editAll(String name, MeasurementType type, String unit,
+                        ScoreDirection direction, FitnessCategory category) {
+        this.name = name;
+        this.measurementType = type;
+        this.unit = unit;
+        this.direction = direction;
+        this.category = category;
+    }
+
+    /** 측정값 있을 때: 안전한 것만 (이름·분류) */
+    public void editSafe(String name, FitnessCategory category) {
+        this.name = name;
+        this.category = category;
+    }
 }

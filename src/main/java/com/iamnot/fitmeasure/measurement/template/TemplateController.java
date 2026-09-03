@@ -47,6 +47,19 @@ public class TemplateController {
         return "program/detail :: itemTable";
     }
 
+    @PostMapping("/{id}/items/{itemId}")
+    public String updateItem(@PathVariable Long id, @PathVariable Long itemId,
+                             @RequestParam String name,
+                             @RequestParam MeasurementType measurementType,
+                             @RequestParam(required = false) String unit,
+                             @RequestParam ScoreDirection direction,
+                             @RequestParam FitnessCategory category,
+                             Model model) {
+        templateService.updateItem(id, itemId, name, measurementType, unit, direction, category);
+        addProgramModel(model, id);
+        return "program/detail :: itemTable";
+    }
+
     @PostMapping("/{id}/items/{itemId}/deactivate")
     public String deactivate(@PathVariable Long id, @PathVariable Long itemId, Model model) {
         templateService.deactivateItem(id, itemId);

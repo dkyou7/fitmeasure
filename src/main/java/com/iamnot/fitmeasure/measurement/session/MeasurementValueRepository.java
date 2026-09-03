@@ -19,4 +19,6 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
     """)
     List<MeasurementValue> findTrend(@Param("membershipId") Long membershipId,
                                      @Param("itemId") Long itemId);
+
+    boolean existsByTemplateItemId(Long templateItemId);
 }

@@ -37,12 +37,25 @@
             --bs-btn-hover-bg:#E64500;--bs-btn-hover-border-color:#E64500;
             --bs-btn-active-bg:#E64500;}
         .text-primary{color:#FF5A1F !important;}
-        .badge.bg-tint{background:#FFF4EF;color:#E64500;font-weight:600;}
         .navbar{border-bottom:1px solid var(--bs-border-color);background:rgba(253,253,252,0.9)!important;
             backdrop-filter:saturate(180%) blur(12px);}
         .navbar-brand{font-weight:800;letter-spacing:-0.03em;}
         h1{font-weight:800;letter-spacing:-0.03em;}
-        .card{border-color:var(--bs-border-color);}
+        .app-footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;background:#FDFDFC;}
+        .af-in{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+        .af-brand{font-weight:800;font-size:15px;letter-spacing:-0.03em;}
+        .af-links{display:flex;gap:16px;}
+        .af-links a{font-size:13px;color:var(--sub);text-decoration:none;}
+        .af-links a:hover{color:var(--orange);}
+        .af-copy{font-size:13px;color:var(--sub);margin-left:auto;}
+        @media(max-width:520px){
+            .af-in{flex-direction:column;align-items:flex-start;gap:10px;}
+            .af-copy{margin-left:0;}
+        }
+        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+            letter-spacing:-0.01em;}
+        main{flex:1 0 auto;}
+        .app-footer{border-top:1px solid var(--line);margin-top:420px;padding:24px 0;background:#FDFDFC;}
     </style>
     <th:block layout:fragment="styles"></th:block>
 </head>
@@ -80,8 +93,21 @@
     </div>
 </nav>
 
-<main class="container py-4" style="max-width:900px;"
-      layout:fragment="content"></main>
+<main class="container py-4" style="max-width:900px;" layout:fragment="content"></main>
+
+<footer class="app-footer">
+    <div class="container" style="max-width:900px;">
+        <div class="af-in">
+            <div class="af-brand">측정<span class="text-primary">.</span></div>
+            <div class="af-links">
+                <a href="#">이용약관</a>
+                <a href="#">개인정보 처리방침</a>
+                <a href="mailto:contact@example.com">문의</a>
+            </div>
+            <div class="af-copy">© 2026 측정.</div>
+        </div>
+    </div>
+</footer>
 
 <th:block layout:fragment="scripts"></th:block>
 <script>

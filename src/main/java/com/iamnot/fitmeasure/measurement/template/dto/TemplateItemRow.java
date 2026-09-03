@@ -13,5 +13,6 @@ public record TemplateItemRow(
         ScoreDirection direction,
         FitnessCategory category,
         int sortOrder,
-        boolean active
+        boolean active,
+        boolean locked
 ) {}

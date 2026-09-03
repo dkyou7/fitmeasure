@@ -3,6 +3,7 @@ package com.iamnot.fitmeasure.measurement.template;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.measurement.session.MeasurementValueRepository;
 import com.iamnot.fitmeasure.measurement.template.dto.ProgramRow;
 import com.iamnot.fitmeasure.measurement.template.dto.TemplateItemRow;
 import com.iamnot.fitmeasure.measurement.template.dto.TemplateView;
@@ -19,6 +20,7 @@ public class TemplateService {
     private final CurrentClub currentClub;
     private final MeasurementTemplateRepository templateRepository;
     private final ClubRepository clubRepository;
+    private final MeasurementValueRepository valueRepository;
 
     /** 현재 클럽의 프로그램 목록 */
     @Transactional(readOnly = true)
@@ -39,16 +41,34 @@ public class TemplateService {
         return templateRepository.save(t).getId();
     }
 
-    /** 특정 프로그램 상세 (항목 포함) */
     @Transactional(readOnly = true)
     public TemplateView getProgram(Long programId) {
         MeasurementTemplate t = load(programId);
         var rows = t.getItems().stream()
                 .map(i -> new TemplateItemRow(
                         i.getId(), i.getName(), i.getMeasurementType(), i.getUnit(),
-                        i.getDirection(), i.getCategory(), i.getSortOrder(), i.isActive()))
+                        i.getDirection(), i.getCategory(), i.getSortOrder(), i.isActive(),
+                        valueRepository.existsByTemplateItemId(i.getId())))   // locked
                 .toList();
         return new TemplateView(t.getId(), t.getName(), t.getRecommendedCadenceDays(), rows);
+    }
+
+    /** 항목 수정. locked면 유형·단위·방향은 무시하고 이름·분류만 반영 */
+    @Transactional
+    public void updateItem(Long programId, Long itemId, String name,
+                           MeasurementType type, String unit,
+                           ScoreDirection direction, FitnessCategory category) {
+        MeasurementTemplate t = load(programId);
+        TemplateItem item = t.getItems().stream()
+                .filter(i -> i.getId().equals(itemId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("항목을 찾을 수 없습니다."));
+
+        boolean locked = valueRepository.existsByTemplateItemId(itemId);
+        if (locked) {
+            item.editSafe(name, category);   // 이름·분류만
+        } else {
+            item.editAll(name, type, unit, direction, category);
+        }
     }
 
     @Transactional
