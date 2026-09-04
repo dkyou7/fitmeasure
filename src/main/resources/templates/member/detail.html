@@ -3,102 +3,106 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${detail.nickname} + ' 상세'">회원 상세</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-      line-height:1.6;padding:24px;max-width:640px;margin:0 auto;letter-spacing:-0.01em;}
-    a.back{font-size:14px;color:var(--sub);text-decoration:none;}
-    a.back:hover{color:var(--orange);}
-    .head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 4px;}
-    .head .who{font-size:26px;font-weight:800;letter-spacing:-0.03em;}
-    .head .measure{background:var(--orange);color:#fff;padding:10px 18px;border-radius:10px;
-      text-decoration:none;font-size:14px;font-weight:600;}
-    .badge{font-size:12px;color:#E64500;background:var(--tint);padding:2px 10px;border-radius:100px;margin-left:8px;}
-    .due{font-size:14px;padding:12px 16px;border-radius:10px;margin:16px 0;}
-    .due.ok{background:#fff;border:1px solid var(--line);color:var(--sub);}
-    .due.over{background:var(--tint);border:1px solid var(--orange);color:#E64500;font-weight:600;}
-    h2{font-size:15px;color:var(--sub);font-weight:600;margin:24px 0 10px;}
-    .chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:100px;
-      padding:7px 14px;margin:0 6px 6px 0;font-size:14px;cursor:pointer;}
-    .chip:hover,.chip.on{border-color:var(--orange);color:var(--orange);}
-    .chartbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:8px 0 16px;display:none;}
-    .sess{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:8px;
-      display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:inherit;}
-    .sess:hover{border-color:var(--orange);}
-    .sess .p{font-weight:600;}
-    .sess .d{font-size:13px;color:var(--sub);}
-    .empty{color:var(--sub);padding:20px 0;}
-  </style>
+    <title th:text="${detail.nickname} + ' 상세'">회원 상세</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .md-wrap{max-width:640px;margin:0 auto;}
+            .md-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:12px;}
+            .md-head .who{font-size:26px;font-weight:800;letter-spacing:-0.03em;}
+            .md-badge{font-size:12px;color:var(--orange-deep);background:var(--tint);padding:2px 10px;border-radius:100px;margin-left:8px;}
+            .due{font-size:14px;padding:12px 16px;border-radius:10px;margin:16px 0;}
+            .due.ok{background:#fff;border:1px solid var(--line);color:var(--sub);}
+            .due.over{background:var(--tint);border:1px solid var(--orange);color:var(--orange-deep);font-weight:600;}
+            .md-h2{font-size:15px;color:var(--sub);font-weight:600;margin:24px 0 10px;}
+            .chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:100px;
+                padding:7px 14px;margin:0 6px 6px 0;font-size:14px;cursor:pointer;}
+            .chip:hover,.chip.on{border-color:var(--orange);color:var(--orange);}
+            .chartbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:8px 0 16px;}
+            .sess{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:8px;
+                display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:inherit;}
+            .sess:hover{border-color:var(--orange);}
+            .sess .p{font-weight:600;}
+            .sess .d{font-size:13px;color:var(--sub);}
+            .empty{color:var(--sub);padding:20px 0;}
+        </style>
+    </th:block>
 </head>
 <body>
-<a class="back" href="/members">← 회원 목록</a>
-<div class="head">
-  <div class="who">
-    <span th:text="${detail.nickname}">이름 없는 곰</span>
-    <span class="badge" th:if="${detail.anonymous}">익명</span>
-  </div>
-  <a class="measure" th:href="@{/measure/{id}(id=${detail.membershipId})}">측정하기</a>
+<div layout:fragment="content">
+    <div class="md-wrap">
+        <a class="back-link text-secondary text-decoration-none" href="/members" style="font-size:14px;">← 회원 목록</a>
+
+        <div class="md-head mt-2">
+            <div class="who">
+                <span th:text="${detail.nickname}">이름 없는 곰</span>
+                <span class="md-badge" th:if="${detail.anonymous}">미가입</span>
+            </div>
+            <a class="btn btn-primary" th:href="@{/measure/{id}(id=${detail.membershipId})}">측정하기</a>
+        </div>
+
+        <div th:if="${detail.nextDueDate != null}"
+             th:class="'due ' + (${detail.overdue} ? 'over' : 'ok')">
+            <span th:if="${detail.overdue}">측정할 때가 지났어요 · 예정일 </span>
+            <span th:unless="${detail.overdue}">다음 측정 예정일 </span>
+            <span th:text="${#temporals.format(detail.nextDueDate, 'yyyy.MM.dd')}">2026.04.02</span>
+        </div>
+
+        <div class="md-h2">성장 추이</div>
+        <div th:if="${detail.trackedItems.isEmpty()}" class="empty">아직 측정 기록이 없습니다.</div>
+        <div th:unless="${detail.trackedItems.isEmpty()}">
+      <span class="chip" th:each="t,st : ${detail.trackedItems}"
+            th:classappend="${st.first} ? 'on'"
+            th:attr="data-mid=${detail.membershipId},data-iid=${t.itemId}"
+            th:text="${t.name}" onclick="showTrend(this)">벤치프레스 1RM</span>
+            <div class="chartbox"><canvas id="trendChart"></canvas></div>
+        </div>
+
+        <div class="md-h2">측정 이력</div>
+        <div th:if="${detail.sessions.isEmpty()}" class="empty">측정 이력이 없습니다.</div>
+        <a class="sess" th:each="s : ${detail.sessions}"
+           th:href="@{/measure/result/{sid}(sid=${s.sessionId})}">
+            <span class="p" th:text="${s.programName}">3대 측정</span>
+            <span class="d">
+        <span th:text="${#temporals.format(s.measuredAt, 'yyyy.MM.dd')}">2026.03.05</span>
+        · <span th:text="${s.itemCount}">3</span>개 측정
+      </span>
+        </a>
+    </div>
 </div>
 
-<div th:if="${detail.nextDueDate != null}"
-     th:class="'due ' + (${detail.overdue} ? 'over' : 'ok')">
-  <span th:if="${detail.overdue}">측정할 때가 지났어요 · 예정일 </span>
-  <span th:unless="${detail.overdue}">다음 측정 예정일 </span>
-  <span th:text="${#temporals.format(detail.nextDueDate, 'yyyy.MM.dd')}">2026.04.02</span>
-</div>
-
-<h2>성장 추이</h2>
-<div th:if="${detail.trackedItems.isEmpty()}" class="empty">아직 측정 기록이 없습니다.</div>
-<div th:unless="${detail.trackedItems.isEmpty()}">
-        <span class="chip" th:each="t : ${detail.trackedItems}"
-              th:attr="data-mid=${detail.membershipId},data-iid=${t.itemId}"
-              th:text="${t.name}" onclick="showTrend(this)">벤치프레스 1RM</span>
-  <div class="chartbox" id="chartbox"><canvas id="trendChart"></canvas></div>
-</div>
-
-<h2>측정 이력</h2>
-<div th:if="${detail.sessions.isEmpty()}" class="empty">측정 이력이 없습니다.</div>
-<a class="sess" th:each="s : ${detail.sessions}"
-   th:href="@{/measure/result/{sid}(sid=${s.sessionId})}">
-  <span class="p" th:text="${s.programName}">3대 측정</span>
-  <span class="d">
-            <span th:text="${#temporals.format(s.measuredAt, 'yyyy.MM.dd')}">2026.03.05</span>
-            · <span th:text="${s.itemCount}">3</span>개 측정
-        </span>
-</a>
-
-<script th:inline="none">
-  let chart = null;
-  function showTrend(chip) {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-    chip.classList.add('on');
-    const box = document.getElementById('chartbox');
-    box.style.display = 'block';
-    fetch(`/measure/trend/${chip.dataset.mid}/item/${chip.dataset.iid}`)
-            .then(r => r.json())
-            .then(d => {
-              if (chart) chart.destroy();
-              chart = new Chart(document.getElementById('trendChart'), {
-                type: 'line',
-                data: {
-                  labels: d.labels,
-                  datasets: [{
-                    label: d.itemName + (d.unit ? ' (' + d.unit + ')' : ''),
-                    data: d.values,
-                    borderColor: '#FF5A1F',
-                    backgroundColor: 'rgba(255,90,31,0.1)',
-                    borderWidth: 3, tension: 0.3, fill: true,
-                    pointBackgroundColor: '#FF5A1F', pointRadius: 4
-                  }]
-                },
-                options: { plugins:{legend:{display:true}}, scales:{y:{beginAtZero:false}} }
-              });
-            });
-  }
-</script>
+<th:block layout:fragment="scripts">
+    <script th:inline="none">
+        let chart = null;
+        function showTrend(chip) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+            chip.classList.add('on');
+            fetch(`/measure/trend/${chip.dataset.mid}/item/${chip.dataset.iid}`)
+                .then(r => r.json())
+                .then(d => {
+                    if (chart) chart.destroy();
+                    chart = new Chart(document.getElementById('trendChart'), {
+                        type: 'line',
+                        data: {
+                            labels: d.labels,
+                            datasets: [{
+                                label: d.itemName + (d.unit ? ' (' + d.unit + ')' : ''),
+                                data: d.values,
+                                borderColor: '#FF5A1F',
+                                backgroundColor: 'rgba(255,90,31,0.1)',
+                                borderWidth: 3, tension: 0.3, fill: true,
+                                pointBackgroundColor: '#FF5A1F', pointRadius: 4
+                            }]
+                        },
+                        options: { plugins:{legend:{display:true}}, scales:{y:{beginAtZero:false}} }
+                    });
+                });
+        }
+        // 첫 항목 그래프 자동 표시
+        document.addEventListener('DOMContentLoaded', function () {
+            const first = document.querySelector('.chip');
+            if (first) showTrend(first);
+        });
+    </script>
+</th:block>
 </body>
 </html>
