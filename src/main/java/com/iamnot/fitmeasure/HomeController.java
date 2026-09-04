@@ -50,4 +50,9 @@ public class HomeController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "contact";
+    }
 }

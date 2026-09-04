@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도입 문의</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Pretendard',sans-serif;background:#F1EFE8;color:var(--ink);line-height:1.6;
+            padding:20px;min-height:100vh;display:flex;align-items:center;justify-content:center;letter-spacing:-0.01em;}
+        .card{background:var(--bg);border-radius:24px;padding:40px 32px;max-width:440px;width:100%;
+            box-shadow:0 8px 40px rgba(0,0,0,0.08);text-align:center;}
+        .logo{font-size:22px;font-weight:800;letter-spacing:-0.03em;margin-bottom:8px;}
+        .logo .dot{color:var(--orange);}
+        h1{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.25;}
+        .lead{font-size:15px;color:var(--sub);margin-bottom:32px;line-height:1.6;}
+        .contact-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+        .contact-item{display:flex;align-items:center;gap:14px;background:#F6F5F1;border-radius:14px;
+            padding:16px 18px;text-decoration:none;color:inherit;text-align:left;transition:background .15s;}
+        .contact-item:hover{background:var(--tint);}
+        .contact-item .ic{width:40px;height:40px;border-radius:12px;background:var(--ink);color:#fff;
+            display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .contact-item .t{flex:1;}
+        .contact-item .t .k{font-size:12px;color:var(--sub);}
+        .contact-item .t .v{font-size:16px;font-weight:700;}
+        .back{display:inline-block;margin-top:8px;font-size:14px;color:var(--sub);text-decoration:none;}
+        .back:hover{color:var(--orange);}
+        .points{background:var(--tint);border-radius:14px;padding:16px 18px;margin-bottom:28px;text-align:left;}
+        .points .p{font-size:13px;color:var(--ink);padding:3px 0;}
+        .points .p::before{content:'✓ ';color:var(--orange);font-weight:700;}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">측정<span class="dot">.</span></div>
+    <h1>헬스장 도입 문의</h1>
+    <p class="lead">회원의 성장을 데이터로 보여주는<br>운동력 측정 솔루션을 도입해보세요.</p>
+
+    <div class="points">
+        <div class="p">회원 10명까지 무료로 시작</div>
+        <div class="p">설치 없이 웹에서 바로</div>
+        <div class="p">3대 측정·기초 체력 프로그램 기본 제공</div>
+    </div>
+
+    <div class="contact-list">
+        <a class="contact-item" href="mailto:contact@example.com">
+            <div class="ic">✉</div>
+            <div class="t"><div class="k">이메일</div><div class="v">contact@example.com</div></div>
+        </a>
+        <a class="contact-item" href="tel:01000000000">
+            <div class="ic">☎</div>
+            <div class="t"><div class="k">전화</div><div class="v">010-0000-0000</div></div>
+        </a>
+    </div>
+
+    <a class="back" href="/">← 홈으로</a>
+</div>
+</body>
+</html>
