@@ -25,9 +25,10 @@ public class MemberClaimController {
     public String submit(@PathVariable String token,
                          @RequestParam String username,
                          @RequestParam String password,
+                         @RequestParam(required = false) String name,
                          Model model) {
         try {
-            claimService.claimByUsername(token, username, password);
+            claimService.claimByUsername(token, username, password, name);
         } catch (IllegalStateException e) {
             model.addAttribute("form", claimService.prepareForm(token));
             model.addAttribute("error", e.getMessage());

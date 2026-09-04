@@ -38,4 +38,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     Optional<Membership> findByMemberIdAndClubId(Long memberId, Long clubId);
 
     boolean existsByClubIdAndPhone(Long clubId, String phone);
+
+    List<Membership> findByMemberId(Long memberId);
 }

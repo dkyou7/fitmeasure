@@ -43,14 +43,15 @@ public class ProfileService {
 
     /** 이름 + 현재 클럽 닉네임 수정 */
     @Transactional
-    public void update(LoginMember lm, String name, String nickname, String phone) {
+    public void update(LoginMember lm, String name, String phone) {
         Member m = memberRepository.findById(lm.memberId()).orElseThrow();
         m.updateName(name);
-        m.updatePhone(phone == null ? null : phone.replaceAll("[^0-9]", ""));  // 본인 번호 수정
+        m.updatePhone(phone == null ? null : phone.replaceAll("[^0-9]", ""));
 
-        if (lm.clubId() != null && nickname != null && !nickname.isBlank()) {
-            membershipRepository.findByMemberIdAndClubId(lm.memberId(), lm.clubId())
-                    .ifPresent(ms -> ms.rename(nickname.trim()));
+        // 완전 동기화: 모든 클럽 닉네임을 이름으로
+        if (name != null && !name.isBlank()) {
+            membershipRepository.findByMemberId(lm.memberId())
+                    .forEach(ms -> ms.rename(name.trim()));
         }
     }
 }
