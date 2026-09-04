@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>측정 결과</title>
     <th:block layout:fragment="styles">
@@ -59,7 +59,8 @@
         </div>
 
         <button class="done" style="background:#FF5A1F;margin-bottom:8px;" onclick="share()">공유 링크 만들기</button>
-        <a class="done" th:href="@{/members}">완료</a>
+        <a sec:authorize="hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/members}">완료</a>
+        <a sec:authorize="!hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/me}">완료</a>
     </div>
 </div>
 
