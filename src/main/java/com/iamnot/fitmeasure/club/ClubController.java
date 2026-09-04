@@ -15,12 +15,6 @@ public class ClubController {
 
     private final ClubCreateService clubCreateService;
 
-    @GetMapping("/clubs/new")
-    public String form(Model model) {
-        model.addAttribute("types", ClubType.values());
-        return "club/new";
-    }
-
     @PostMapping("/clubs")
     public String create(@AuthenticationPrincipal LoginMember loginMember,
                          @RequestParam String name,

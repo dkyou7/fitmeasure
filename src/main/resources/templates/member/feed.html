@@ -32,12 +32,11 @@
     <h1 class="mb-4" style="font-size:24px;font-weight:800;letter-spacing:-0.03em;">내 측정 기록</h1>
 
     <!-- 프로모션 배너 -->
-    <!-- 측정 기록 없을 때만 헬스장 만들기 배너 -->
-    <a href="/clubs/new" class="promo" th:unless="${hasRecords}">
-        <div class="promo-badge">전격 모집</div>
-        <div class="promo-title">내 헬스장, 지금 시작하세요</div>
-        <div class="promo-sub">회원 10명까지 무료 · 3분이면 오픈 · 측정 도구 바로 제공</div>
-        <div class="promo-cta">헬스장 만들기 →</div>
+    <a href="/contact" class="promo" th:unless="${hasRecords}">
+        <div class="promo-badge">파트너 모집</div>
+        <div class="promo-title">헬스장을 운영하고 계신가요?</div>
+        <div class="promo-sub">회원의 성장을 데이터로 보여주는 측정 솔루션, 도입 문의하세요</div>
+        <div class="promo-cta">도입 문의하기 →</div>
     </a>
 
     <a class="feed-item" th:each="f : ${feed}"

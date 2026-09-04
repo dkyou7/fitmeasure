@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>헬스장 등록</title></head>
+<body>
+<div layout:fragment="content">
+    <div style="max-width:520px;margin:0 auto;">
+        <a class="text-secondary text-decoration-none" href="/admin" style="font-size:14px;">← 관리로</a>
+        <h1 class="mt-2 mb-4">헬스장 등록 (계약)</h1>
+
+        <div class="alert" th:if="${error}"
+             style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+            <span class="text-primary fw-semibold" th:text="${error}">오류</span>
+        </div>
+
+        <form th:action="@{/admin/clubs}" method="post" class="card p-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">헬스장 이름</label>
+                <input class="form-control" name="clubName" placeholder="예: 스트롱짐 강남점" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">유형</label>
+                <select class="form-select" name="type">
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+                </select>
+            </div>
+
+            <hr class="my-3">
+            <div class="text-secondary mb-3" style="font-size:13px;">사장 계정</div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">사장 이름</label>
+                <input class="form-control" name="ownerName" placeholder="사장님 성함" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">로그인 아이디</label>
+                <input class="form-control" name="ownerUsername" placeholder="사장님이 쓸 아이디" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">초기 비밀번호</label>
+                <input class="form-control" name="ownerPassword" placeholder="사장님께 전달할 비밀번호" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">헬스장 등록</button>
+        </form>
+        <div class="text-secondary mt-3" style="font-size:12px;">
+            * 등록 후 아이디·비밀번호를 사장님께 전달하세요. 사장님은 이 계정으로 로그인해 바로 운영할 수 있어요.
+        </div>
+    </div>
+</div>
+</body>
+</html>

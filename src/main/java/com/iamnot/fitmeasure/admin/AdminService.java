@@ -3,9 +3,14 @@ package com.iamnot.fitmeasure.admin;
 import com.iamnot.fitmeasure.admin.dto.AdminClubRow;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
+import com.iamnot.fitmeasure.club.ClubType;
+import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
+import com.iamnot.fitmeasure.member.*;
+import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +22,46 @@ public class AdminService {
 
     private final ClubRepository clubRepository;
     private final MembershipRepository membershipRepository;
+    private final MemberRepository memberRepository;
+    private final MemberCredentialRepository credentialRepository;
+    private final MeasurementTemplateRepository templateRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    /** 운영자가 헬스장 + 사장 계정을 생성 (계약 온보딩) */
+    @Transactional
+    public void createClubWithOwner(String clubName, ClubType type,
+                                    String ownerName, String ownerUsername, String ownerPassword) {
+        // 아이디 중복 체크
+        if (credentialRepository.findByProviderAndProviderId(
+                AuthProvider.USERNAME, ownerUsername.trim()).isPresent()) {
+            throw new IllegalStateException("이미 사용 중인 아이디예요.");
+        }
+
+        // 클럽
+        String slug = toSlug(clubName);
+        Club club = clubRepository.save(new Club(clubName.trim(), slug, type));
+
+        // 사장 계정
+        Member owner = Member.anonymous();
+        owner.claim(ownerName);
+        memberRepository.save(owner);
+        credentialRepository.save(MemberCredential.username(
+                owner, ownerUsername.trim(), passwordEncoder.encode(ownerPassword)));
+        membershipRepository.save(new Membership(club, owner, MembershipRole.OWNER, ownerName));
+
+        // 표준 프로그램 복사
+        templateRepository.findByClubIsNull()
+                .forEach(std -> templateRepository.save(std.copyForClub(club)));
+    }
+
+    private String toSlug(String name) {
+        String base = name.trim().toLowerCase()
+                .replaceAll("[^a-z0-9가-힣]+", "-").replaceAll("(^-|-$)", "");
+        if (base.isBlank()) base = "club";
+        String slug = base; int n = 1;
+        while (clubRepository.findBySlug(slug).isPresent()) slug = base + "-" + (++n);
+        return slug;
+    }
 
     @Transactional(readOnly = true)
     public List<AdminClubRow> listClubs() {
