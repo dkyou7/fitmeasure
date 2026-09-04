@@ -36,7 +36,7 @@
 <body>
 <div class="card">
     <a sec:authorize="hasRole('ADMIN')" class="back" href="/admin">← 돌아가기</a>
-    <a sec:authorize="hasAnyRole('OWNER','STAFF')" class="back" href="/">← 돌아가기</a>
+    <a sec:authorize="!hasRole('ADMIN') and hasAnyRole('OWNER','STAFF')" class="back" href="/">← 돌아가기</a>
     <a sec:authorize="!hasAnyRole('ADMIN','OWNER','STAFF')" class="back" href="/me">← 돌아가기</a>
     <h1>내 정보</h1>
 
@@ -55,8 +55,8 @@
         </div>
     </div>
     <div class="phone-hint" th:unless="${profile.hasPhone}">
-        연락처가 연결되어 있지 않아요. 헬스장에서 측정받은 기록을 이어보려면
-        측정 후 받은 링크로 계정을 연결해주세요.
+        아직 연결된 측정 기록이 없어요. 헬스장에서 측정받으면,
+        트레이너가 준 링크로 기록을 내 계정에 추가할 수 있어요.
     </div>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">

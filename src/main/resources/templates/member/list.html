@@ -44,7 +44,7 @@
             <a class="btn btn-primary btn-sm" href="/owner/plans" sec:authorize="hasRole('OWNER')">요금제 보기</a>
         </div>
         <table class="table table-hover align-middle mb-0" th:if="${!members.isEmpty()}">
-            <thead><tr><th>이름</th><th>전화번호</th><th>등록일</th><th></th></tr></thead>
+            <thead><tr><th>이름</th><th>전화번호</th><th>등록일</th><th class="text-end">관리</th></tr></thead>
             <tbody>
             <tr th:each="m : ${members}">
                 <td>
@@ -55,8 +55,12 @@
                 <td class="text-secondary" style="font-size:14px;" th:text="${m.phone} ?: '-'">010...</td>
                 <td class="text-secondary" style="font-size:14px;"
                     th:text="${#temporals.format(m.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
-                <td><a th:href="@{/measure/{id}(id=${m.membershipId})}"
-                       class="text-primary fw-semibold text-decoration-none">측정하기 →</a></td>
+                <td class="text-end">
+                    <a th:href="@{/members/{id}(id=${m.membershipId})}"
+                       class="btn btn-sm btn-outline-secondary">기록 보기</a>
+                    <a th:href="@{/measure/{id}(id=${m.membershipId})}"
+                       class="btn btn-sm btn-primary">측정하기</a>
+                </td>
             </tr>
             </tbody>
         </table>
