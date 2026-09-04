@@ -1,98 +1,111 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${card.nickname} + ' 운동력'">운동력 측정 결과</title>
+    <title th:text="${card.nickname} + ' 운동력 측정'">운동력 측정 결과</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
     <style>
-        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--line:#ECEBE7;--tint:#FFF4EF;}
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Pretendard',sans-serif;background:#F1EFE8;color:var(--ink);
-            line-height:1.6;padding:20px;letter-spacing:-0.01em;
+        body{font-family:'Pretendard',sans-serif;background:#EEEDE9;color:var(--ink);
+            line-height:1.6;padding:24px 16px;letter-spacing:-0.01em;
             min-height:100vh;display:flex;align-items:center;justify-content:center;}
-        .card{background:var(--bg);border-radius:24px;overflow:hidden;max-width:360px;width:100%;
-            box-shadow:0 8px 40px rgba(0,0,0,0.08);}
-        .hd{background:var(--ink);padding:20px 22px;}
-        .hd .club{font-size:12px;color:#B4B2A9;}
-        .hd .who{display:flex;align-items:center;gap:8px;margin-top:2px;}
-        .hd .who .name{font-size:19px;font-weight:700;color:#fff;}
-        .hd .who .anon{font-size:10px;color:#B4B2A9;border:0.5px solid #444;border-radius:100px;padding:2px 8px;}
-        .hd .date{font-size:11px;color:#6B6B66;margin-top:4px;}
-        .bd{padding:22px;}
-        .lead{text-align:center;font-size:13px;color:var(--sub);margin-bottom:18px;}
-        .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-        .cell{background:#F1EFE8;border-radius:12px;padding:14px 16px;}
-        .cell .n{font-size:12px;color:var(--sub);}
-        .cell .v{font-size:20px;font-weight:800;}
-        .cell .v .u{font-size:13px;font-weight:600;color:var(--sub);margin-left:2px;}
-        .cell.skip .v{font-size:14px;color:var(--sub);font-weight:600;}
-        .locked{position:relative;border:1px solid var(--line);border-radius:14px;padding:16px;
-            margin-bottom:18px;overflow:hidden;min-height:96px;}
-        .locked .blur{filter:blur(4px);opacity:0.5;}
-        .locked .fake{height:56px;background:linear-gradient(90deg,transparent,var(--tint));
-            border-radius:8px;position:relative;}
-        .locked .fake::after{content:'';position:absolute;left:8px;right:8px;bottom:14px;height:3px;
-            background:var(--orange);border-radius:3px;transform:rotate(-8deg);transform-origin:left;}
-        .locked .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-            justify-content:center;gap:5px;background:rgba(253,253,252,0.35);}
-        .locked .ov .lock{width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;
-            display:flex;align-items:center;justify-content:center;font-size:15px;}
-        .locked .ov .t{font-size:13px;font-weight:700;}
-        .locked .ov .s{font-size:11px;color:var(--sub);}
-        .tease{background:var(--tint);border-radius:14px;padding:14px 16px;text-align:center;margin-bottom:18px;}
-        .tease .t{font-size:13px;font-weight:700;}
-        .tease .s{font-size:12px;color:var(--sub);line-height:1.5;}
-        .cta{display:block;width:100%;padding:13px;background:var(--orange);color:#fff;border:none;
-            border-radius:12px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;}
-        .foot{font-size:11px;color:#B4B2A9;text-align:center;margin-top:12px;}
+        .card{background:var(--bg);border-radius:20px;overflow:hidden;max-width:380px;width:100%;
+            box-shadow:0 4px 24px rgba(0,0,0,0.06);border:1px solid var(--line);}
+
+        /* 헤더 */
+        .hd{padding:24px 24px 20px;border-bottom:1px solid var(--line);}
+        .hd .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+        .hd .brand .club{font-size:14px;font-weight:700;}
+        .hd .brand .badge{font-size:11px;font-weight:600;color:var(--orange-deep);
+            background:var(--tint);padding:3px 10px;border-radius:100px;}
+        .hd .who{font-size:22px;font-weight:800;letter-spacing:-0.03em;}
+        .hd .meta{display:flex;gap:12px;margin-top:6px;font-size:12px;color:var(--sub);}
+        .hd .meta .dot{color:var(--line);}
+
+        /* 측정 결과 */
+        .bd{padding:22px 24px;}
+        .sec-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:12px;
+            text-transform:none;display:flex;align-items:center;gap:6px;}
+        .items{display:flex;flex-direction:column;gap:2px;}
+        .item{display:flex;align-items:center;justify-content:space-between;
+            padding:13px 0;border-bottom:1px solid var(--line);}
+        .item:last-child{border-bottom:none;}
+        .item .n{font-size:15px;font-weight:500;color:var(--ink);}
+        .item .v{font-size:18px;font-weight:800;letter-spacing:-0.02em;}
+        .item .v .u{font-size:13px;font-weight:600;color:var(--sub);margin-left:2px;}
+        .item.skip .v{font-size:13px;color:var(--sub);font-weight:500;}
+
+        /* 검증 배너 */
+        .verify{display:flex;align-items:center;gap:8px;background:#F6F5F1;border-radius:12px;
+            padding:12px 14px;margin-top:18px;}
+        .verify .ic{width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;
+            display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+        .verify .txt{font-size:12px;color:var(--sub);line-height:1.45;}
+        .verify .txt b{color:var(--ink);font-weight:600;}
+
+        /* CTA */
+        .action{padding:0 24px 24px;}
+        .cta{display:block;width:100%;padding:15px;background:var(--orange);color:#fff;border:none;
+            border-radius:12px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;
+            cursor:pointer;transition:background .15s;}
+        .cta:hover{background:var(--orange-deep);}
+        .cta-sub{text-align:center;font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5;}
+        .foot{text-align:center;font-size:11px;color:#B4B2A9;padding:16px 24px;border-top:1px solid var(--line);}
     </style>
 </head>
 <body>
 <div class="card">
     <div class="hd">
-        <div class="club" th:text="${card.clubName} + ' · 운동력 측정'">스트롱짐 · 운동력 측정</div>
-        <div class="who">
-            <span class="name" th:text="${card.nickname}">이름 없는 곰</span>
-            <span class="anon" th:if="${card.anonymous}">익명</span>
+        <div class="brand">
+            <span class="club" th:text="${card.clubName}">스트롱짐</span>
+            <span class="badge">운동력 측정</span>
         </div>
-        <div class="date" th:text="${#temporals.format(card.measuredDate, 'yyyy.MM.dd')}">2026.03.05</div>
+        <div class="who" th:text="${card.nickname}">이름 없는 곰</div>
+        <div class="meta">
+            <span th:text="${#temporals.format(card.measuredDate, 'yyyy년 M월 d일')}">2026년 3월 5일</span>
+            <span class="dot">·</span>
+            <span><span th:text="${#lists.size(card.values)}">3</span>개 항목 측정</span>
+        </div>
     </div>
 
     <div class="bd">
-        <div class="lead">오늘 이만큼 해냈어요</div>
-
-        <div class="grid">
-            <div th:each="v : ${card.values}" th:classappend="${v.skipped} ? 'skip'" class="cell">
-                <div class="n" th:text="${v.name}">벤치프레스</div>
-                <div class="v" th:if="${!v.skipped}">
+        <div class="sec-label">측정 결과</div>
+        <div class="items">
+            <div class="item" th:each="v : ${card.values}" th:classappend="${v.skipped} ? 'skip'">
+                <span class="n" th:text="${v.name}">벤치프레스</span>
+                <span class="v" th:if="${!v.skipped}">
                     <span th:text="${v.displayValue}">85</span><span class="u" th:if="${v.unit}" th:text="${v.unit}">kg</span>
-                </div>
-                <div class="v" th:if="${v.skipped}">측정 안 함</div>
+                </span>
+                <span class="v" th:if="${v.skipped}">측정 안 함</span>
             </div>
         </div>
 
-        <!-- 잠긴 성장 그래프 (갈증 유발) -->
-        <div class="locked">
-            <div class="blur"><div class="fake"></div></div>
-            <div class="ov">
-                <div class="lock">🔒</div>
-                <div class="t">지난 기록과 이어서 보기</div>
-                <div class="s">매달 기록이 여기 쌓여요</div>
+        <div class="verify">
+            <div class="ic">✓</div>
+            <div class="txt">
+                <b th:text="${card.clubName}">스트롱짐</b> 트레이너가 정해진 기준으로 직접 측정한 기록이에요.
             </div>
         </div>
+    </div>
 
-        <div class="tease">
-            <div class="s">회원가입하면 매달 측정 기록이<br>내 히스토리로 계속 이어집니다</div>
-        </div>
-
+    <div class="action">
         <!-- 비로그인 -->
         <a sec:authorize="!isAuthenticated()" class="cta"
-           th:href="@{/s/{token}/claim(token=${card.shareToken})}">내 기록으로 남기기</a>
+           th:href="@{/s/{token}/claim(token=${card.shareToken})}">내 기록으로 저장하기</a>
+        <div sec:authorize="!isAuthenticated()" class="cta-sub">
+            저장하면 앞으로의 측정 기록이<br>내 성장 그래프로 이어집니다
+        </div>
         <!-- 로그인 -->
-        <a sec:authorize="isAuthenticated()" class="cta" href="/me">내 전체 기록 보기</a>
-        <div class="foot" th:text="${card.clubName} + '이 제공하는 운동력 측정'">제공</div>
+        <form sec:authorize="isAuthenticated()" th:action="@{/s/{token}/absorb(token=${card.shareToken})}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="cta">내 기록에 추가하기</button>
+        </form>
     </div>
+
+    <div class="foot" th:text="'measured by ' + ${card.clubName}">measured by 스트롱짐</div>
 </div>
 </body>
 </html>

@@ -1,8 +1,10 @@
 package com.iamnot.fitmeasure.measurement.session;
 
+import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.dto.TrendView;
 import com.iamnot.fitmeasure.measurement.template.TemplateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +51,10 @@ public class MeasurementController {
 
     /** 측정 결과지 */
     @GetMapping("/result/{sessionId}")
-    public String result(@PathVariable Long sessionId, Model model) {
-        model.addAttribute("result", measurementService.getResult(sessionId));
+    public String result(@PathVariable Long sessionId,
+                         @AuthenticationPrincipal LoginMember loginMember,
+                         Model model) {
+        model.addAttribute("result", measurementService.getResult(sessionId, loginMember));
         return "measure/result";
     }
 
@@ -58,8 +62,10 @@ public class MeasurementController {
     @GetMapping("/trend/{membershipId}/item/{itemId}")
     @ResponseBody
     public TrendView trend(
-            @PathVariable Long membershipId, @PathVariable Long itemId) {
-        return measurementService.getTrend(membershipId, itemId);
+            @PathVariable Long membershipId,
+            @AuthenticationPrincipal LoginMember loginMember,
+            @PathVariable Long itemId) {
+        return measurementService.getTrend(membershipId, itemId,loginMember);
     }
 
     @PostMapping("/result/{sessionId}/share")

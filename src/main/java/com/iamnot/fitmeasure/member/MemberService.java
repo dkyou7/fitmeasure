@@ -52,12 +52,9 @@ public class MemberService {
         Club club = clubRepository.getReferenceById(clubId);
         String normalizedPhone = phone.replaceAll("[^0-9]", "");
 
-        Member person = memberRepository.findByPhone(normalizedPhone)
-                .orElseGet(() -> memberRepository.save(Member.withPhone(normalizedPhone)));
-
-        if (membershipRepository.existsByClubIdAndMemberId(clubId, person.getId())) {
-            throw new IllegalStateException("이미 이 회원이 등록되어 있어요.");
-        }
+        // 전화번호로 기존 Member를 찾지 않는다.
+        // 번호 일치만으로 자동 통합하면 오타·도용에 취약. 통합은 claim(토큰)으로만.
+        Member person = memberRepository.save(Member.withPhone(normalizedPhone));
 
         String nickname = nicknameGenerator.generate();
         Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);

@@ -19,6 +19,7 @@ public class MemberClaimService {
     private final MemberCredentialRepository credentialRepository;
     private final PasswordEncoder passwordEncoder;
     private final MembershipRepository membershipRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public ClaimForm prepareForm(String token) {
@@ -58,5 +59,21 @@ public class MemberClaimService {
     private MeasurementSession loadByToken(String token) {
         return sessionRepository.findByShareTokenAndShareEnabledTrue(token)
                 .orElseThrow(() -> new IllegalArgumentException("공유된 기록을 찾을 수 없습니다."));
+    }
+
+    /** 로그인한 사람이 이 세션(측정 기록)을 자기 계정에 흡수. 토큰이 인증. */
+    @Transactional
+    public void absorbToLoggedIn(String token, Long loginMemberId) {
+        MeasurementSession session = loadByToken(token);
+        Membership membership = session.getMembership();
+        Member anonymousMember = membership.getMember();
+
+        if (anonymousMember.isClaimed()) {
+            throw new IllegalStateException("이미 계정이 연결된 기록입니다.");
+        }
+        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow();
+
+        // 이 익명 Membership의 소유자를 로그인한 사람으로 이전
+        membership.transferTo(loginMember);
     }
 }

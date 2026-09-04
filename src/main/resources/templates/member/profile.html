@@ -24,7 +24,13 @@
         .btn{width:100%;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:12px;
             font-size:16px;font-weight:700;cursor:pointer;}
         .btn:hover{background:#E64500;}
-        .hint{font-size:12px;color:var(--sub);margin:-8px 0 16px;}
+        .info-box{background:#F1EFE8;border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+        .info-row{display:flex;justify-content:space-between;padding:6px 0;}
+        .info-row .k{font-size:13px;color:var(--sub);}
+        .info-row .v{font-size:14px;font-weight:600;}
+        .info-row .v.muted{color:var(--orange);font-weight:600;}
+        .phone-hint{font-size:12px;color:var(--sub);background:var(--tint);border-radius:10px;
+            padding:12px 14px;line-height:1.5;margin-bottom:8px;}
     </style>
 </head>
 <body>
@@ -36,21 +42,34 @@
 
     <div class="saved" th:if="${param.saved}">저장됐어요.</div>
 
+    <!-- 계정 정보 (읽기전용 요약) -->
+    <div class="info-box">
+        <div class="info-row">
+            <span class="k">아이디</span>
+            <span class="v" th:text="${profile.username} ?: '-'">dong123</span>
+        </div>
+        <div class="info-row">
+            <span class="k">연락처</span>
+            <span class="v" th:if="${profile.hasPhone}" th:text="${profile.phone}">01012345678</span>
+            <span class="v muted" th:unless="${profile.hasPhone}">연결 안 됨</span>
+        </div>
+    </div>
+    <div class="phone-hint" th:unless="${profile.hasPhone}">
+        연락처가 연결되어 있지 않아요. 헬스장에서 측정받은 기록을 이어보려면
+        측정 후 받은 링크로 계정을 연결해주세요.
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">
+
+    <!-- 수정 -->
     <form th:action="@{/me/profile}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
         <label>이름</label>
         <input type="text" name="name" th:value="${profile.name}" placeholder="이름을 입력하세요">
-
         <div th:if="${profile.hasClub}">
             <label>이 헬스장에서 표시될 이름</label>
             <input type="text" name="nickname" th:value="${profile.nickname}" placeholder="닉네임">
         </div>
-
-        <label>연락처</label>
-        <input type="text" th:value="${profile.phone} ?: '등록된 번호 없음'" disabled>
-        <div class="hint">연락처는 헬스장을 통해서만 변경할 수 있어요.</div>
-
         <button type="submit" class="btn">저장</button>
     </form>
 </div>

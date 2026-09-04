@@ -1,7 +1,9 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.member.dto.ClaimForm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +40,23 @@ public class MemberClaimController {
     public String done(@PathVariable String token, Model model) {
         model.addAttribute("form", claimService.prepareForm(token));
         return "share/claim-done";
+    }
+
+    /** 로그인 상태로 이 세션을 내 계정에 흡수 */
+    @PostMapping("/s/{token}/absorb")
+    public String absorb(@PathVariable String token,
+                         @AuthenticationPrincipal LoginMember loginMember,
+                         Model model) {
+        if (loginMember == null) {
+            return "redirect:/login";   // 로그인 먼저
+        }
+        try {
+            claimService.absorbToLoggedIn(token, loginMember.memberId());
+        } catch (IllegalStateException e) {
+            model.addAttribute("form", claimService.prepareForm(token));
+            model.addAttribute("error", e.getMessage());
+            return "share/claim";
+        }
+        return "redirect:/me";   // 흡수 후 내 피드로
     }
 }

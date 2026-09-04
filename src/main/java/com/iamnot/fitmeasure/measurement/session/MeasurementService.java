@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.measurement.session;
 
 import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.dto.*;
 import com.iamnot.fitmeasure.measurement.template.*;
 import com.iamnot.fitmeasure.membership.Membership;
@@ -107,12 +108,19 @@ public class MeasurementService {
 
     /** 측정 결과지: 이번 세션 + 직전 세션 대비 변화 */
     @Transactional(readOnly = true)
-    public ResultView getResult(Long sessionId) {
+    public ResultView getResult(Long sessionId, LoginMember loginMember) {
         MeasurementSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("측정 기록을 찾을 수 없습니다."));
-        // 격리 검증: 세션의 클럽이 현재 클럽인지
-        Long clubId = session.getMembership().getClub().getId();
-        if (!clubId.equals(currentClub.clubId())) {
+
+        Membership membership = session.getMembership();
+        Long sessionClubId = membership.getClub().getId();
+        Long sessionMemberId = membership.getMember().getId();
+
+        boolean isOwnerOfRecord = sessionMemberId.equals(loginMember.memberId());  // 회원 본인
+        boolean isSameClub = loginMember.clubId() != null
+                && loginMember.clubId().equals(sessionClubId);                     // 그 클럽 트레이너/사장
+
+        if (!isOwnerOfRecord && !isSameClub) {
             throw new IllegalArgumentException("접근할 수 없는 기록입니다.");
         }
 
@@ -154,11 +162,16 @@ public class MeasurementService {
 
     /** 특정 항목의 성장 추이 */
     @Transactional(readOnly = true)
-    public TrendView getTrend(Long membershipId, Long itemId) {
-        // 격리 검증
-        membershipRepository.findByIdAndClubId(membershipId, currentClub.clubId())
+    public TrendView getTrend(Long membershipId, Long itemId, LoginMember loginMember) {
+        Membership membership = membershipRepository.findById(membershipId)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
+        boolean isOwner = membership.getMember().getId().equals(loginMember.memberId());
+        boolean isSameClub = loginMember.clubId() != null
+                && loginMember.clubId().equals(membership.getClub().getId());
+        if (!isOwner && !isSameClub) {
+            throw new IllegalArgumentException("접근할 수 없습니다.");
+        }
         var values = valueRepository.findTrend(membershipId, itemId);
         List<String> labels = new java.util.ArrayList<>();
         List<Double> nums = new java.util.ArrayList<>();

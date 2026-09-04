@@ -79,4 +79,6 @@ public class Membership extends BaseEntity {
     }
 
     public void rename(String nickname) { this.nickname = nickname; }
+
+    public void transferTo(Member newMember) {this.member = newMember;}
 }

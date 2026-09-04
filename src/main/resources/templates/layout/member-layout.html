@@ -28,6 +28,10 @@
     <div class="mnav-in">
         <a class="logo" href="/me">내 운동력<span class="dot">.</span></a>
         <div class="d-flex align-items-center gap-2">
+            <a sec:authorize="isAuthenticated()" href="/me/profile"
+               class="text-secondary text-decoration-none" style="font-size:13px;">
+                안녕하세요,<span sec:authentication="principal.nickname" class="fw-semibold text-body">회원</span>님
+            </a>
             <a sec:authorize="hasAnyRole('OWNER','STAFF')" href="/" class="btn btn-sm btn-outline-secondary">관리 화면</a>
             <a sec:authorize="hasRole('ADMIN')" href="/admin" class="btn btn-sm btn-outline-secondary">관리 화면</a>
             <form th:action="@{/logout}" method="post" class="m-0">

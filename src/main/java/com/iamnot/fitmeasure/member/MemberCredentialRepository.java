@@ -5,4 +5,5 @@ import java.util.Optional;
 
 public interface MemberCredentialRepository extends JpaRepository<MemberCredential, Long> {
     Optional<MemberCredential> findByProviderAndProviderId(AuthProvider provider, String providerId);
+    Optional<MemberCredential> findByMemberIdAndProvider(Long memberId, AuthProvider provider);
 }

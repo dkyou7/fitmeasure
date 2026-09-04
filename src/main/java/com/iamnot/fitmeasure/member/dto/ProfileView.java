@@ -1,8 +1,10 @@
 package com.iamnot.fitmeasure.member.dto;
 
 public record ProfileView(
-        String name,          // Member.name (없으면 null)
-        String nickname,      // 현재 클럽 닉네임 (클럽 없으면 null)
-        String phone,         // 연락처 (마스킹해서 보여줄 수도)
-        boolean hasClub       // 클럽 소속 여부
+        String username,      // 로그인 아이디 (USERNAME credential)
+        String name,
+        String nickname,
+        String phone,
+        boolean hasClub,
+        boolean hasPhone      // 전화번호 연결 여부(통합 가능 여부)
 ) {}
