@@ -33,23 +33,6 @@ public class AdminController {
         return "admin/club-new";
     }
 
-    @PostMapping("/clubs")
-    public String createClub(@RequestParam String clubName,
-                             @RequestParam ClubType type,
-                             @RequestParam String ownerName,
-                             @RequestParam String ownerUsername,
-                             @RequestParam String ownerPassword,
-                             Model model) {
-        try {
-            adminService.createClubWithOwner(clubName, type, ownerName, ownerUsername, ownerPassword);
-        } catch (IllegalStateException e) {
-            model.addAttribute("types", ClubType.values());
-            model.addAttribute("error", e.getMessage());
-            return "admin/club-new";
-        }
-        return "redirect:/admin";
-    }
-
     /** 아이디 검색 (htmx) */
     @GetMapping("/clubs/new/search")
     public String search(@RequestParam String username, Model model) {
