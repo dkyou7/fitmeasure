@@ -46,19 +46,12 @@ public class Member extends BaseEntity {
     public void grantPlatformAdmin() { this.platformAdmin = true; }
 
     public void updatePhone(String phone) {
-        this.phone = phone;
+        this.phone = (phone == null || phone.isBlank()) ? null : phone;
     }
 
     /** 클럽이 등록하는 익명 회원 */
     public static Member anonymous() {
         return new Member();
-    }
-
-    // anonymous 팩토리에 전화번호 받는 버전 추가
-    public static Member anonymousWithPhone(String phone) {
-        Member m = new Member();
-        m.phone = phone;
-        return m;
     }
 
     /**

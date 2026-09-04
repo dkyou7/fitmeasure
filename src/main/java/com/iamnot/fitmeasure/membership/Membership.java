@@ -54,6 +54,9 @@ public class Membership extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String memo;
 
+    @Column(length = 20)
+    private String phone;   // 이 클럽에서의 회원 연락처
+
     public Membership(Club club, Member member, MembershipRole role, String nickname) {
         this.club = club;
         this.member = member;
@@ -81,4 +84,6 @@ public class Membership extends BaseEntity {
     public void rename(String nickname) { this.nickname = nickname; }
 
     public void transferTo(Member newMember) {this.member = newMember;}
+
+    public void assignPhone(String phone) { this.phone = phone; }
 }

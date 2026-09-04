@@ -33,7 +33,7 @@ public class MemberService {
                 .map(m -> new MemberRow(
                         m.getId(),
                         m.getNickname(),
-                        m.getMember().getPhone(),
+                        m.getPhone(),
                         !m.getMember().isClaimed(),
                         m.getJoinedAt()))
                 .toList();
@@ -41,23 +41,22 @@ public class MemberService {
 
     @Transactional
     public Membership register(String phone, boolean consent) {
-        if (phone == null || phone.isBlank()) {
+        if (phone == null || phone.isBlank())
             throw new IllegalArgumentException("전화번호는 필수입니다.");
-        }
-        if (!consent) {
+        if (!consent)
             throw new IllegalArgumentException("회원 동의 확인이 필요합니다.");
-        }
 
         Long clubId = currentClub.clubId();
         Club club = clubRepository.getReferenceById(clubId);
         String normalizedPhone = phone.replaceAll("[^0-9]", "");
 
-        // 전화번호로 기존 Member를 찾지 않는다.
-        // 번호 일치만으로 자동 통합하면 오타·도용에 취약. 통합은 claim(토큰)으로만.
-        Member person = memberRepository.save(Member.withPhone(normalizedPhone));
+        if (membershipRepository.existsByClubIdAndPhone(clubId, normalizedPhone))
+            throw new IllegalStateException("이미 등록된 번호예요.");
 
+        Member person = memberRepository.save(Member.anonymous());  // 계정만
         String nickname = nicknameGenerator.generate();
         Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);
+        membership.assignPhone(normalizedPhone);   // 번호는 Membership에
         return membershipRepository.save(membership);
     }
 }

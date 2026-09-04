@@ -34,20 +34,22 @@ public class ProfileService {
                     .map(Membership::getNickname).orElse(null);
         }
 
-        return new ProfileView(username, m.getName(), nickname,
-                m.getPhone(), hasClub, m.getPhone() != null && !m.getPhone().isBlank());
+        return new ProfileView(
+                username, m.getName(), nickname,
+                m.getPhone(),                          // Member.phone (본인 번호)
+                hasClub,
+                m.getPhone() != null && !m.getPhone().isBlank());
     }
 
     /** 이름 + 현재 클럽 닉네임 수정 */
     @Transactional
-    public void update(LoginMember lm, String name, String nickname) {
+    public void update(LoginMember lm, String name, String nickname, String phone) {
         Member m = memberRepository.findById(lm.memberId()).orElseThrow();
         m.updateName(name);
+        m.updatePhone(phone == null ? null : phone.replaceAll("[^0-9]", ""));  // 본인 번호 수정
 
-        // 현재 클럽에서의 닉네임도 수정 (클럽 소속이면)
         if (lm.clubId() != null && nickname != null && !nickname.isBlank()) {
-            membershipRepository
-                    .findByMemberIdAndClubId(lm.memberId(), lm.clubId())
+            membershipRepository.findByMemberIdAndClubId(lm.memberId(), lm.clubId())
                     .ifPresent(ms -> ms.rename(nickname.trim()));
         }
     }

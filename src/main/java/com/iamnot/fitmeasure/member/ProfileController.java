@@ -24,8 +24,9 @@ public class ProfileController {
     @PostMapping
     public String update(@AuthenticationPrincipal LoginMember lm,
                          @RequestParam(required = false) String name,
-                         @RequestParam(required = false) String nickname) {
-        profileService.update(lm, name, nickname);
+                         @RequestParam(required = false) String nickname,
+                         @RequestParam(required = false) String phone) {
+        profileService.update(lm, name, nickname, phone);
         return "redirect:/me/profile?saved";
     }
 }

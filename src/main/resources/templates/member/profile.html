@@ -42,21 +42,12 @@
 
     <div class="saved" th:if="${param.saved}">저장됐어요.</div>
 
-    <!-- 계정 정보 (읽기전용 요약) -->
+    <!-- 계정 정보 (읽기전용) -->
     <div class="info-box">
         <div class="info-row">
             <span class="k">아이디</span>
             <span class="v" th:text="${profile.username} ?: '-'">dong123</span>
         </div>
-        <div class="info-row">
-            <span class="k">연락처</span>
-            <span class="v" th:if="${profile.hasPhone}" th:text="${profile.phone}">01012345678</span>
-            <span class="v muted" th:unless="${profile.hasPhone}">연결 안 됨</span>
-        </div>
-    </div>
-    <div class="phone-hint" th:unless="${profile.hasPhone}">
-        아직 연결된 측정 기록이 없어요. 헬스장에서 측정받으면,
-        트레이너가 준 링크로 기록을 내 계정에 추가할 수 있어요.
     </div>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">
@@ -66,6 +57,10 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <label>이름</label>
         <input type="text" name="name" th:value="${profile.name}" placeholder="이름을 입력하세요">
+
+        <label>연락처</label>
+        <input type="tel" name="phone" th:value="${profile.phone}" placeholder="01012345678">
+
         <div th:if="${profile.hasClub}">
             <label>이 헬스장에서 표시될 이름</label>
             <input type="text" name="nickname" th:value="${profile.nickname}" placeholder="닉네임">
