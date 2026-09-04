@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.admin;
 
 import com.iamnot.fitmeasure.admin.dto.AdminClubRow;
+import com.iamnot.fitmeasure.admin.dto.AdminStats;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.club.ClubType;
@@ -93,5 +94,32 @@ public class AdminService {
         }
     }
 
-    public record AdminStats(int totalClubs, long paidClubs) {}
+    /** 아이디로 사용자 조회 (검색용) */
+    @Transactional(readOnly = true)
+    public MemberSearchResult findByUsername(String username) {
+        MemberCredential cred = credentialRepository
+                .findByProviderAndProviderId(AuthProvider.USERNAME, username.trim())
+                .orElse(null);
+        if (cred == null) return null;
+        Member m = cred.getMember();
+        return new MemberSearchResult(m.getId(), username.trim(), m.getName());
+    }
+
+    public record MemberSearchResult(Long memberId, String username, String name) {}
+
+    /** 기존 계정을 OWNER로 하는 클럽 생성 (계약 온보딩) */
+    @Transactional
+    public void createClubForExistingMember(Long memberId, String clubName, ClubType type) {
+        Member owner = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다."));
+
+        String slug = toSlug(clubName);
+        Club club = clubRepository.save(new Club(clubName.trim(), slug, type));
+
+        String nickname = owner.getName() != null ? owner.getName() : "사장님";
+        membershipRepository.save(new Membership(club, owner, MembershipRole.OWNER, nickname));
+
+        templateRepository.findByClubIsNull()
+                .forEach(std -> templateRepository.save(std.copyForClub(club)));
+    }
 }

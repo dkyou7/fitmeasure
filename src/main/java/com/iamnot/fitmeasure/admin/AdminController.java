@@ -49,4 +49,21 @@ public class AdminController {
         }
         return "redirect:/admin";
     }
+
+    /** 아이디 검색 (htmx) */
+    @GetMapping("/clubs/new/search")
+    public String search(@RequestParam String username, Model model) {
+        model.addAttribute("result", adminService.findByUsername(username));
+        model.addAttribute("searched", true);
+        return "admin/club-new :: searchResult";
+    }
+
+    @PostMapping("/clubs")
+    public String createClub(@RequestParam Long memberId,
+                             @RequestParam String clubName,
+                             @RequestParam ClubType type,
+                             Model model) {
+        adminService.createClubForExistingMember(memberId, clubName, type);
+        return "redirect:/admin";
+    }
 }
