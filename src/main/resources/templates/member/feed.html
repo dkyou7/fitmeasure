@@ -32,7 +32,8 @@
     <h1 class="mb-4" style="font-size:24px;font-weight:800;letter-spacing:-0.03em;">내 측정 기록</h1>
 
     <!-- 프로모션 배너 -->
-    <a href="/clubs/new" class="promo">
+    <!-- 측정 기록 없을 때만 헬스장 만들기 배너 -->
+    <a href="/clubs/new" class="promo" th:unless="${hasRecords}">
         <div class="promo-badge">전격 모집</div>
         <div class="promo-title">내 헬스장, 지금 시작하세요</div>
         <div class="promo-sub">회원 10명까지 무료 · 3분이면 오픈 · 측정 도구 바로 제공</div>
@@ -41,10 +42,10 @@
 
     <a class="feed-item" th:each="f : ${feed}"
        th:href="@{/measure/result/{sid}(sid=${f.sessionId})}">
-        <div class="club" th:text="${f.clubName}">스트롱짐</div>
+        <div class="club" th:text="${f.clubName}">데모 헬스장</div>
         <div class="prog" th:text="${f.programName}">3대 측정</div>
         <div class="meta">
-            <span th:text="${#temporals.format(f.measuredAt, 'yyyy.MM.dd')}">2026.05.20</span>
+            <span th:text="${#temporals.format(f.measuredAt, 'yyyy.MM.dd HH:mm')}">2026.09.04 15:30</span>
             · <span th:text="${f.itemCount}">3</span>개 측정
         </div>
     </a>

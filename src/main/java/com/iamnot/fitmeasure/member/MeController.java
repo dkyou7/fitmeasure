@@ -16,7 +16,9 @@ public class MeController {
     @GetMapping("/me")
     public String feed(@AuthenticationPrincipal LoginMember loginMember, Model model) {
         if (loginMember == null) return "redirect:/login";
-        model.addAttribute("feed", feedService.myFeed(loginMember));
+        var feed = feedService.myFeed(loginMember);
+        model.addAttribute("feed", feed);
+        model.addAttribute("hasRecords", !feed.isEmpty());   // 측정 기록 있나
         return "member/feed";
     }
 }
