@@ -10,7 +10,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+server:
+  forward-headers-strategy: framework
 ---
 spring:
   config:
