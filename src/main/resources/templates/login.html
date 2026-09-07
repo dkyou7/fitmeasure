@@ -48,6 +48,7 @@
 
     <form th:action="@{/login}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" name="next" th:value="${param.next}">
         <input class="field" type="tel" name="username" placeholder="아이디" required autofocus>
         <input class="field" type="password" name="password" placeholder="비밀번호" required>
 
@@ -58,7 +59,7 @@
             <span class="links">
                     <a href="#">비밀번호 찾기</a>
                     <span class="bar">|</span>
-                    <a class="signup" href="/signup">회원가입</a>
+                    <a class="signup" th:href="@{/signup(next=${param.next})}">회원가입</a>
                 </span>
         </div>
 

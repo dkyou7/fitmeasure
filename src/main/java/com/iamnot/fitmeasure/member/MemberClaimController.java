@@ -1,12 +1,12 @@
 package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.config.security.LoginMember;
-import com.iamnot.fitmeasure.member.dto.ClaimForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -14,50 +14,33 @@ public class MemberClaimController {
 
     private final MemberClaimService claimService;
 
-    /** claim 폼 (공유 카드에서 진입) */
-    @GetMapping("/s/{token}/claim")
-    public String form(@PathVariable String token, Model model) {
-        model.addAttribute("form", claimService.prepareForm(token));
-        return "share/claim";
-    }
-
-    @PostMapping("/s/{token}/claim")
-    public String submit(@PathVariable String token,
-                         @RequestParam String username,
-                         @RequestParam String password,
-                         @RequestParam(required = false) String name,
-                         Model model) {
-        try {
-            claimService.claimByUsername(token, username, password, name);
-        } catch (IllegalStateException e) {
-            model.addAttribute("form", claimService.prepareForm(token));
-            model.addAttribute("error", e.getMessage());
-            return "share/claim";
-        }
-        return "redirect:/s/" + token + "/claim/done";
-    }
-
-    @GetMapping("/s/{token}/claim/done")
-    public String done(@PathVariable String token, Model model) {
-        model.addAttribute("form", claimService.prepareForm(token));
-        return "share/claim-done";
-    }
-
-    /** 로그인 상태로 이 세션을 내 계정에 흡수 */
-    @PostMapping("/s/{token}/absorb")
-    public String absorb(@PathVariable String token,
-                         @AuthenticationPrincipal LoginMember loginMember,
-                         Model model) {
+    /** 로그인 후 리다이렉트로 진입 (GET) */
+    @GetMapping("/s/{token}/absorb")
+    public String absorbByRedirect(@PathVariable String token,
+                                   @AuthenticationPrincipal LoginMember loginMember) {
         if (loginMember == null) {
-            return "redirect:/login";   // 로그인 먼저
+            return "redirect:/login?next=/s/" + token + "/absorb";
         }
+        tryAbsorb(token, loginMember);
+        return "redirect:/me";
+    }
+
+    /** 로그인 상태에서 공유 카드 버튼으로 진입 (POST) */
+    @PostMapping("/s/{token}/absorb")
+    public String absorbBySubmit(@PathVariable String token,
+                                 @AuthenticationPrincipal LoginMember loginMember) {
+        if (loginMember == null) {
+            return "redirect:/login?next=/s/" + token + "/absorb";
+        }
+        tryAbsorb(token, loginMember);
+        return "redirect:/me";
+    }
+
+    private void tryAbsorb(String token, LoginMember loginMember) {
         try {
             claimService.absorbToLoggedIn(token, loginMember.memberId());
         } catch (IllegalStateException e) {
-            model.addAttribute("form", claimService.prepareForm(token));
-            model.addAttribute("error", e.getMessage());
-            return "share/claim";
+            // 이미 흡수됐거나 중복이면 무시하고 피드로 (재클릭·중복 대비)
         }
-        return "redirect:/me";   // 흡수 후 내 피드로
     }
 }

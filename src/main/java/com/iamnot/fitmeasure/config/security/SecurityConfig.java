@@ -29,7 +29,11 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler((request, response, authentication) -> {
+                            String next = request.getParameter("next");
+                            // login 폼이 next를 hidden으로 넘겨줘야 함
+                            response.sendRedirect(next != null && next.startsWith("/") ? next : "/");
+                        })
                         .permitAll()
                 )
                 .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login"))

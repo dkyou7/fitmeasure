@@ -95,14 +95,17 @@
     </div>
 
     <div class="action">
-        <!-- 비로그인 -->
+        <!-- 비로그인: 로그인/가입하고 흡수 -->
         <a sec:authorize="!isAuthenticated()" class="cta"
-           th:href="@{/s/{token}/claim(token=${card.shareToken})}">내 기록으로 저장하기</a>
+           th:href="@{/login(next='/s/' + ${card.shareToken} + '/absorb')}">
+            내 기록으로 저장하기
+        </a>
         <div sec:authorize="!isAuthenticated()" class="cta-sub">
-            저장하면 앞으로의 측정 기록이<br>내 성장 그래프로 이어집니다
+            로그인하면 이 측정 기록이<br>내 성장 그래프로 이어집니다
         </div>
-        <!-- 로그인 -->
-        <form sec:authorize="isAuthenticated()" th:action="@{/s/{token}/absorb(token=${card.shareToken})}" method="post">
+        <!-- 로그인: 바로 흡수 -->
+        <form sec:authorize="isAuthenticated()"
+              th:action="@{/s/{token}/absorb(token=${card.shareToken})}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <button type="submit" class="cta">내 기록에 추가하기</button>
         </form>
