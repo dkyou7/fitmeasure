@@ -226,10 +226,13 @@ public class MeasurementService {
         // 이 회원에게 2회 이상 측정 이력이 있으면 추이가 존재 → 잠긴 그래프 티저
         boolean hasTrend = sessionRepository
                 .findByMembershipIdOrderByMeasuredAtDesc(membershipId).size() > 1;
+        Membership measurer = session.getMeasuredBy();
+        String measuredByName = measurer != null ? measurer.getNickname() : null;
 
         return new ShareCard(
                 token,
                 member.getClub().getName(),
+                measuredByName,              // 추가
                 member.getNickname(),
                 !member.getMember().isClaimed(),
                 session.getMeasuredAt().toLocalDate(),

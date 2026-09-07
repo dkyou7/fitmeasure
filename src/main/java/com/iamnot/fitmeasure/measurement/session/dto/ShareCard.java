@@ -7,16 +7,12 @@ import java.util.List;
 public record ShareCard(
         String shareToken,
         String clubName,
+        String measuredByName,   // 측정한 트레이너 이름 추가
         String nickname,
         boolean anonymous,
         LocalDate measuredDate,
         List<ShareValueRow> values,
-        boolean hasTrend        // 이전 기록 존재 여부(잠긴 그래프 티저 노출용)
+        boolean hasTrend
 ) {
-    public record ShareValueRow(
-            String name,
-            String displayValue,
-            String unit,
-            boolean skipped
-    ) {}
+    public record ShareValueRow(String name, String displayValue, String unit, boolean skipped) {}
 }

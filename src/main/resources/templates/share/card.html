@@ -86,7 +86,10 @@
         <div class="verify">
             <div class="ic">✓</div>
             <div class="txt">
-                <b th:text="${card.clubName}">스트롱짐</b> 트레이너가 정해진 기준으로 직접 측정한 기록이에요.
+                <b th:text="${card.clubName}">스트롱짐</b>에서
+                <b th:if="${card.measuredByName}" th:text="${card.measuredByName}">김트레이너</b>
+                <span th:if="${card.measuredByName}"> 트레이너가</span>
+                정해진 기준으로 직접 측정한 기록이에요.
             </div>
         </div>
     </div>
