@@ -34,7 +34,7 @@
 
     <div class="row g-3">
         <!-- 무료 -->
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="plan" th:classappend="${currentPlan == 'FREE'} ? 'featured'">
                 <span class="tag" th:if="${currentPlan == 'FREE'}">현재 플랜</span>
                 <div class="range">~10명</div>
@@ -50,47 +50,16 @@
             </div>
         </div>
         <!-- 스타터 -->
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="plan">
                 <div class="range">~50명</div>
-                <div class="price">5<span class="won">만원</span></div>
+                <div class="price">1<span class="won">만원</span></div>
                 <div class="per">월 · 부가세 별도</div>
                 <ul>
                     <li>무료의 모든 기능</li>
                     <li>누적 히스토리</li>
                     <li>성장 추이 그래프</li>
                     <li>트레이너 무제한</li>
-                </ul>
-                <button class="btn btn-primary w-100">문의하기</button>
-            </div>
-        </div>
-        <!-- 그로스 (추천) -->
-        <div class="col-md-3">
-            <div class="plan featured">
-                <span class="tag">가장 인기</span>
-                <div class="range">~100명</div>
-                <div class="price">9<span class="won">만원</span></div>
-                <div class="per">월 · 부가세 별도</div>
-                <ul>
-                    <li>스타터의 모든 기능</li>
-                    <li>측정 명단 대시보드</li>
-                    <li>회원 리포트</li>
-                    <li>우선 지원</li>
-                </ul>
-                <button class="btn btn-primary w-100">문의하기</button>
-            </div>
-        </div>
-        <!-- 프로 -->
-        <div class="col-md-3">
-            <div class="plan">
-                <div class="range">~200명</div>
-                <div class="price">15<span class="won">만원</span></div>
-                <div class="per">월 · 부가세 별도</div>
-                <ul>
-                    <li>그로스의 모든 기능</li>
-                    <li>다중 지점 관리</li>
-                    <li>데이터 내보내기</li>
-                    <li>전담 매니저</li>
                 </ul>
                 <button class="btn btn-primary w-100">문의하기</button>
             </div>

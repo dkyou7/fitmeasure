@@ -24,7 +24,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                withCredentials([string(credentialsId: 'fitmeasure-db-password', variable: 'DB_PASSWORD')]) {
+                withCredentials([
+                    string(credentialsId: 'fitmeasure-db-password', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_ID', variable: 'fitmeasure_KAKAO_CLIENT_ID'),
+                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'fitmeasure_KAKAO_CLIENT_SECRET')
+                ]) {
                     sh '''
                     docker rm -f $CONTAINER || true
                     docker run -d --name $CONTAINER \

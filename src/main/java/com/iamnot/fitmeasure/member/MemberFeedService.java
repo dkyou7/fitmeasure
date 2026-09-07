@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSession;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
@@ -24,7 +25,7 @@ public class MemberFeedService {
 
     /** 로그인한 회원의 모든 클럽 측정 기록을 최신순 피드로 */
     @Transactional(readOnly = true)
-    public List<FeedItem> myFeed(LoginMember loginMember) {
+    public List<FeedItem> myFeed(AppPrincipal loginMember) {
         Long memberId = loginMember.memberId();
 
         // 이 사람의 MEMBER 역할 멤버십 전부 (여러 클럽)

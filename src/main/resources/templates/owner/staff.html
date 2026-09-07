@@ -20,12 +20,12 @@
 
     <div th:fragment="staffTable" id="staffTable">
         <table class="table align-middle mb-0">
-            <thead><tr><th>이름</th><th>역할</th><th>상태</th><th>등록일</th><th></th></tr></thead>
+            <thead><tr><th>이름</th><th>역할</th><th>등록일</th><th>상태</th><th></th></tr></thead>
             <tbody>
             <tr th:each="s : ${staff}" th:style="${s.status.name() == 'DORMANT'} ? 'opacity:0.45;'">
                 <td class="fw-semibold" th:text="${s.nickname}">김트레이너</td>
                 <td>
-                    <span class="badge bg-tint" th:if="${s.isOwner}">사장</span>
+                    <span class="badge bg-tint text-secondary" th:if="${s.isOwner}">사장</span>
                     <span class="text-secondary" style="font-size:13px;" th:unless="${s.isOwner}">트레이너</span>
                 </td>
                 <td class="text-secondary" style="font-size:14px;"

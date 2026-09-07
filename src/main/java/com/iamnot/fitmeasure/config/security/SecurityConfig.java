@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.config.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,7 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,6 +39,11 @@ public class SecurityConfig {
                             response.sendRedirect(next != null && next.startsWith("/") ? next : "/");
                         })
                         .permitAll()
+                )
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .userInfoEndpoint(ui -> ui.userService(customOAuth2UserService))
+                        .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login"))
                 .headers(h -> h.frameOptions(f -> f.sameOrigin()))

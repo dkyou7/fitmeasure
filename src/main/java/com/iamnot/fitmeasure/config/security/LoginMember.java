@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** 로그인한 트레이너/사장. 소속 클럽을 함께 들고 있다. */
-public class LoginMember implements UserDetails {
+public class LoginMember implements UserDetails, AppPrincipal {
 
     private final Long memberId;
     private final Long clubId;

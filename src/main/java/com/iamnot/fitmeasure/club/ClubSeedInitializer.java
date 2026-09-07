@@ -61,7 +61,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         ownerPerson.claim("사장님");
         memberRepository.save(ownerPerson);
         credentialRepository.save(MemberCredential.username(
-                ownerPerson, "01012341234", passwordEncoder.encode("1234")));
+                ownerPerson, "123", passwordEncoder.encode("123")));
         membershipRepository.save(new Membership(club, ownerPerson, MembershipRole.OWNER, "사장님"));
 
         // 트레이너
@@ -69,7 +69,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         trainerPerson.claim("김트레이너");
         memberRepository.save(trainerPerson);
         credentialRepository.save(MemberCredential.username(
-                trainerPerson, "01023452345", passwordEncoder.encode("2345")));
+                trainerPerson, "234", passwordEncoder.encode("234")));
         membershipRepository.save(new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 
         // 회원
@@ -77,7 +77,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         testPerson.claim("유테스터");
         memberRepository.save(testPerson);
         credentialRepository.save(MemberCredential.username(
-                testPerson, "01034563456", passwordEncoder.encode("3456")));
+                testPerson, "345", passwordEncoder.encode("345")));
         membershipRepository.save(new Membership(club, testPerson, MembershipRole.MEMBER, "유테스터"));
 
         // 3. 표준 프로그램 전체를 클럽으로 복사

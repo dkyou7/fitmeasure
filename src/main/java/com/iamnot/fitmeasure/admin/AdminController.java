@@ -30,6 +30,7 @@ public class AdminController {
     @GetMapping("/clubs/new")
     public String newClubForm(Model model) {
         model.addAttribute("types", ClubType.values());
+        model.addAttribute("searched", false);   // 추가
         return "admin/club-new";
     }
 
@@ -38,6 +39,7 @@ public class AdminController {
     public String search(@RequestParam String username, Model model) {
         model.addAttribute("result", adminService.findByUsername(username));
         model.addAttribute("searched", true);
+        model.addAttribute("types", ClubType.values());
         return "admin/club-new :: searchResult";
     }
 
