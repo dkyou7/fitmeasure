@@ -72,6 +72,14 @@ public class ClubSeedInitializer implements ApplicationRunner {
                 trainerPerson, "01023452345", passwordEncoder.encode("2345")));
         membershipRepository.save(new Membership(club, trainerPerson, MembershipRole.STAFF, "김트레이너"));
 
+        // 회원
+        Member testPerson = Member.anonymous();
+        trainerPerson.claim("유테스터");
+        memberRepository.save(testPerson);
+        credentialRepository.save(MemberCredential.username(
+                testPerson, "01034563456", passwordEncoder.encode("3456")));
+        membershipRepository.save(new Membership(club, testPerson, MembershipRole.MEMBER, "유테스터"));
+
         // 3. 표준 프로그램 전체를 클럽으로 복사
         List<MeasurementTemplate> standards = templateRepository.findByClubIsNull();
         for (MeasurementTemplate std : standards) {

@@ -51,10 +51,10 @@ public class MeasurementService {
      */
     @Transactional
     public Long save(Long membershipId, Long programId,
-                     Map<Long, String> values, String note) {
+                     Map<Long, String> values, String note, LoginMember loginMember) {
         Membership member = loadMember(membershipId);
         MeasurementTemplate program = loadProgram(programId);
-        Membership measuredBy = currentMeasurer();
+        Membership measuredBy = currentMeasurer(loginMember);
 
         MeasurementSession session = new MeasurementSession(
                 member, program, measuredBy, LocalDateTime.now());
@@ -95,15 +95,16 @@ public class MeasurementService {
                 .orElseThrow(() -> new IllegalArgumentException("프로그램을 찾을 수 없습니다."));
     }
 
-    /** 임시: 측정자를 클럽의 STAFF/OWNER 아무나로. Security 붙으면 로그인 사용자로 교체 */
-    private Membership currentMeasurer() {
-        return membershipRepository
-                .findByClubIdAndRoleOrderByNicknameAsc(currentClub.clubId(), MembershipRole.STAFF)
-                .stream().findFirst()
-                .or(() -> membershipRepository
-                        .findByClubIdAndRoleOrderByNicknameAsc(currentClub.clubId(), MembershipRole.OWNER)
-                        .stream().findFirst())
-                .orElseThrow(() -> new IllegalStateException("측정자(STAFF/OWNER)가 없습니다."));
+    /** 측정자 = 현재 로그인 사용자의 이 클럽 멤버십 (STAFF 또는 OWNER) */
+    private Membership currentMeasurer(LoginMember loginMember) {
+        Membership measurer = membershipRepository
+                .findByMemberIdAndClubId(loginMember.memberId(), currentClub.clubId())
+                .orElseThrow(() -> new IllegalStateException("이 클럽의 측정 권한이 없습니다."));
+        if (measurer.getRole() != MembershipRole.STAFF
+                && measurer.getRole() != MembershipRole.OWNER) {
+            throw new IllegalStateException("측정 권한이 없는 사용자입니다.");
+        }
+        return measurer;
     }
 
     /** 측정 결과지: 이번 세션 + 직전 세션 대비 변화 */

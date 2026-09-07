@@ -38,6 +38,7 @@ public class MeasurementController {
     /** 저장: item_{id} 파라미터들을 Map으로 수집 */
     @PostMapping("/{membershipId}/program/{programId}")
     public String save(@PathVariable Long membershipId, @PathVariable Long programId,
+                       @AuthenticationPrincipal LoginMember loginMember,
                        @RequestParam Map<String, String> allParams) {
         Map<Long, String> values = allParams.entrySet().stream()
                 .filter(e -> e.getKey().startsWith("item_"))
@@ -45,8 +46,8 @@ public class MeasurementController {
                         e -> Long.valueOf(e.getKey().substring(5)),
                         Map.Entry::getValue));
         String note = allParams.get("note");
-        Long sessionId = measurementService.save(membershipId, programId, values, note);
-        return "redirect:/measure/result/" + sessionId;  // 결과 화면은 커밋 11
+        Long sessionId = measurementService.save(membershipId, programId, values, note, loginMember);
+        return "redirect:/measure/result/" + sessionId;
     }
 
     /** 측정 결과지 */
