@@ -26,8 +26,8 @@ pipeline {
             steps {
                 withCredentials([
                     string(credentialsId: 'fitmeasure-db-password', variable: 'DB_PASSWORD'),
-                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_ID', variable: 'fitmeasure_KAKAO_CLIENT_ID'),
-                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'fitmeasure_KAKAO_CLIENT_SECRET')
+                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
+                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET')
                 ]) {
                     sh '''
                     docker rm -f $CONTAINER || true
@@ -37,6 +37,8 @@ pipeline {
                       -e DB_URL="jdbc:mysql://iamnotmeeting-mysql:3306/fitmeasure?serverTimezone=Asia/Seoul&characterEncoding=UTF-8" \
                       -e DB_USER="fitmeasure" \
                       -e DB_PASSWORD="$DB_PASSWORD" \
+                      -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
+                      -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
                       --restart unless-stopped \
                       $IMAGE
                     '''
