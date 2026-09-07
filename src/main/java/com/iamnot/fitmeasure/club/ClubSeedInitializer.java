@@ -74,7 +74,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
 
         // 회원
         Member testPerson = Member.anonymous();
-        trainerPerson.claim("유테스터");
+        testPerson.claim("유테스터");
         memberRepository.save(testPerson);
         credentialRepository.save(MemberCredential.username(
                 testPerson, "01034563456", passwordEncoder.encode("3456")));
