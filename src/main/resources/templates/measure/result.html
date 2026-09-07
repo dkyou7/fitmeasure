@@ -72,7 +72,10 @@
 
         <button sec:authorize="hasAnyRole('OWNER','STAFF')"
                 class="done"
-                style="background:#FF5A1F;margin-bottom:8px;" onclick="share()">공유 링크 만들기</button>
+                style="background:#FF5A1F;margin-bottom:8px;" onclick="share('claim')">공유 링크 만들기</button>
+        <button sec:authorize="hasAnyRole('OWNER','STAFF')"
+                class="done"
+                style="background:#1A1A18;margin-bottom:8px;" onclick="share('flex')">자랑 링크 만들기</button>
         <a sec:authorize="hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/members}">완료</a>
         <a sec:authorize="!hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/me}">완료</a>
     </div>
@@ -81,7 +84,7 @@
 <th:block layout:fragment="scripts">
     <script th:inline="javascript">
         const SESSION_ID = /*[[${result.sessionId}]]*/ 0;
-        function share() {
+        function share(mode) {
             const token = document.querySelector('meta[name="_csrf"]').content;
             const header = document.querySelector('meta[name="_csrf_header"]').content;
             fetch(`/measure/result/${SESSION_ID}/share`, {
@@ -89,9 +92,12 @@
             })
                 .then(r => r.json())
                 .then(d => {
-                    const url = location.origin + d.url;
+                    // d.url = "/s/{token}", 자랑 링크는 뒤에 /flex
+                    const path = (mode === 'flex') ? d.url + '/flex' : d.url;
+                    const url = location.origin + path;
                     navigator.clipboard.writeText(url);
-                    alert('공유 링크가 복사되었어요\n' + url);
+                    const label = (mode === 'flex') ? '자랑 링크' : '공유 링크';
+                    alert(label + '가 복사되었어요\n' + url);
                 });
         }
     </script>

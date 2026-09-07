@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${card.nickname} + '의 측정 기록'">운동력 측정 결과</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Pretendard',sans-serif;background:#EEEDE9;color:var(--ink);
+            line-height:1.6;padding:24px 16px;letter-spacing:-0.01em;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;}
+        .card{background:var(--bg);border-radius:20px;overflow:hidden;max-width:380px;width:100%;
+            box-shadow:0 4px 24px rgba(0,0,0,0.06);border:1px solid var(--line);}
+
+        /* 헤더: 이름 + 클럽 (자랑의 주체) */
+        .hd{padding:24px 24px 18px;}
+        .hd .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+        .hd .brand .club{font-size:13px;font-weight:700;color:var(--sub);}
+        .hd .brand .badge{font-size:11px;font-weight:600;color:var(--orange-deep);
+            background:var(--tint);padding:3px 10px;border-radius:100px;}
+        .hd .who{font-size:22px;font-weight:800;letter-spacing:-0.03em;}
+        .hd .who .suffix{font-size:15px;font-weight:600;color:var(--sub);margin-left:4px;}
+        .hd .date{font-size:12px;color:var(--sub);margin-top:4px;}
+
+        /* 히어로: 대표 성취를 크게 */
+        .hero{margin:2px 24px 0;background:var(--ink);border-radius:16px;padding:22px 24px;color:#fff;}
+        .hero .label{font-size:13px;font-weight:600;color:#C9C7BF;}
+        .hero .big{display:flex;align-items:baseline;gap:6px;margin-top:6px;}
+        .hero .big .num{font-size:44px;font-weight:800;letter-spacing:-0.04em;line-height:1;}
+        .hero .big .u{font-size:18px;font-weight:700;color:#C9C7BF;}
+        .hero .grow{display:inline-flex;align-items:center;gap:5px;margin-top:12px;
+            background:var(--orange);color:#fff;font-size:13px;font-weight:700;
+            padding:5px 12px;border-radius:100px;}
+
+        /* 나머지 항목 */
+        .bd{padding:20px 24px 6px;}
+        .sec-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:10px;}
+        .items{display:flex;flex-direction:column;gap:2px;}
+        .item{display:flex;align-items:center;justify-content:space-between;
+            padding:12px 0;border-bottom:1px solid var(--line);}
+        .item:last-child{border-bottom:none;}
+        .item .n{font-size:15px;font-weight:500;}
+        .item .v{font-size:17px;font-weight:800;letter-spacing:-0.02em;}
+        .item .v .u{font-size:12px;font-weight:600;color:var(--sub);margin-left:2px;}
+        .item.skip .v{font-size:13px;color:var(--sub);font-weight:500;}
+
+        /* 잠긴 그래프 티저 */
+        .trend-teaser{margin:14px 24px 0;border:1px dashed var(--line);border-radius:12px;
+            padding:16px;text-align:center;background:#F9F8F5;}
+        .trend-teaser .lock{font-size:20px;}
+        .trend-teaser .t{font-size:13px;font-weight:600;margin-top:4px;}
+        .trend-teaser .s{font-size:12px;color:var(--sub);margin-top:2px;}
+
+        /* 공유/저장 액션 */
+        .action{padding:18px 24px 8px;display:flex;flex-direction:column;gap:8px;}
+        .btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:14px;
+            border-radius:12px;font-size:15px;font-weight:700;text-align:center;text-decoration:none;
+            cursor:pointer;border:none;transition:.15s;}
+        .btn-primary{background:var(--orange);color:#fff;}
+        .btn-primary:hover{background:var(--orange-deep);}
+        .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);}
+        .btn-ghost:hover{border-color:var(--ink);}
+
+        /* 친구용 CTA (신규 유입 루프) */
+        .invite{margin:8px 24px 0;padding:16px;background:var(--tint);border-radius:12px;text-align:center;}
+        .invite .t{font-size:13px;font-weight:700;color:var(--orange-deep);}
+        .invite .s{font-size:12px;color:var(--sub);margin-top:3px;line-height:1.45;}
+
+        .verify{font-size:11px;color:var(--sub);text-align:center;padding:14px 24px 0;line-height:1.5;}
+        .verify b{color:var(--ink);font-weight:600;}
+        .foot{text-align:center;font-size:11px;color:#B4B2A9;padding:16px 24px;}
+        .foot .logo{font-weight:800;color:var(--ink);letter-spacing:-0.02em;}
+        .foot .logo .p{color:var(--orange);}
+    </style>
+</head>
+<body>
+<div class="card" id="shareCard">
+    <div class="hd">
+        <div class="brand">
+            <span class="club" th:text="${card.clubName}">스트롱짐</span>
+            <span class="badge">운동력 측정</span>
+        </div>
+        <div class="who">
+            <span th:text="${card.nickname}">이름 없는 곰</span><span class="suffix">님의 기록</span>
+        </div>
+        <div class="date" th:text="${#temporals.format(card.measuredDate, 'yyyy년 M월 d일')}">2026년 3월 5일</div>
+    </div>
+
+    <!-- 히어로: 첫 번째 항목을 대표 성취로 -->
+    <div class="hero" th:if="${!card.values.isEmpty()}" th:with="hero=${card.values[0]}">
+        <div class="label" th:text="${hero.name}">벤치프레스 1RM</div>
+        <div class="big" th:if="${!hero.skipped}">
+            <span class="num" th:text="${hero.displayValue}">85</span>
+            <span class="u" th:if="${hero.unit}" th:text="${hero.unit}">kg</span>
+        </div>
+        <div class="big" th:if="${hero.skipped}">
+            <span class="num" style="font-size:20px;">측정 안 함</span>
+        </div>
+        <span class="grow" th:if="${card.hasTrend}">↑ 계속 성장 중</span>
+    </div>
+
+    <!-- 나머지 항목 -->
+    <div class="bd" th:if="${#lists.size(card.values) > 1}">
+        <div class="sec-label">함께 측정한 기록</div>
+        <div class="items">
+            <div class="item" th:each="v,st : ${card.values}" th:if="${st.index > 0 or v.skipped}"
+                 th:classappend="${v.skipped} ? 'skip'">
+                <span class="n" th:text="${v.name}">데드리프트</span>
+                <span class="v" th:if="${!v.skipped}">
+                    <span th:text="${v.displayValue}">120</span><span class="u" th:if="${v.unit}" th:text="${v.unit}">kg</span>
+                </span>
+                <span class="v" th:if="${v.skipped}">측정 안 함</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 잠긴 성장 그래프 티저 -->
+    <div class="trend-teaser" th:if="${card.hasTrend}">
+        <div class="lock">🔒</div>
+        <div class="t">성장 그래프가 있어요</div>
+        <div class="s">측정을 거듭할수록 실력이 쌓입니다</div>
+    </div>
+
+    <!-- 공유/저장 액션 (본인이 뿌리는 카드) -->
+    <div class="action">
+        <button type="button" class="btn btn-primary" onclick="copyLink()">
+            🔗 <span>자랑 링크 복사</span>
+        </button>
+        <a class="btn btn-ghost" th:href="@{/signup}">
+            나도 시작하기
+        </a>
+    </div>
+
+    <!-- 친구용 유입 CTA -->
+    <div class="invite">
+        <div class="t">나도 측정받고 싶다면?</div>
+        <div class="s">
+            <b th:text="${card.clubName}">스트롱짐</b>에서 같은 기준으로<br>내 운동력을 측정할 수 있어요
+        </div>
+    </div>
+
+    <div class="verify">
+        <b th:text="${card.clubName}">스트롱짐</b> 공인 측정 기록
+    </div>
+
+    <div class="foot">
+        <span class="logo">1Rep<span class="p">Plus</span></span>
+    </div>
+</div>
+
+<script th:inline="none">
+    function copyLink() {
+        const url = location.href;
+        navigator.clipboard.writeText(url)
+            .then(() => alert('자랑 링크가 복사되었어요\n' + url))
+            .catch(() => alert('복사에 실패했어요. 주소창의 URL을 직접 복사해 주세요.'));
+    }
+</script>
+</body>
+</html>
