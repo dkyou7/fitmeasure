@@ -5,8 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title layout:title-pattern="$CONTENT_TITLE">측정 서비스</title>
-
+    <title layout:title-pattern="$CONTENT_TITLE">1RepPlus</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -14,87 +13,82 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-
     <style>
-        /* 브랜드 색을 Bootstrap 변수에 주입 */
-        :root{
-            --bs-primary:#FF5A1F;
-            --bs-primary-rgb:255,90,31;
-            --bs-body-bg:#FDFDFC;
-            --bs-body-color:#1A1A18;
-            --bs-body-font-family:'Pretendard',-apple-system,sans-serif;
-            --bs-border-color:#ECEBE7;
-            /* 커스텀 변수 추가 */
-            --bg:#FDFDFC;
-            --ink:#1A1A18;
-            --sub:#6B6B66;
-            --orange:#FF5A1F;
-            --orange-deep:#E64500;
-            --line:#ECEBE7;
-            --tint:#FFF4EF;
-        }
-        /* primary 버튼을 브랜드 오렌지로 */
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;
+            --bs-primary:#FF5A1F;--bs-primary-rgb:255,90,31;}
         .btn-primary{--bs-btn-bg:#FF5A1F;--bs-btn-border-color:#FF5A1F;
             --bs-btn-hover-bg:#E64500;--bs-btn-hover-border-color:#E64500;
-            --bs-btn-active-bg:#E64500;}
+            --bs-btn-active-bg:#E64500;--bs-btn-active-border-color:#E64500;
+            --bs-btn-disabled-bg:#FF5A1F;--bs-btn-disabled-border-color:#FF5A1F;}
         .text-primary{color:#FF5A1F !important;}
-        .navbar{border-bottom:1px solid var(--bs-border-color);background:rgba(253,253,252,0.9)!important;
-            backdrop-filter:saturate(180%) blur(12px);}
-        .navbar-brand{font-weight:800;letter-spacing:-0.03em;}
+        .badge.bg-tint{background:#FFF4EF;color:#E64500;font-weight:600;}
+        body{font-family:'Pretendard',sans-serif;background:#FDFDFC;color:#1A1A18;letter-spacing:-0.01em;
+            min-height:100vh;display:flex;flex-direction:column;}
+        main{flex:1 0 auto;}
+        .navbar{border-bottom:1px solid var(--line);background:rgba(253,253,252,0.9)!important;
+            backdrop-filter:saturate(180%) blur(12px);height:60px;}
+        .navbar-brand{font-weight:800;letter-spacing:-0.03em;font-size:18px;}
+        .navbar-brand .dot{color:var(--orange);}
+        .nav-link{font-size:15px;color:var(--sub);font-weight:500;}
+        .nav-link:hover,.nav-link.active{color:var(--ink);}
+        .dropdown-item{font-size:14px;}
         h1{font-weight:800;letter-spacing:-0.03em;}
-        .app-footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;background:#FDFDFC;}
-        .af-in{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+        .card{border-color:var(--line);}
+        .app-footer{border-top:1px solid var(--line);margin-top:120px;padding:24px 0;background:#FDFDFC;}
+        .af-in{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:900px;margin:0 auto;padding:0 24px;}
         .af-brand{font-weight:800;font-size:15px;letter-spacing:-0.03em;}
         .af-links{display:flex;gap:16px;}
         .af-links a{font-size:13px;color:var(--sub);text-decoration:none;}
         .af-links a:hover{color:var(--orange);}
         .af-copy{font-size:13px;color:var(--sub);margin-left:auto;}
-        @media(max-width:520px){
-            .af-in{flex-direction:column;align-items:flex-start;gap:10px;}
-            .af-copy{margin-left:0;}
-        }
-        body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-            letter-spacing:-0.01em;}
-        main{flex:1 0 auto;}
-        .app-footer{border-top:1px solid var(--line);margin-top:420px;padding:24px 0;background:#FDFDFC;}
+        @media(max-width:520px){.af-in{flex-direction:column;align-items:flex-start;gap:10px;}.af-copy{margin-left:0;}}
     </style>
     <th:block layout:fragment="styles"></th:block>
 </head>
 <body>
 <nav class="navbar navbar-expand-md sticky-top">
-    <div class="container" style="max-width:900px;">
-        <a class="navbar-brand" href="/">1RepPlus<span class="text-primary">.</span></a>
+    <div class="container" style="max-width:1000px;">
+        <a class="navbar-brand" href="/">1RepPlus<span class="dot">.</span></a>
 
-        <!-- 햄버거 버튼 (md 미만에서만 보임) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navMain" aria-controls="navMain"
-                aria-expanded="false" aria-label="메뉴 열기">
+                data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="메뉴">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navMain">
-            <!-- 클럽 메뉴 (사장/트레이너) -->
-            <div class="navbar-nav" sec:authorize="hasAnyRole('OWNER','STAFF')">
-                <a class="nav-link" href="/members">회원</a>
-                <a class="nav-link" href="/programs">프로그램</a>
-                <a class="nav-link" href="/dashboard">측정 명단</a>
-                <a class="nav-link" href="/owner/staff" sec:authorize="hasRole('OWNER')">트레이너</a>
-                <a class="nav-link" href="/owner/billing" sec:authorize="hasRole('OWNER')">운영 현황</a>
-                <a class="nav-link" href="/owner/plans" sec:authorize="hasRole('OWNER')">요금제</a>
-                <a class="nav-link" href="/owner/club" sec:authorize="hasRole('OWNER')">헬스장 정보</a>
-                <a class="nav-link" href="/me">내 기록</a>
-            </div>
+            <!-- 일상 작업 (사장/트레이너 공통) -->
+            <ul class="navbar-nav me-auto" sec:authorize="hasAnyRole('OWNER','STAFF')">
+                <li class="nav-item"><a class="nav-link" href="/members">회원</a></li>
+                <li class="nav-item"><a class="nav-link" href="/dashboard">측정 명단</a></li>
+                <li class="nav-item"><a class="nav-link" href="/programs">프로그램</a></li>
 
-            <!-- 운영자 메뉴 -->
-            <div class="navbar-nav" sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link" href="/admin">플랫폼 관리</a>
-            </div>
+                <!-- 사장 전용 설정 드롭다운 -->
+                <li class="nav-item dropdown" sec:authorize="hasRole('OWNER')">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">설정</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/owner/club">헬스장 정보</a></li>
+                        <li><a class="dropdown-item" href="/owner/staff">트레이너 관리</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/owner/billing">운영 현황</a></li>
+                        <li><a class="dropdown-item" href="/owner/plans">요금제</a></li>
+                    </ul>
+                </li>
 
-            <!-- 사용자 영역 -->
+                <!-- 내 측정 기록 -->
+                <li class="nav-item"><a class="nav-link" href="/me/records">내 기록</a></li>
+            </ul>
+
+            <!-- 운영자 -->
+            <ul class="navbar-nav me-auto" sec:authorize="hasRole('ADMIN')">
+                <li class="nav-item"><a class="nav-link" href="/admin">플랫폼 관리</a></li>
+            </ul>
+
+            <!-- 우측: 사용자 -->
             <div class="d-flex align-items-center gap-3 ms-md-auto mt-2 mt-md-0">
                 <a sec:authorize="isAuthenticated()" href="/me/profile"
                    class="text-secondary small text-decoration-none">
-                    안녕하세요, <span sec:authentication="principal.nickname" class="fw-semibold text-body">회원</span>님
+                    안녕하세요, <span sec:authentication="principal.nickname" class="fw-semibold text-body">사용자</span>님
                 </a>
                 <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -107,30 +101,28 @@
     </div>
 </nav>
 
-<main class="container py-4" style="max-width:900px;" layout:fragment="content"></main>
+<main class="container py-4" style="max-width:1000px;" layout:fragment="content"></main>
 
 <footer class="app-footer">
-    <div class="container" style="max-width:900px;">
-        <div class="af-in">
-            <div class="af-brand">측정<span class="text-primary">.</span></div>
-            <div class="af-links">
-                <a href="#">이용약관</a>
-                <a href="#">개인정보 처리방침</a>
-                <a href="mailto:contact@example.com">문의</a>
-            </div>
-            <div class="af-copy">© 2026 측정.</div>
+    <div class="af-in">
+        <div class="af-brand">1RepPlus<span class="text-primary">.</span></div>
+        <div class="af-links">
+            <a href="#">이용약관</a>
+            <a href="#">개인정보 처리방침</a>
+            <a href="/contact">문의</a>
         </div>
+        <div class="af-copy">© 2026 1RepPlus.</div>
     </div>
 </footer>
 
 <th:block layout:fragment="scripts"></th:block>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const token = document.querySelector('meta[name="_csrf"]').content;
+        const meta = document.querySelector('meta[name="_csrf"]');
+        if (!meta) return;
+        const token = meta.content;
         const header = document.querySelector('meta[name="_csrf_header"]').content;
-        document.body.addEventListener('htmx:configRequest', function (evt) {
-            evt.detail.headers[header] = token;
-        });
+        document.body.addEventListener('htmx:configRequest', e => e.detail.headers[header] = token);
     });
 </script>
 </body>
