@@ -29,6 +29,9 @@ public class ConnectService {
     @Transactional
     public String issueCode(AppPrincipal principal) {
         Member member = memberRepository.findById(principal.memberId()).orElseThrow();
+        // 기존 미사용 코드 무효화 (재발급 시 옛 코드 정리)
+        connectCodeRepository.markAllUsedByMemberId(member.getId());
+
         String code = String.format("%06d", ThreadLocalRandom.current().nextInt(1_000_000));
         connectCodeRepository.save(
                 new ConnectCode(member, code, LocalDateTime.now().plusMinutes(EXPIRE_MINUTES)));
