@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <style>
@@ -27,20 +28,21 @@
         }
         .text-primary{color:#FF5A1F !important;}
         .badge.bg-tint{background:#FFF4EF;color:#E64500;font-weight:600;}
-        /* 상단 헤더 (모바일 앱 스타일) */
-        .m-header{position:sticky;top:0;z-index:50;background:var(--bg);
-            border-bottom:1px solid var(--line);height:52px;
-            display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
-        .m-header .logo{font-weight:800;font-size:17px;letter-spacing:-0.03em;text-decoration:none;color:var(--ink);}
+        /* 상단 헤더 — 하단 탭바와 높이·폭 통일 */
+        .m-header{position:sticky;top:0;z-index:50;background:rgba(253,253,252,0.95);
+            backdrop-filter:blur(12px);border-bottom:1px solid var(--line);height:64px;
+            display:flex;align-items:center;justify-content:space-between;
+            max-width:520px;margin:0 auto;padding:0 20px;}
+        .m-header .logo{font-weight:800;font-size:18px;letter-spacing:-0.03em;text-decoration:none;color:var(--ink);}
         .m-header .logo .dot{color:var(--orange);}
         .m-header .h-right{display:flex;align-items:center;gap:6px;}
         .m-header .h-btn{font-size:13px;color:var(--sub);text-decoration:none;padding:6px 8px;
             background:none;border:none;cursor:pointer;font-family:inherit;}
 
-        /* 본문 — 하단 탭바 공간 확보 */
-        .m-main{max-width:520px;margin:0 auto;padding:20px 16px 84px;min-height:calc(100vh - 52px);}
+        /* 본문 — 상단 64 + 하단 탭바 공간 */
+        .m-main{max-width:520px;margin:0 auto;padding:20px 20px 84px;min-height:calc(100vh - 64px);}
 
-        /* 하단 탭바 */
+        /* 하단 탭바 (기존, 폭·높이 그대로) */
         .m-tabbar{position:fixed;bottom:0;left:0;right:0;z-index:50;
             background:rgba(253,253,252,0.95);backdrop-filter:blur(12px);
             border-top:1px solid var(--line);height:64px;
@@ -73,16 +75,16 @@
 <!-- 하단 탭바 -->
 <nav class="m-tabbar">
     <a class="m-tab" href="/me/gyms" th:classappend="${activeTab == 'gyms'} ? 'active'">
-        <span class="ic">🏋️</span> 홈
+        <i class="bi bi-geo-alt ic"></i> 홈
     </a>
     <a class="m-tab" href="/me" th:classappend="${activeTab == 'feed'} ? 'active'">
-        <span class="ic">📊</span> 내 기록
+        <i class="bi bi-graph-up-arrow ic"></i> 내 기록
     </a>
     <a class="m-tab" href="/me/connect" th:classappend="${activeTab == 'connect'} ? 'active'">
-        <span class="ic">🔗</span> 연결
+        <i class="bi bi-qr-code ic"></i> 연결
     </a>
     <a class="m-tab" href="/me/profile" th:classappend="${activeTab == 'profile'} ? 'active'">
-        <span class="ic">👤</span> 내 정보
+        <i class="bi bi-person ic"></i> 내 정보
     </a>
 </nav>
 
