@@ -83,6 +83,20 @@ public class Membership extends BaseEntity {
 
     public void rename(String nickname) { this.nickname = nickname; }
 
+    public void promoteToStaff() {
+        if (role == MembershipRole.OWNER) {
+            throw new IllegalStateException("사장 계정의 역할은 변경할 수 없습니다.");
+        }
+        this.role = MembershipRole.STAFF;
+    }
+
+    public void demoteToMember() {
+        if (role == MembershipRole.OWNER) {
+            throw new IllegalStateException("사장 계정의 역할은 변경할 수 없습니다.");
+        }
+        this.role = MembershipRole.MEMBER;
+    }
+
     public void transferTo(Member newMember) {this.member = newMember;}
 
     public void assignPhone(String phone) { this.phone = phone; }
