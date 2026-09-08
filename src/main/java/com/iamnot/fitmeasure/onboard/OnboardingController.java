@@ -20,7 +20,7 @@ public class OnboardingController {
         if (principal == null) return "redirect:/login";
         if (principal.isOnboarded()) return "redirect:/me";  // 이미 했으면 skip
         model.addAttribute("nickname", principal.nickname());  // 카카오 닉네임 기본값
-        return "onboarding";
+        return "onboard/onboarding";
     }
 
     @PostMapping("/onboarding")
