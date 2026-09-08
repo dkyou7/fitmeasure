@@ -2,6 +2,7 @@ package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
+import com.iamnot.fitmeasure.membership.ConnectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MeController {
 
     private final MemberFeedService feedService;
+    private final ConnectService connectService;
 
     @GetMapping("/me")
     public String feed(@AuthenticationPrincipal AppPrincipal loginMember, Model model) {
@@ -21,5 +23,12 @@ public class MeController {
         model.addAttribute("feed", feed);
         model.addAttribute("hasRecords", !feed.isEmpty());   // 측정 기록 있나
         return "member/feed";
+    }
+
+    @GetMapping("/me/connect")
+    public String connectCode(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("code", connectService.issueCode(principal));
+        return "member/connect-code";
     }
 }

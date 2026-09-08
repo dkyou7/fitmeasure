@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>회원 연결</title></head>
+<body>
+<div layout:fragment="content">
+    <div style="max-width:400px;margin:0 auto;">
+        <h1 class="mb-2">회원 연결</h1>
+        <p class="text-secondary mb-4" style="font-size:14px;">
+            회원이 보여주는 6자리 코드를 입력하세요.
+        </p>
+        <div class="alert" th:if="${error}"
+             style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+            <span class="text-primary fw-semibold" th:text="${error}">오류</span>
+        </div>
+        <form th:action="@{/members/connect}" method="post" class="card p-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input class="form-control mb-3" name="code" placeholder="6자리 코드"
+                   maxlength="6" inputmode="numeric" required
+                   style="font-size:24px;text-align:center;letter-spacing:0.2em;">
+            <button type="submit" class="btn btn-primary w-100">연결하기</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
