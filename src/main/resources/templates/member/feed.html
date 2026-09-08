@@ -29,11 +29,6 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0" style="font-size:24px;font-weight:800;letter-spacing:-0.03em;">내 측정 기록</h1>
-        <a href="/me/connect" class="btn btn-primary btn-sm">헬스장 연결</a>
-    </div>
-
     <!-- 프로모션 배너 (기록 없을 때만) -->
     <a href="/contact" class="promo" th:if="${feed.isEmpty()}">
         <div class="promo-badge">파트너 모집</div>

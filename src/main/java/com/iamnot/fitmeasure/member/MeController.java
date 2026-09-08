@@ -19,13 +19,21 @@ public class MeController {
     private final ClubDiscoveryService clubDiscoveryService;
 
     @GetMapping("/me")
-    public String feed(@AuthenticationPrincipal AppPrincipal loginMember, Model model) {
-        if (loginMember == null) return "redirect:/login";
-        var feed = feedService.myFeed(loginMember);
-        model.addAttribute("feed", feed);
-        model.addAttribute("hasRecords", !feed.isEmpty());
-        model.addAttribute("activeTab", "feed");
-        return "member/feed";
+    public String home(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("clubs", clubDiscoveryService.listedClubs());
+        model.addAttribute("recentFeed", feedService.recentFeed(principal, 3));  // 최근 3개
+        model.addAttribute("activeTab", "home");
+        return "member/home";
+    }
+
+    /** 내 기록 (전체 측정 히스토리) */
+    @GetMapping("/me/records")
+    public String records(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("feed", feedService.myFeed(principal));
+        model.addAttribute("activeTab", "records");
+        return "member/feed";   // 기존 피드 화면 재사용
     }
 
     @GetMapping("/me/connect")

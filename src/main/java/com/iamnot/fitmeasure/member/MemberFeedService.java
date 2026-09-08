@@ -9,6 +9,7 @@ import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,5 +47,13 @@ public class MemberFeedService {
         }
         feed.sort(Comparator.comparing(FeedItem::measuredAt).reversed());
         return feed;
+    }
+
+    /** 최근 측정 기록 N개 (홈 요약용) */
+    @Transactional(readOnly = true)
+    public List<FeedItem> recentFeed(AppPrincipal principal, int limit) {
+        return myFeed(principal).stream()
+                .limit(limit)
+                .toList();
     }
 }
