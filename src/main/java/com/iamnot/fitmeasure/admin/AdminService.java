@@ -150,4 +150,21 @@ public class AdminService {
                 usernames, hasSocial, m.isPlatformAdmin(), m.isOnboarded(),
                 clubRoles, m.getCreatedAt().toLocalDate());
     }
+
+    @Transactional
+    public void grantPlatformAdmin(Long memberId) {
+        Member m = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다."));
+        m.grantPlatformAdmin();
+    }
+
+    @Transactional
+    public void revokePlatformAdmin(Long memberId, Long currentAdminMemberId) {
+        if (memberId.equals(currentAdminMemberId)) {
+            throw new IllegalStateException("본인의 관리자 권한은 회수할 수 없습니다.");
+        }
+        Member m = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다."));
+        m.revokePlatformAdmin();
+    }
 }

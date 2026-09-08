@@ -1,9 +1,11 @@
 package com.iamnot.fitmeasure.admin;
 
 import com.iamnot.fitmeasure.club.ClubType;
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +63,28 @@ public class AdminController {
         model.addAttribute("page", adminService.listMembers(keyword, pageable));
         model.addAttribute("keyword", keyword);
         return "admin/members";
+    }
+
+    @PostMapping("/members/{id}/grant-admin")
+    public String grantAdmin(@PathVariable Long id,
+                             @RequestParam(required = false) String keyword,
+                             @PageableDefault(size = 20) Pageable pageable,
+                             Model model) {
+        adminService.grantPlatformAdmin(id);
+        model.addAttribute("page", adminService.listMembers(keyword, pageable));
+        model.addAttribute("keyword", keyword);
+        return "admin/members :: memberTable";
+    }
+
+    @PostMapping("/members/{id}/revoke-admin")
+    public String revokeAdmin(@PathVariable Long id,
+                              @AuthenticationPrincipal AppPrincipal principal,
+                              @RequestParam(required = false) String keyword,
+                              @PageableDefault(size = 20) Pageable pageable,
+                              Model model) {
+        adminService.revokePlatformAdmin(id, principal.memberId());
+        model.addAttribute("page", adminService.listMembers(keyword, pageable));
+        model.addAttribute("keyword", keyword);
+        return "admin/members :: memberTable";
     }
 }

@@ -55,6 +55,8 @@ public class Member extends BaseEntity {
 
     public void grantPlatformAdmin() { this.platformAdmin = true; }
 
+    public void revokePlatformAdmin() { this.platformAdmin = false; }
+
     public void updatePhone(String phone) {
         this.phone = (phone == null || phone.isBlank()) ? null : phone;
     }

@@ -18,16 +18,19 @@
             <button class="btn btn-primary" type="submit">검색</button>
         </div>
     </form>
-
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
+    
+    <div th:fragment="memberTable" id="memberTable" class="card">
+        <table class="table align-middle mb-0">
             <thead class="table-light">
             <tr>
                 <th>이름</th>
                 <th>전화번호</th>
                 <th>로그인 수단</th>
+                <th>소속 클럽</th>
                 <th class="text-center">플랫폼 관리자</th>
+                <th class="text-center">온보딩</th>
                 <th>가입일</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -35,21 +38,41 @@
                 <td th:text="${row.name} ?: '(이름 없음)'">홍길동</td>
                 <td th:text="${row.phone} ?: '-'">01012345678</td>
                 <td>
-                    <span th:each="u : ${row.usernames}"
-                          class="badge bg-secondary me-1" th:text="${u}">user01</span>
-                    <span th:if="${row.hasSocial}"
-                          class="badge bg-info text-dark">소셜</span>
+                <span th:each="u : ${row.usernames}"
+                      class="badge bg-secondary me-1" th:text="${u}">user01</span>
+                    <span th:if="${row.hasSocial}" class="badge bg-info text-dark">소셜</span>
                     <span th:if="${#lists.isEmpty(row.usernames)} and ${!row.hasSocial}"
                           class="text-muted">-</span>
+                </td>
+                <td>
+                    <span th:if="${#lists.isEmpty(row.clubRoles)}" class="text-muted">없음</span>
+                    <div th:each="cr : ${row.clubRoles}" th:text="${cr}">클럽A (OWNER)</div>
                 </td>
                 <td class="text-center">
                     <span th:if="${row.platformAdmin}" class="badge bg-danger">ADMIN</span>
                     <span th:unless="${row.platformAdmin}" class="text-muted">-</span>
                 </td>
-                <td th:text="${#temporals.format(row.createdAt, 'yyyy-MM-dd')}">2026-01-01</td>
+                <td class="text-center">
+                    <span th:if="${row.onboarded}" class="text-success">✓</span>
+                    <span th:unless="${row.onboarded}" class="text-muted">미완료</span>
+                </td>
+                <td class="text-secondary" style="font-size:13px;"
+                    th:text="${#temporals.format(row.createdAt, 'yyyy.MM.dd')}">2026.03.05</td>
+                <td>
+                    <button th:unless="${row.platformAdmin}"
+                            class="btn btn-sm btn-outline-secondary"
+                            th:hx-post="@{/admin/members/{id}/grant-admin(id=${row.memberId})}"
+                            th:hx-vals="'{&quot;keyword&quot;:&quot;' + ${keyword} ?: '' + '&quot;}'"
+                            hx-target="#memberTable" hx-swap="outerHTML">관리자 지정</button>
+                    <button th:if="${row.platformAdmin}"
+                            class="btn btn-sm btn-outline-danger"
+                            th:hx-post="@{/admin/members/{id}/revoke-admin(id=${row.memberId})}"
+                            th:hx-vals="'{&quot;keyword&quot;:&quot;' + ${keyword} ?: '' + '&quot;}'"
+                            hx-target="#memberTable" hx-swap="outerHTML">관리자 해제</button>
+                </td>
             </tr>
             <tr th:if="${page.isEmpty()}">
-                <td colspan="7" class="text-center text-muted py-4">회원이 없습니다.</td>
+                <td colspan="8" class="text-center text-muted py-4">회원이 없습니다.</td>
             </tr>
             </tbody>
         </table>
