@@ -8,12 +8,21 @@
     <h1 class="mb-4">트레이너 관리</h1>
 
     <div class="card p-3 mb-4">
+        <div class="text-secondary mb-2" style="font-size:13px;line-height:1.5;">
+            트레이너가 직접 <b>1RepPlus에 가입</b>한 뒤, 앱에서 발급한 <b>6자리 연결 코드</b>를 알려주면
+            아래에 입력해 트레이너로 등록할 수 있어요.
+        </div>
         <div class="row g-2">
-            <div class="col"><input class="form-control" name="nickname" id="staff-name" placeholder="트레이너 이름"></div>
+            <div class="col">
+                <input class="form-control" name="code" id="staff-code"
+                       placeholder="트레이너 연결 코드 6자리" maxlength="6" inputmode="numeric">
+            </div>
             <div class="col-auto">
-                <button class="btn btn-primary" hx-post="/owner/staff" hx-include="#staff-name"
+                <button class="btn btn-primary" hx-post="/owner/staff" hx-include="#staff-code"
                         hx-target="#staffTable" hx-swap="outerHTML"
-                        hx-on::after-request="staff-name.value='';">트레이너 추가</button>
+                        hx-on::after-request="if(event.detail.successful) staff-code.value='';">
+                    트레이너 등록
+                </button>
             </div>
         </div>
     </div>
@@ -31,11 +40,20 @@
                 <td class="text-secondary" style="font-size:14px;"
                     th:text="${#temporals.format(s.joinedAt, 'yyyy.MM.dd')}">2026.03.05</td>
                 <td>
-                    <button th:if="${!s.isOwner}"
-                            th:class="${s.status.name() == 'ACTIVE'} ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-primary'"
-                            th:text="${s.status.name() == 'ACTIVE'} ? '비활성' : '활성화'"
-                            th:hx-post="@{/owner/staff/{id}/toggle(id=${s.membershipId})}"
-                            hx-target="#staffTable" hx-swap="outerHTML">비활성</button>
+                    <span th:if="${s.status.name() == 'ACTIVE'}" class="text-secondary" style="font-size:13px;">활성</span>
+                    <span th:unless="${s.status.name() == 'ACTIVE'}" class="text-secondary" style="font-size:13px;">비활성</span>
+                </td>
+                <td class="text-end">
+                    <div th:unless="${s.isOwner}" class="d-inline-flex gap-1">
+                        <button th:class="${s.status.name() == 'ACTIVE'} ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-primary'"
+                                th:text="${s.status.name() == 'ACTIVE'} ? '비활성' : '활성화'"
+                                th:hx-post="@{/owner/staff/{id}/toggle(id=${s.membershipId})}"
+                                hx-target="#staffTable" hx-swap="outerHTML">비활성</button>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                hx-confirm="이 트레이너를 일반 회원으로 강등할까요?"
+                                th:hx-post="@{/owner/staff/{id}/demote(id=${s.membershipId})}"
+                                hx-target="#staffTable" hx-swap="outerHTML">회원으로</button>
+                    </div>
                 </td>
             </tr>
             </tbody>
