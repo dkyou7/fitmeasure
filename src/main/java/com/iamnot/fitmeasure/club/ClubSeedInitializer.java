@@ -50,6 +50,8 @@ public class ClubSeedInitializer implements ApplicationRunner {
         // 클럽
         Club club = clubRepository.save(new Club("데모 헬스장", "demo-gym", ClubType.GYM));
         club.setListed(true);
+        club.updateIntro("회원 한 분 한 분의 성장을 데이터로 관리합니다. " +
+                "3대 측정과 기초 체력을 정기적으로 측정해 눈에 보이는 변화를 만들어드려요.");
 
         // 사장 / 트레이너 / 회원
         seedMember(club, MembershipRole.OWNER, "사장님", "123", "123");

@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ClubController {
 
     private final ClubCreateService clubCreateService;
+    private final ClubDiscoveryService clubDiscoveryService;
 
     @PostMapping("/clubs")
     public String create(@AuthenticationPrincipal AppPrincipal loginMember,
@@ -28,5 +30,11 @@ public class ClubController {
     @GetMapping("/clubs/created")
     public String created() {
         return "club/created";
+    }
+
+    @GetMapping("/club/{id}")
+    public String gymDetail(@PathVariable Long id, Model model) {
+        model.addAttribute("gym", clubDiscoveryService.getPublicDetail(id));
+        return "member/gym-detail";
     }
 }

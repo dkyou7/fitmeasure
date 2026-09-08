@@ -1,0 +1,18 @@
+<div layout:fragment="content" xmlns:layout="http://www.w3.org/1999/xhtml">
+    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.03em;" th:text="${gym.name}">스트롱짐</h1>
+    <p class="text-secondary" style="font-size:14px;" th:text="${gym.address}">서울 강남구</p>
+
+    <div th:if="${gym.intro}" style="background:#F6F5F1;border-radius:14px;padding:16px;margin:16px 0;
+         font-size:14px;line-height:1.6;" th:text="${gym.intro}">소개</div>
+
+    <div class="sec-title" style="font-size:16px;font-weight:700;margin:24px 0 12px;">측정 프로그램</div>
+    <div th:each="p : ${gym.programs}" style="background:#fff;border:1px solid var(--line);
+         border-radius:14px;padding:18px;margin-bottom:12px;">
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;" th:text="${p.name}">3대 측정</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span th:each="item : ${p.items}" th:text="${item}"
+                  style="font-size:13px;background:var(--tint);color:var(--orange-deep);
+                         padding:4px 12px;border-radius:100px;">벤치프레스</span>
+        </div>
+    </div>
+</div>

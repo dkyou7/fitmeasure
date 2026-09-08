@@ -42,6 +42,10 @@ public class Club extends BaseEntity {
     @Column(nullable = false)
     private boolean listed = false;   // 플랫폼 헬스장 찾기에 노출 여부
 
+    @Column(columnDefinition = "TEXT")
+    private String intro;   // 헬스장 소개 (회원에게 노출)
+
+
 
     public Club(String name, String slug, ClubType type) {
         this.name = name;
@@ -62,7 +66,7 @@ public class Club extends BaseEntity {
         this.phone = phone;
         this.address = address;
     }
-
     public void downgradeToFree() { this.plan = ClubPlan.FREE; }
     public void setListed(boolean listed) { this.listed = listed; }
+    public void updateIntro(String intro) { this.intro = intro; }
 }

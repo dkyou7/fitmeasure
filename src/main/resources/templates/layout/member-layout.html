@@ -52,6 +52,14 @@
             padding-bottom:env(safe-area-inset-bottom,0);}
         .m-tab .ic{font-size:20px;line-height:1;}
         .m-tab.active{color:var(--orange);}
+        /* 콘텐츠 등장 애니메이션 */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .m-main > * {
+            animation: fadeUp 2s ease both;
+        }
     </style>
     <th:block layout:fragment="styles"></th:block>
 </head>

@@ -74,7 +74,7 @@
 
     <!-- 헬스장 찾기 -->
     <div class="sec-title">측정 가능한 헬스장</div>
-    <a class="gym-item" th:each="c : ${clubs}" href="#">
+    <a class="gym-item" th:each="c : ${clubs}" th:href="@{/club/{id}(id=${c.clubId})}">
         <div class="name" th:text="${c.name}">스트롱짐 강남점</div>
         <div class="addr" th:text="${c.address} ?: '위치 정보 없음'">서울 강남구</div>
     </a>

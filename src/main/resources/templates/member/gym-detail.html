@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/member-layout}">
+<head>
+    <title th:text="${gym.name}">헬스장 상세</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .gd-back{font-size:14px;color:var(--sub);text-decoration:none;display:inline-block;margin-bottom:12px;}
+            .gd-back:hover{color:var(--orange);}
+            .gd-name{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px;}
+            .gd-addr{font-size:14px;color:var(--sub);margin-bottom:6px;}
+            .gd-type{font-size:11px;color:var(--orange-deep);background:var(--tint);
+                display:inline-block;padding:3px 12px;border-radius:100px;}
+            .gd-intro{background:#F6F5F1;border-radius:14px;padding:16px 18px;margin:18px 0;
+                font-size:14px;line-height:1.65;color:var(--ink);}
+            .gd-sec{font-size:16px;font-weight:700;letter-spacing:-0.02em;margin:24px 0 12px;}
+            .gd-prog{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;}
+            .gd-prog .pname{font-size:16px;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em;}
+            .gd-items{display:flex;flex-wrap:wrap;gap:6px;}
+            .gd-item{font-size:13px;background:var(--tint);color:var(--orange-deep);
+                padding:5px 12px;border-radius:100px;font-weight:500;}
+            .gd-empty{text-align:center;color:var(--sub);padding:24px;font-size:14px;}
+            .gd-visit{background:var(--tint);border-radius:14px;padding:16px 18px;margin-top:24px;
+                text-align:center;font-size:13px;color:var(--sub);line-height:1.6;}
+            .gd-visit b{color:var(--ink);}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <a class="gd-back" href="/me">← 헬스장 찾기</a>
+
+    <div class="gd-name" th:text="${gym.name}">스트롱짐 강남점</div>
+    <div class="gd-addr" th:text="${gym.address} ?: '위치 정보 없음'">서울 강남구</div>
+    <span class="gd-type" th:text="${gym.type}">GYM</span>
+
+    <!-- 소개 -->
+    <div class="gd-intro" th:if="${gym.intro}" th:text="${gym.intro}">
+        저희 헬스장 소개입니다.
+    </div>
+
+    <!-- 측정 프로그램 -->
+    <div class="gd-sec">측정 프로그램</div>
+    <div class="gd-prog" th:each="p : ${gym.programs}">
+        <div class="pname" th:text="${p.name}">3대 측정</div>
+        <div class="gd-items">
+            <span class="gd-item" th:each="item : ${p.items}" th:text="${item}">벤치프레스</span>
+        </div>
+    </div>
+    <div class="gd-empty" th:if="${gym.programs.isEmpty()}">
+        아직 등록된 측정 프로그램이 없어요.
+    </div>
+
+    <!-- 방문 안내 -->
+    <div class="gd-visit">
+        이곳에서 측정받고 싶다면 <b>헬스장을 방문</b>하세요.<br>
+        측정 후 <b>연결 코드</b>로 기록을 내 계정에 담을 수 있어요.
+    </div>
+</div>
+</body>
+</html>
