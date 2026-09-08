@@ -138,8 +138,10 @@ public class AdminService {
                 .filter(c -> c.getProvider() == AuthProvider.USERNAME)
                 .map(MemberCredential::getProviderId)
                 .toList();
-        boolean hasSocial = creds.stream()
-                .anyMatch(c -> c.getProvider() != AuthProvider.USERNAME);
+        List<String> socialProviders = creds.stream()
+                .filter(c -> c.getProvider() != AuthProvider.USERNAME)
+                .map(c -> socialLabel(c.getProvider()))
+                .toList();
 
         List<String> clubRoles = membershipRepository.findByMemberId(m.getId()).stream()
                 .map(ms -> ms.getClub().getName() + " (" + ms.getRole().name() + ")")
@@ -147,8 +149,18 @@ public class AdminService {
 
         return new AdminMemberRow(
                 m.getId(), m.getName(), m.getPhone(),
-                usernames, hasSocial, m.isPlatformAdmin(), m.isOnboarded(),
+                usernames, socialProviders, m.isPlatformAdmin(), m.isOnboarded(),
                 clubRoles, m.getCreatedAt().toLocalDate());
+    }
+
+    private String socialLabel(AuthProvider provider) {
+        return switch (provider) {
+            case KAKAO -> "카카오";
+            case NAVER -> "네이버";
+            case APPLE -> "애플";
+            case GOOGLE -> "구글";
+            case USERNAME -> "아이디";   // 여기 오지 않지만 switch 완전성
+        };
     }
 
     @Transactional

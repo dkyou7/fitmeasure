@@ -18,7 +18,7 @@
             <button class="btn btn-primary" type="submit">검색</button>
         </div>
     </form>
-    
+
     <div th:fragment="memberTable" id="memberTable" class="card">
         <table class="table align-middle mb-0">
             <thead class="table-light">
@@ -40,8 +40,9 @@
                 <td>
                 <span th:each="u : ${row.usernames}"
                       class="badge bg-secondary me-1" th:text="${u}">user01</span>
-                    <span th:if="${row.hasSocial}" class="badge bg-info text-dark">소셜</span>
-                    <span th:if="${#lists.isEmpty(row.usernames)} and ${!row.hasSocial}"
+                    <span th:each="sp : ${row.socialProviders}"
+                          class="badge bg-info text-dark me-1" th:text="${sp}">카카오</span>
+                    <span th:if="${#lists.isEmpty(row.usernames)} and ${#lists.isEmpty(row.socialProviders)}"
                           class="text-muted">-</span>
                 </td>
                 <td>

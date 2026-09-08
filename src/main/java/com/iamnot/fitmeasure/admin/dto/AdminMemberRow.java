@@ -8,9 +8,9 @@ public record AdminMemberRow(
         String name,
         String phone,
         List<String> usernames,
-        boolean hasSocial,
+        List<String> socialProviders,   // hasSocial → 이걸로
         boolean platformAdmin,
         boolean onboarded,
-        List<String> clubRoles,   // "클럽명 (OWNER)" 형태
+        List<String> clubRoles,
         LocalDate createdAt
 ) {}
