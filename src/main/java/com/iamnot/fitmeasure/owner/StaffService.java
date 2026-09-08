@@ -4,7 +4,6 @@ import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
 import com.iamnot.fitmeasure.member.Member;
-import com.iamnot.fitmeasure.member.MemberRepository;
 import com.iamnot.fitmeasure.membership.*;
 import com.iamnot.fitmeasure.owner.dto.StaffRow;
 import lombok.RequiredArgsConstructor;
@@ -19,39 +18,63 @@ import java.util.stream.Stream;
 public class StaffService {
 
     private final CurrentClub currentClub;
-    private final ClubRepository clubRepository;
-    private final MemberRepository memberRepository;
     private final MembershipRepository membershipRepository;
+    private final ConnectService connectService;
+    private final ClubRepository clubRepository;
+    private final ConnectCodeRepository connectCodeRepository;
 
     /** 운영진 목록(OWNER + STAFF) */
     @Transactional(readOnly = true)
     public List<StaffRow> listStaff() {
         Long clubId = currentClub.clubId();
         return Stream.concat(
-                membershipRepository.findByClubIdAndRoleOrderByNicknameAsc(clubId, MembershipRole.OWNER).stream(),
-                membershipRepository.findByClubIdAndRoleOrderByNicknameAsc(clubId, MembershipRole.STAFF).stream())
-            .map(m -> new StaffRow(
-                    m.getId(), m.getNickname(), m.getRole(), m.getStatus(),
-                    m.getRole() == MembershipRole.OWNER, m.getJoinedAt()))
-            .toList();
+                        membershipRepository.findByClubIdAndRoleOrderByNicknameAsc(clubId, MembershipRole.OWNER).stream(),
+                        membershipRepository.findByClubIdAndRoleOrderByNicknameAsc(clubId, MembershipRole.STAFF).stream())
+                .map(m -> new StaffRow(
+                        m.getId(), m.getNickname(), m.getRole(), m.getStatus(),
+                        m.getRole() == MembershipRole.OWNER, m.getJoinedAt()))
+                .toList();
     }
 
-    /** 트레이너 추가 (계정 없는 STAFF — 나중에 본인이 claim). 이름만 등록 */
     @Transactional
-    public void addStaff(String nickname) {
+    public Long connectByCode(String code) {   // void → Long
+        ConnectCode cc = connectCodeRepository
+                .findFirstByCodeAndUsedFalseOrderByCreatedAtDesc(code.trim())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드예요."));
+        if (!cc.isValid()) {
+            throw new IllegalStateException("만료된 코드예요. 회원에게 코드를 다시 요청하세요.");
+        }
+
         Long clubId = currentClub.clubId();
+        Member member = cc.getMember();
+
+        if (membershipRepository.existsByClubIdAndMemberId(clubId, member.getId())) {
+            throw new IllegalStateException("이미 등록된 회원이에요.");
+        }
+
         Club club = clubRepository.getReferenceById(clubId);
-        Member person = memberRepository.save(Member.anonymous());
-        String name = (nickname == null || nickname.isBlank()) ? "새 트레이너" : nickname.trim();
-        membershipRepository.save(new Membership(club, person, MembershipRole.STAFF, name));
+        String nickname = member.getName() != null ? member.getName() : "회원";
+        membershipRepository.save(new Membership(club, member, MembershipRole.MEMBER, nickname));
+        cc.markUsed();
+        return member.getId();   // 추가
+    }
+
+    /** 회원 → 트레이너 승격 */
+    @Transactional
+    public void promote(Long membershipId) {
+        find(membershipId).promoteToStaff();
+    }
+
+    /** 트레이너 → 회원 강등 */
+    @Transactional
+    public void demote(Long membershipId) {
+        find(membershipId).demoteToMember();
     }
 
     /** 트레이너 활성/비활성 토글 */
     @Transactional
     public void toggleStaff(Long membershipId) {
-        Membership m = membershipRepository
-                .findByIdAndClubId(membershipId, currentClub.clubId())
-                .orElseThrow(() -> new IllegalArgumentException("대상을 찾을 수 없습니다."));
+        Membership m = find(membershipId);
         if (m.getRole() == MembershipRole.OWNER) {
             throw new IllegalStateException("사장 계정은 상태를 변경할 수 없습니다.");
         }
@@ -60,5 +83,11 @@ public class StaffService {
         } else {
             m.activate();
         }
+    }
+
+    private Membership find(Long membershipId) {
+        return membershipRepository
+                .findByIdAndClubId(membershipId, currentClub.clubId())
+                .orElseThrow(() -> new IllegalArgumentException("대상을 찾을 수 없습니다."));
     }
 }
