@@ -1,6 +1,9 @@
 package com.iamnot.fitmeasure.owner;
 
+import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
+import com.iamnot.fitmeasure.club.ClubService;
+import com.iamnot.fitmeasure.club.ClubType;
 import com.iamnot.fitmeasure.config.CurrentClub;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
@@ -19,7 +22,8 @@ public class OwnerController {
     private final CurrentClub currentClub;
     private final ClubRepository clubRepository;
     private final MembershipRepository membershipRepository;
-    private final StaffService staffService;  // 필드 추가
+    private final StaffService staffService;
+    private final ClubService clubService;
 
     @GetMapping("/billing")
     public String billing(Model model) {
@@ -71,5 +75,23 @@ public class OwnerController {
         staffService.toggleStaff(id);
         model.addAttribute("staff", staffService.listStaff());
         return "owner/staff :: staffTable";
+    }
+
+    @GetMapping("/club")
+    public String clubForm(Model model) {
+        Long clubId = currentClub.clubId();
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        model.addAttribute("club", club);
+        model.addAttribute("types", ClubType.values());
+        return "owner/club-edit";
+    }
+
+    @PostMapping("/club")
+    public String updateClub(@RequestParam String name,
+                             @RequestParam(required = false) String address,
+                             @RequestParam(required = false) String intro,
+                             @RequestParam(defaultValue = "false") boolean listed) {
+        clubService.updateClub(currentClub.clubId(), name, address, intro, listed);
+        return "redirect:/owner/club?saved";
     }
 }

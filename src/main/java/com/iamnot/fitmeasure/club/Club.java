@@ -4,6 +4,7 @@ import com.iamnot.fitmeasure.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
@@ -56,17 +57,17 @@ public class Club extends BaseEntity {
     public boolean isFree() {
         return plan == ClubPlan.FREE;
     }
-
     public void upgradeToPaid() {
         this.plan = ClubPlan.PAID;
-    }
-
-    public void updateInfo(String name, String phone, String address) {
-        this.name = name;
-        this.phone = phone;
-        this.address = address;
     }
     public void downgradeToFree() { this.plan = ClubPlan.FREE; }
     public void setListed(boolean listed) { this.listed = listed; }
     public void updateIntro(String intro) { this.intro = intro; }
+
+    public void updateInfo(String name, String address, String intro, boolean listed) {
+        this.name = name;
+        this.address = address;
+        this.intro = intro;
+        this.listed = listed;
+    }
 }
