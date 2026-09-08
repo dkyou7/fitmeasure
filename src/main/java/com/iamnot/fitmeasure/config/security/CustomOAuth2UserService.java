@@ -25,16 +25,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest req) {
         OAuth2User oauth = super.loadUser(req);
-        String kakaoId = String.valueOf(oauth.getAttributes().get("id"));
+        String registrationId = req.getClientRegistration().getRegistrationId(); // "kakao" | "naver"
 
-        final String nickname = extractNickname(oauth.getAttributes());
+        OAuthInfo info = extract(registrationId, oauth.getAttributes());
 
         Member member = credentialRepository
-                .findByProviderAndProviderId(AuthProvider.KAKAO, kakaoId)
+                .findByProviderAndProviderId(info.provider(), info.providerId())
                 .map(MemberCredential::getMember)
-                .orElseGet(() -> createKakaoMember(kakaoId, nickname));
+                .orElseGet(() -> createSocialMember(info));
 
-        // 폼 로그인과 동일: 로그인 가능한 소속 중 OWNER 우선, 없으면 첫 번째, 아무것도 없으면 null
         List<Membership> memberships =
                 membershipRepository.findLoginableByMemberId(member.getId());
         Membership chosen = memberships.stream()
@@ -45,19 +44,36 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return new OAuth2LoginMember(member, chosen, oauth.getAttributes());
     }
 
-    private String extractNickname(Map<String, Object> attributes) {
-        Object props = attributes.get("properties");
-        if (props instanceof Map<?, ?> p && p.get("nickname") != null) {
-            return String.valueOf(p.get("nickname"));
-        }
-        return "카카오회원";
+    /** provider별 응답 구조에서 고유 id·닉네임을 뽑는다. */
+    private OAuthInfo extract(String registrationId, Map<String, Object> attributes) {
+        return switch (registrationId) {
+            case "kakao" -> {
+                String id = String.valueOf(attributes.get("id"));
+                String nickname = "카카오회원";
+                if (attributes.get("properties") instanceof Map<?, ?> p && p.get("nickname") != null) {
+                    nickname = String.valueOf(p.get("nickname"));
+                }
+                yield new OAuthInfo(AuthProvider.KAKAO, id, nickname);
+            }
+            case "naver" -> {
+                // 네이버는 사용자 정보가 response 객체 안에 중첩
+                Map<?, ?> resp = (Map<?, ?>) attributes.get("response");
+                String id = String.valueOf(resp.get("id"));
+                String nickname = resp.get("name") != null ? String.valueOf(resp.get("name")) : "네이버회원";
+                yield new OAuthInfo(AuthProvider.NAVER, id, nickname);
+            }
+            default -> throw new IllegalStateException("지원하지 않는 소셜 로그인: " + registrationId);
+        };
     }
 
-    private Member createKakaoMember(String kakaoId, String nickname) {
+    private Member createSocialMember(OAuthInfo info) {
         Member m = Member.anonymous();
-        m.claim(nickname);
+        m.claim(info.nickname());
         memberRepository.save(m);
-        credentialRepository.save(MemberCredential.social(m, AuthProvider.KAKAO, kakaoId, null));
+        credentialRepository.save(
+                MemberCredential.social(m, info.provider(), info.providerId(), null));
         return m;
     }
+
+    private record OAuthInfo(AuthProvider provider, String providerId, String nickname) {}
 }
