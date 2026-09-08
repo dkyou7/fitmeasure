@@ -2,6 +2,8 @@ package com.iamnot.fitmeasure.admin;
 
 import com.iamnot.fitmeasure.club.ClubType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +52,14 @@ public class AdminController {
                              Model model) {
         adminService.createClubForExistingMember(memberId, clubName, type);
         return "redirect:/admin";
+    }
+
+    @GetMapping("/members")
+    public String members(@RequestParam(required = false) String keyword,
+                          @PageableDefault(size = 20) Pageable pageable,
+                          Model model) {
+        model.addAttribute("page", adminService.listMembers(keyword, pageable));
+        model.addAttribute("keyword", keyword);
+        return "admin/members";
     }
 }

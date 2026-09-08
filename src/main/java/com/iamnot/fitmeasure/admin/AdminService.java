@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.admin;
 
 import com.iamnot.fitmeasure.admin.dto.AdminClubRow;
+import com.iamnot.fitmeasure.admin.dto.AdminMemberRow;
 import com.iamnot.fitmeasure.admin.dto.AdminStats;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
@@ -11,6 +12,8 @@ import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,5 +124,30 @@ public class AdminService {
 
         templateRepository.findByClubIsNull()
                 .forEach(std -> templateRepository.save(std.copyForClub(club)));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdminMemberRow> listMembers(String keyword, Pageable pageable) {
+        return memberRepository.searchByNameOrPhone(keyword, pageable)
+                .map(this::toRow);
+    }
+
+    private AdminMemberRow toRow(Member m) {
+        List<MemberCredential> creds = credentialRepository.findByMember_Id(m.getId());
+        List<String> usernames = creds.stream()
+                .filter(c -> c.getProvider() == AuthProvider.USERNAME)
+                .map(MemberCredential::getProviderId)
+                .toList();
+        boolean hasSocial = creds.stream()
+                .anyMatch(c -> c.getProvider() != AuthProvider.USERNAME);
+
+        List<String> clubRoles = membershipRepository.findByMemberId(m.getId()).stream()
+                .map(ms -> ms.getClub().getName() + " (" + ms.getRole().name() + ")")
+                .toList();
+
+        return new AdminMemberRow(
+                m.getId(), m.getName(), m.getPhone(),
+                usernames, hasSocial, m.isPlatformAdmin(), m.isOnboarded(),
+                clubRoles, m.getCreatedAt().toLocalDate());
     }
 }

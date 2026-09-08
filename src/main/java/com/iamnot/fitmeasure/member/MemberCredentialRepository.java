@@ -1,9 +1,12 @@
 package com.iamnot.fitmeasure.member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberCredentialRepository extends JpaRepository<MemberCredential, Long> {
     Optional<MemberCredential> findByProviderAndProviderId(AuthProvider provider, String providerId);
     Optional<MemberCredential> findByMemberIdAndProvider(Long memberId, AuthProvider provider);
+    List<MemberCredential> findByMember_Id(Long memberId);
 }
