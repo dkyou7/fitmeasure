@@ -2,61 +2,107 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
-<head><title>홈</title></head>
+<head><title>홈</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .hero{margin-bottom:24px;}
+            .hero .club{font-size:14px;color:var(--sub);}
+            .hero h1{font-size:28px;}
+            .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+            .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;}
+            .stat .label{font-size:13px;color:var(--sub);margin-bottom:6px;}
+            .stat .num{font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1;}
+            .stat .num.hl{color:var(--orange);}
+            .stat .sub{font-size:12px;color:var(--sub);margin-top:6px;}
+            .usage-bar{height:6px;background:#F1EFE8;border-radius:100px;overflow:hidden;margin-top:8px;}
+            .usage-bar > div{height:100%;background:var(--orange);}
+            .sec-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;margin:8px 0 12px;
+                display:flex;align-items:center;justify-content:space-between;}
+            .sec-title a{font-size:13px;color:var(--sub);text-decoration:none;font-weight:500;}
+            .attn-row{display:flex;align-items:center;justify-content:space-between;
+                background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;}
+            .attn-row .name{font-weight:600;}
+            .attn-row .st{font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--tint);color:var(--orange-deep);}
+            .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;}
+            .quick a{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;
+                text-decoration:none;color:inherit;transition:border-color .15s;}
+            .quick a:hover{border-color:var(--orange);}
+            .quick .t{font-size:16px;font-weight:700;margin-bottom:4px;}
+            .quick .d{font-size:13px;color:var(--sub);line-height:1.5;}
+            @media(max-width:768px){.stat-grid{grid-template-columns:1fr 1fr;}.quick{grid-template-columns:1fr;}}
+        </style>
+    </th:block>
+</head>
 <body>
 <div layout:fragment="content">
-
-    <div class="mb-4">
-        <div class="text-secondary" style="font-size:14px;" th:text="${clubName}">데모 헬스장</div>
-        <h1 class="mb-0">오늘도 회원의 성장을 기록하세요</h1>
+    <div class="hero">
+        <div class="club" th:text="${home.clubName}">데모 헬스장</div>
+        <h1>오늘도 회원의 성장을 기록하세요</h1>
     </div>
 
     <!-- 지표 -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-4">
-            <div class="card p-3 h-100">
-                <div class="text-secondary" style="font-size:13px;">등록 회원</div>
-                <div class="d-flex align-items-baseline gap-2">
-                    <span class="fw-bold" style="font-size:28px;" th:text="${memberCount}">0</span>
-                    <span class="text-secondary" style="font-size:13px;">
-                        / <span th:text="${freeLimit}">10</span>명 무료
-                    </span>
-                </div>
-                <div class="text-primary fw-semibold mt-1" style="font-size:12px;" th:if="${overLimit}">
-                    무료 한도를 초과했어요
-                </div>
+    <div class="stat-grid">
+        <div class="stat">
+            <div class="label">등록 회원</div>
+            <div class="num"><span th:text="${home.memberCount}">0</span></div>
+            <div class="sub">/ <span th:text="${home.freeLimit}">10</span>명 무료</div>
+            <div class="usage-bar">
+                <div th:style="'width:' + (${home.memberCount} * 100 / ${home.freeLimit} > 100 ? 100 : ${home.memberCount} * 100 / ${home.freeLimit}) + '%'"></div>
             </div>
         </div>
-        <div class="col-6 col-md-4">
-            <div class="card p-3 h-100">
-                <div class="text-secondary" style="font-size:13px;">측정 프로그램</div>
-                <span class="fw-bold" style="font-size:28px;" th:text="${programCount}">2</span>
-            </div>
+        <div class="stat">
+            <div class="label">이번 주 측정</div>
+            <div class="num hl" th:text="${home.weekMeasures}">0</div>
+            <div class="sub">건</div>
+        </div>
+        <div class="stat">
+            <div class="label">챙길 회원</div>
+            <div class="num" th:text="${home.attentionCount}">0</div>
+            <div class="sub">측정 권할 때</div>
+        </div>
+        <div class="stat">
+            <div class="label">측정 프로그램</div>
+            <div class="num" th:text="${home.programCount}">2</div>
+            <div class="sub">개</div>
         </div>
     </div>
 
-    <!-- 바로가기 -->
-    <div class="row g-3">
-        <div class="col-md-4">
-            <a class="card p-4 h-100 text-decoration-none text-body d-block" href="/members">
-                <div class="fw-bold mb-1" style="font-size:18px;">회원 측정하기 →</div>
-                <div class="text-secondary" style="font-size:14px;">회원을 선택해 오늘의 운동력을 기록합니다.</div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a class="card p-4 h-100 text-decoration-none text-body d-block" href="/programs">
-                <div class="fw-bold mb-1" style="font-size:18px;">프로그램 관리 →</div>
-                <div class="text-secondary" style="font-size:14px;">측정 항목을 구성하고 우리 클럽에 맞게 커스텀합니다.</div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a class="card p-4 h-100 text-decoration-none text-body d-block" href="/dashboard">
-                <div class="fw-bold mb-1" style="font-size:18px;">측정 명단 →</div>
-                <div class="text-secondary" style="font-size:14px;">측정할 때가 된 회원을 확인합니다.</div>
-            </a>
+    <!-- 오늘 챙길 회원 -->
+    <div class="sec-title">
+        <span>지금 챙길 회원</span>
+        <a href="/dashboard">측정 명단 전체 →</a>
+    </div>
+    <div th:if="${home.attention.isEmpty()}" class="text-secondary" style="padding:20px 0;font-size:14px;">
+        지금 챙길 회원이 없어요. 모두 최근에 측정했네요 👍
+    </div>
+    <div class="attn-row" th:each="r : ${home.attention}">
+        <a class="name text-decoration-none text-body" th:href="@{/members/{id}(id=${r.membershipId})}" th:text="${r.nickname}">회원</a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="st" th:switch="${r.status.name()}">
+                <span th:case="'AT_RISK'">이탈 위험</span>
+                <span th:case="'OVERDUE'" th:text="${r.daysOverdue} + '일 지남'">지남</span>
+                <span th:case="'DUE_SOON'">곧 예정</span>
+                <span th:case="'NEVER'">측정 전</span>
+            </span>
+            <a class="btn btn-primary btn-sm" th:href="@{/measure/{id}(id=${r.membershipId})}">측정</a>
         </div>
     </div>
 
+    <!-- 빠른 진입 -->
+    <div class="quick">
+        <a href="/members">
+            <div class="t">회원 측정 →</div>
+            <div class="d">회원을 선택해 오늘의 운동력을 기록합니다.</div>
+        </a>
+        <a href="/programs">
+            <div class="t">프로그램 관리 →</div>
+            <div class="d">측정 항목을 구성하고 우리 클럽에 맞게 커스텀합니다.</div>
+        </a>
+        <a href="/dashboard">
+            <div class="t">측정 명단 →</div>
+            <div class="d">측정할 때가 된 회원을 확인합니다.</div>
+        </a>
+    </div>
 </div>
 </body>
 </html>

@@ -1,6 +1,10 @@
 package com.iamnot.fitmeasure.measurement.session;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +18,11 @@ public interface MeasurementSessionRepository extends JpaRepository<MeasurementS
 
     /** 공유 카드 조회 (공개 링크) */
     Optional<MeasurementSession> findByShareTokenAndShareEnabledTrue(String shareToken);
+
+    @Query("""
+        select count(s) from MeasurementSession s
+        where s.membership.club.id = :clubId and s.measuredAt >= :from
+    """)
+    long countByClubIdAndMeasuredAtAfter(@Param("clubId") Long clubId,
+                                         @Param("from") LocalDateTime from);
 }
