@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.club.ClubDiscoveryService;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.membership.ConnectService;
@@ -15,6 +16,7 @@ public class MeController {
 
     private final MemberFeedService feedService;
     private final ConnectService connectService;
+    private final ClubDiscoveryService clubDiscoveryService;
 
     @GetMapping("/me")
     public String feed(@AuthenticationPrincipal AppPrincipal loginMember, Model model) {
@@ -32,5 +34,13 @@ public class MeController {
         model.addAttribute("code", connectService.issueCode(principal));
         model.addAttribute("activeTab", "connect");
         return "member/connect-code";
+    }
+
+    @GetMapping("/me/gyms")
+    public String gyms(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("clubs", clubDiscoveryService.listedClubs());
+        model.addAttribute("activeTab", "gyms");
+        return "member/gyms";
     }
 }

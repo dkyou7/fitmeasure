@@ -2,8 +2,12 @@ package com.iamnot.fitmeasure.club;
 
 import com.iamnot.fitmeasure.config.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
 @Table(name = "club", uniqueConstraints = @UniqueConstraint(columnNames = "slug"))
 public class Club extends BaseEntity {
 
@@ -35,8 +39,9 @@ public class Club extends BaseEntity {
     @Column(length = 200)
     private String address;
 
-    protected Club() {
-    }
+    @Column(nullable = false)
+    private boolean listed = false;   // 플랫폼 헬스장 찾기에 노출 여부
+
 
     public Club(String name, String slug, ClubType type) {
         this.name = name;
@@ -58,13 +63,6 @@ public class Club extends BaseEntity {
         this.address = address;
     }
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getSlug() { return slug; }
-    public ClubType getType() { return type; }
-    public ClubPlan getPlan() { return plan; }
-    public int getFreeMemberLimit() { return freeMemberLimit; }
-    public String getPhone() { return phone; }
-    public String getAddress() { return address; }
     public void downgradeToFree() { this.plan = ClubPlan.FREE; }
+    public void setListed(boolean listed) { this.listed = listed; }
 }

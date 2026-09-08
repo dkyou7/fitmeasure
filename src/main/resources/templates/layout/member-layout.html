@@ -12,11 +12,21 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <style>
-        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;}
+        :root{--bg:#FDFDFC;--ink:#1A1A18;--sub:#6B6B66;--orange:#FF5A1F;--orange-deep:#E64500;--line:#ECEBE7;--tint:#FFF4EF;
+            --bs-primary:#FF5A1F;--bs-primary-rgb:255,90,31;}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--ink);
             letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;}
 
+        /* Bootstrap primary 버튼을 브랜드 오렌지로 */
+        .btn-primary{
+            --bs-btn-bg:#FF5A1F;--bs-btn-border-color:#FF5A1F;
+            --bs-btn-hover-bg:#E64500;--bs-btn-hover-border-color:#E64500;
+            --bs-btn-active-bg:#E64500;--bs-btn-active-border-color:#E64500;
+            --bs-btn-disabled-bg:#FF5A1F;--bs-btn-disabled-border-color:#FF5A1F;
+        }
+        .text-primary{color:#FF5A1F !important;}
+        .badge.bg-tint{background:#FFF4EF;color:#E64500;font-weight:600;}
         /* 상단 헤더 (모바일 앱 스타일) */
         .m-header{position:sticky;top:0;z-index:50;background:var(--bg);
             border-bottom:1px solid var(--line);height:52px;
@@ -62,6 +72,9 @@
 
 <!-- 하단 탭바 -->
 <nav class="m-tabbar">
+    <a class="m-tab" href="/me/gyms" th:classappend="${activeTab == 'gyms'} ? 'active'">
+        <span class="ic">🏋️</span> 홈
+    </a>
     <a class="m-tab" href="/me" th:classappend="${activeTab == 'feed'} ? 'active'">
         <span class="ic">📊</span> 내 기록
     </a>

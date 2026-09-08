@@ -70,12 +70,8 @@
             </div>
         </div>
 
-        <button sec:authorize="hasAnyRole('OWNER','STAFF')"
-                class="done"
-                style="background:#FF5A1F;margin-bottom:8px;" onclick="share('claim')">공유 링크 만들기</button>
-        <button sec:authorize="hasAnyRole('OWNER','STAFF')"
-                class="done"
-                style="background:#1A1A18;margin-bottom:8px;" onclick="share('flex')">자랑 링크 만들기</button>
+        <button class="done"
+                style="background:#FF5A1F;margin-bottom:8px;" onclick="share('flex')">자랑 링크 만들기</button>
         <a sec:authorize="hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/members}">완료</a>
         <a sec:authorize="!hasAnyRole('OWNER','STAFF')" class="done" th:href="@{/me}">완료</a>
     </div>

@@ -39,22 +39,8 @@
         <div class="pf-info">
             <div class="row">
                 <span class="k">아이디</span>
-                <span class="v" th:text="${profile.username} ?: '미설정'">dong123</span>
+                <span class="v" th:text="${profile.username} ?: '소셜로그인'">dong123</span>
             </div>
-        </div>
-
-        <!-- 아이디 미설정 시: 아이디 로그인 추가 -->
-        <div th:if="${profile.username == null}">
-            <div style="font-size:14px;font-weight:600;margin-bottom:4px;">아이디 로그인 추가</div>
-            <div class="pf-sub">아이디와 비밀번호를 등록하면 카카오 없이도 로그인할 수 있어요.</div>
-            <div class="pf-err" th:if="${usernameError}" th:text="${usernameError}"></div>
-            <form th:action="@{/me/profile/username}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <input class="pf-input" type="text" name="username" placeholder="아이디" required>
-                <input class="pf-input" type="password" name="password" placeholder="비밀번호" required>
-                <button type="submit" class="pf-btn" style="background:var(--ink);">아이디 등록</button>
-            </form>
-            <hr class="pf-divider">
         </div>
 
         <!-- 프로필 수정 -->

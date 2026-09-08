@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/member-layout}">
+<head>
+    <title>헬스장 찾기</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .gym-item{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;
+                padding:18px;margin-bottom:12px;text-decoration:none;color:inherit;transition:border-color .15s;}
+            .gym-item:hover{border-color:var(--orange);}
+            .gym-item .name{font-size:17px;font-weight:700;letter-spacing:-0.02em;}
+            .gym-item .addr{font-size:13px;color:var(--sub);margin-top:4px;}
+            .gym-item .type{font-size:11px;color:var(--orange-deep);background:var(--tint);
+                display:inline-block;padding:2px 10px;border-radius:100px;margin-top:8px;}
+            .empty{text-align:center;color:var(--sub);padding:48px 20px;line-height:1.6;}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;">헬스장 찾기</h1>
+    <p class="text-secondary mb-4" style="font-size:14px;">측정 서비스를 제공하는 헬스장이에요.</p>
+
+    <div class="gym-item" th:each="c : ${clubs}">
+        <div class="name" th:text="${c.name}">스트롱짐 강남점</div>
+        <div class="addr" th:text="${c.address} ?: '위치 정보 없음'">서울 강남구</div>
+        <span class="type" th:text="${c.type}">GYM</span>
+    </div>
+
+    <div class="empty" th:if="${clubs.isEmpty()}">
+        아직 등록된 헬스장이 없어요.<br>곧 더 많은 헬스장이 추가됩니다.
+    </div>
+</div>
+</body>
+</html>
