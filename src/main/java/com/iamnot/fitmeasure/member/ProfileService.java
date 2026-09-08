@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.member.dto.ProfileView;
 import com.iamnot.fitmeasure.membership.Membership;
@@ -17,7 +18,7 @@ public class ProfileService {
     private final MemberCredentialRepository credentialRepository;
 
     @Transactional(readOnly = true)
-    public ProfileView getProfile(LoginMember lm) {
+    public ProfileView getProfile(AppPrincipal lm) {
         Member m = memberRepository.findById(lm.memberId()).orElseThrow();
 
         // USERNAME credential에서 아이디
@@ -43,7 +44,7 @@ public class ProfileService {
 
     /** 이름 + 현재 클럽 닉네임 수정 */
     @Transactional
-    public void update(LoginMember lm, String name, String phone) {
+    public void update(AppPrincipal lm, String name, String phone) {
         Member m = memberRepository.findById(lm.memberId()).orElseThrow();
         m.updateName(name);
         m.updatePhone(phone == null ? null : phone.replaceAll("[^0-9]", ""));

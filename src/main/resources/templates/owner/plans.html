@@ -27,8 +27,8 @@
     <div class="mb-4">
         <h1 class="mb-1">요금제</h1>
         <p class="text-secondary mb-0">
-            현재 회원 <span class="fw-semibold text-primary" th:text="${memberCount}">0</span>명 ·
-            측정 기록이 있는 활성 회원 수 기준으로 매달 청구됩니다.
+            현재 측정 회원 <span class="fw-semibold text-primary" th:text="${memberCount}">0</span>명 ·
+            플랜은 구독제로 운영중입니다.
         </p>
     </div>
 
@@ -43,33 +43,31 @@
                 <ul>
                     <li>측정·기록 무제한</li>
                     <li>결과 카드 공유</li>
+                    <li>측정 명단 대시보드</li>
+                    <li>회원 리포트</li>
                     <li>트레이너 1명</li>
                 </ul>
                 <div class="cur" th:if="${currentPlan == 'FREE'}">사용 중</div>
                 <button class="btn btn-outline-secondary w-100" th:unless="${currentPlan == 'FREE'}" disabled>기본 제공</button>
             </div>
         </div>
-        <!-- 스타터 -->
+        <!-- 그로스 (추천) -->
         <div class="col-md-6">
-            <div class="plan">
-                <div class="range">~50명</div>
+            <div class="plan featured">
+                <span class="tag">유료 플랜</span>
+                <div class="range">무제한</div>
                 <div class="price">1<span class="won">만원</span></div>
                 <div class="per">월 · 부가세 별도</div>
                 <ul>
-                    <li>무료의 모든 기능</li>
-                    <li>누적 히스토리</li>
-                    <li>성장 추이 그래프</li>
-                    <li>트레이너 무제한</li>
+                    <li>결과 카드 공유</li>
+                    <li>측정 명단 대시보드</li>
+                    <li>회원 리포트</li>
+                    <li>트레이너 무제한 등록</li>
                 </ul>
                 <button class="btn btn-primary w-100">문의하기</button>
             </div>
         </div>
     </div>
-
-    <p class="text-secondary mt-4" style="font-size:13px;">
-        * 200명 이상은 별도 문의 · 가격은 목업이며 실제 요금은 협의로 정해집니다.
-        결제 기능은 준비 중입니다.
-    </p>
 </div>
 </body>
 </html>

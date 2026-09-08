@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.club;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +17,7 @@ public class ClubController {
     private final ClubCreateService clubCreateService;
 
     @PostMapping("/clubs")
-    public String create(@AuthenticationPrincipal LoginMember loginMember,
+    public String create(@AuthenticationPrincipal AppPrincipal loginMember,
                          @RequestParam String name,
                          @RequestParam ClubType type) {
         clubCreateService.create(loginMember, name, type);

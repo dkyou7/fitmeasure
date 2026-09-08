@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.measurement.session;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.dto.TrendView;
 import com.iamnot.fitmeasure.measurement.template.TemplateService;
@@ -38,7 +39,7 @@ public class MeasurementController {
     /** 저장: item_{id} 파라미터들을 Map으로 수집 */
     @PostMapping("/{membershipId}/program/{programId}")
     public String save(@PathVariable Long membershipId, @PathVariable Long programId,
-                       @AuthenticationPrincipal LoginMember loginMember,
+                       @AuthenticationPrincipal AppPrincipal loginMember,
                        @RequestParam Map<String, String> allParams) {
         Map<Long, String> values = allParams.entrySet().stream()
                 .filter(e -> e.getKey().startsWith("item_"))
@@ -53,7 +54,7 @@ public class MeasurementController {
     /** 측정 결과지 */
     @GetMapping("/result/{sessionId}")
     public String result(@PathVariable Long sessionId,
-                         @AuthenticationPrincipal LoginMember loginMember,
+                         @AuthenticationPrincipal AppPrincipal loginMember,
                          Model model) {
         model.addAttribute("result", measurementService.getResult(sessionId, loginMember));
         return "measure/result";
@@ -64,7 +65,7 @@ public class MeasurementController {
     @ResponseBody
     public TrendView trend(
             @PathVariable Long membershipId,
-            @AuthenticationPrincipal LoginMember loginMember,
+            @AuthenticationPrincipal AppPrincipal loginMember,
             @PathVariable Long itemId) {
         return measurementService.getTrend(membershipId, itemId,loginMember);
     }

@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +18,7 @@ public class MemberClaimController {
     /** 로그인 후 리다이렉트로 진입 (GET) */
     @GetMapping("/s/{token}/absorb")
     public String absorbByRedirect(@PathVariable String token,
-                                   @AuthenticationPrincipal LoginMember loginMember) {
+                                   @AuthenticationPrincipal AppPrincipal loginMember) {
         if (loginMember == null) {
             return "redirect:/login?next=/s/" + token + "/absorb";
         }
@@ -28,7 +29,7 @@ public class MemberClaimController {
     /** 로그인 상태에서 공유 카드 버튼으로 진입 (POST) */
     @PostMapping("/s/{token}/absorb")
     public String absorbBySubmit(@PathVariable String token,
-                                 @AuthenticationPrincipal LoginMember loginMember) {
+                                 @AuthenticationPrincipal AppPrincipal loginMember) {
         if (loginMember == null) {
             return "redirect:/login?next=/s/" + token + "/absorb";
         }
@@ -36,7 +37,7 @@ public class MemberClaimController {
         return "redirect:/me";
     }
 
-    private void tryAbsorb(String token, LoginMember loginMember) {
+    private void tryAbsorb(String token, AppPrincipal loginMember) {
         try {
             claimService.absorbToLoggedIn(token, loginMember.memberId());
         } catch (IllegalStateException e) {

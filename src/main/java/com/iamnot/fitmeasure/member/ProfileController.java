@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.member;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,17 +16,17 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping
-    public String view(@AuthenticationPrincipal LoginMember lm, Model model) {
-        if (lm == null) return "redirect:/login";
-        model.addAttribute("profile", profileService.getProfile(lm));
+    public String view(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("profile", profileService.getProfile(principal));
         return "member/profile";
     }
 
     @PostMapping
-    public String update(@AuthenticationPrincipal LoginMember lm,
+    public String update(@AuthenticationPrincipal AppPrincipal principal,
                          @RequestParam(required = false) String name,
                          @RequestParam(required = false) String phone) {
-        profileService.update(lm, name, phone);
+        profileService.update(principal, name, phone);
         return "redirect:/me/profile?saved";
     }
 }

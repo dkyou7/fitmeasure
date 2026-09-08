@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.measurement.session;
 
 import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.dto.*;
 import com.iamnot.fitmeasure.measurement.template.*;
@@ -51,7 +52,7 @@ public class MeasurementService {
      */
     @Transactional
     public Long save(Long membershipId, Long programId,
-                     Map<Long, String> values, String note, LoginMember loginMember) {
+                     Map<Long, String> values, String note, AppPrincipal loginMember) {
         Membership member = loadMember(membershipId);
         MeasurementTemplate program = loadProgram(programId);
         Membership measuredBy = currentMeasurer(loginMember);
@@ -96,7 +97,7 @@ public class MeasurementService {
     }
 
     /** 측정자 = 현재 로그인 사용자의 이 클럽 멤버십 (STAFF 또는 OWNER) */
-    private Membership currentMeasurer(LoginMember loginMember) {
+    private Membership currentMeasurer(AppPrincipal loginMember) {
         Membership measurer = membershipRepository
                 .findByMemberIdAndClubId(loginMember.memberId(), currentClub.clubId())
                 .orElseThrow(() -> new IllegalStateException("이 클럽의 측정 권한이 없습니다."));
@@ -109,7 +110,7 @@ public class MeasurementService {
 
     /** 측정 결과지: 이번 세션 + 직전 세션 대비 변화 */
     @Transactional(readOnly = true)
-    public ResultView getResult(Long sessionId, LoginMember loginMember) {
+    public ResultView getResult(Long sessionId, AppPrincipal loginMember) {
         MeasurementSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("측정 기록을 찾을 수 없습니다."));
 
@@ -163,7 +164,7 @@ public class MeasurementService {
 
     /** 특정 항목의 성장 추이 */
     @Transactional(readOnly = true)
-    public TrendView getTrend(Long membershipId, Long itemId, LoginMember loginMember) {
+    public TrendView getTrend(Long membershipId, Long itemId, AppPrincipal loginMember) {
         Membership membership = membershipRepository.findById(membershipId)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 

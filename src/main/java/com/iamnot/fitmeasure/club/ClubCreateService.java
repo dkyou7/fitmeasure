@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.club;
 
+import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplate;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
@@ -25,7 +26,7 @@ public class ClubCreateService {
 
     /** 로그인한 사람이 클럽을 만들고 그 클럽의 OWNER가 된다 */
     @Transactional
-    public Long create(LoginMember loginMember, String name, ClubType type) {
+    public Long create(AppPrincipal loginMember, String name, ClubType type) {
         Member owner = memberRepository.getReferenceById(loginMember.memberId());
 
         // slug 자동 생성 (중복 방지)
