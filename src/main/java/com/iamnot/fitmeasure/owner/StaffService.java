@@ -1,9 +1,6 @@
 package com.iamnot.fitmeasure.owner;
 
-import com.iamnot.fitmeasure.club.Club;
-import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
-import com.iamnot.fitmeasure.member.Member;
 import com.iamnot.fitmeasure.membership.*;
 import com.iamnot.fitmeasure.owner.dto.StaffRow;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +17,7 @@ public class StaffService {
     private final CurrentClub currentClub;
     private final MembershipRepository membershipRepository;
     private final ConnectService connectService;
-    private final ClubRepository clubRepository;
-    private final ConnectCodeRepository connectCodeRepository;
 
-    /** 운영진 목록(OWNER + STAFF) */
     @Transactional(readOnly = true)
     public List<StaffRow> listStaff() {
         Long clubId = currentClub.clubId();
@@ -37,41 +31,24 @@ public class StaffService {
     }
 
     @Transactional
-    public Long connectByCode(String code) {   // void → Long
-        ConnectCode cc = connectCodeRepository
-                .findFirstByCodeAndUsedFalseOrderByCreatedAtDesc(code.trim())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드예요."));
-        if (!cc.isValid()) {
-            throw new IllegalStateException("만료된 코드예요. 회원에게 코드를 다시 요청하세요.");
-        }
-
-        Long clubId = currentClub.clubId();
-        Member member = cc.getMember();
-
-        if (membershipRepository.existsByClubIdAndMemberId(clubId, member.getId())) {
-            throw new IllegalStateException("이미 등록된 회원이에요.");
-        }
-
-        Club club = clubRepository.getReferenceById(clubId);
-        String nickname = member.getName() != null ? member.getName() : "회원";
-        membershipRepository.save(new Membership(club, member, MembershipRole.MEMBER, nickname));
-        cc.markUsed();
-        return member.getId();   // 추가
+    public void connectStaffByCode(String code) {
+        Long memberId = connectService.connectByCode(code);
+        Membership m = membershipRepository
+                .findByClubIdAndMemberId(currentClub.clubId(), memberId)
+                .orElseThrow(() -> new IllegalStateException("연결에 실패했어요."));
+        m.promoteToStaff();
     }
 
-    /** 회원 → 트레이너 승격 */
     @Transactional
     public void promote(Long membershipId) {
         find(membershipId).promoteToStaff();
     }
 
-    /** 트레이너 → 회원 강등 */
     @Transactional
     public void demote(Long membershipId) {
         find(membershipId).demoteToMember();
     }
 
-    /** 트레이너 활성/비활성 토글 */
     @Transactional
     public void toggleStaff(Long membershipId) {
         Membership m = find(membershipId);

@@ -64,15 +64,22 @@ public class OwnerController {
     }
 
     @PostMapping("/staff")
-    public String addStaff(@RequestParam(required = false) String nickname, Model model) {
-        staffService.addStaff(nickname);
+    public String connectStaff(@RequestParam String code, Model model) {
+        staffService.connectStaffByCode(code);
         model.addAttribute("staff", staffService.listStaff());
         return "owner/staff :: staffTable";
     }
 
-    @PostMapping("/staff/{id}/toggle")
-    public String toggleStaff(@PathVariable Long id, Model model) {
-        staffService.toggleStaff(id);
+    @PostMapping("/staff/{id}/promote")
+    public String promoteStaff(@PathVariable Long id, Model model) {
+        staffService.promote(id);
+        model.addAttribute("staff", staffService.listStaff());
+        return "owner/staff :: staffTable";
+    }
+
+    @PostMapping("/staff/{id}/demote")
+    public String demoteStaff(@PathVariable Long id, Model model) {
+        staffService.demote(id);
         model.addAttribute("staff", staffService.listStaff());
         return "owner/staff :: staffTable";
     }

@@ -40,7 +40,7 @@ public class ConnectService {
 
     /** 트레이너가 코드로 회원을 자기 클럽에 연결 */
     @Transactional
-    public void connectByCode(String code) {
+    public Long connectByCode(String code) {
         ConnectCode cc = connectCodeRepository
                 .findFirstByCodeAndUsedFalseOrderByCreatedAtDesc(code.trim())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드예요."));
@@ -60,5 +60,7 @@ public class ConnectService {
         String nickname = member.getName() != null ? member.getName() : "회원";
         membershipRepository.save(new Membership(club, member, MembershipRole.MEMBER, nickname));
         cc.markUsed();
+
+        return member.getId();
     }
 }
