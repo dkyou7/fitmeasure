@@ -19,6 +19,7 @@ public class ProfileController {
     public String view(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "redirect:/login";
         model.addAttribute("profile", profileService.getProfile(principal));
+        model.addAttribute("activeTab", "profile");
         return "member/profile";
     }
 

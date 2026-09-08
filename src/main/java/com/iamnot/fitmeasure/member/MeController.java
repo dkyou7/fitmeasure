@@ -21,7 +21,8 @@ public class MeController {
         if (loginMember == null) return "redirect:/login";
         var feed = feedService.myFeed(loginMember);
         model.addAttribute("feed", feed);
-        model.addAttribute("hasRecords", !feed.isEmpty());   // 측정 기록 있나
+        model.addAttribute("hasRecords", !feed.isEmpty());
+        model.addAttribute("activeTab", "feed");
         return "member/feed";
     }
 
@@ -29,6 +30,7 @@ public class MeController {
     public String connectCode(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "redirect:/login";
         model.addAttribute("code", connectService.issueCode(principal));
+        model.addAttribute("activeTab", "connect");
         return "member/connect-code";
     }
 }
