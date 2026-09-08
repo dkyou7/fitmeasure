@@ -2,7 +2,6 @@ package com.iamnot.fitmeasure.member;
 
 import com.iamnot.fitmeasure.club.ClubDiscoveryService;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
-import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.membership.ConnectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -68,6 +68,10 @@
 <div class="m-header">
     <a class="logo" href="/me">1RepPlus<span class="dot">.</span></a>
     <div class="h-right">
+        <a sec:authorize="isAuthenticated()" href="/me/profile"
+           class="text-secondary small text-decoration-none">
+            안녕하세요, <span sec:authentication="principal.nickname" class="fw-semibold text-body">사용자</span>님
+        </a>
         <a sec:authorize="hasAnyRole('OWNER','STAFF')" href="/" class="h-btn">관리</a>
         <a sec:authorize="hasRole('ADMIN')" href="/admin" class="h-btn">관리</a>
         <form th:action="@{/logout}" method="post" class="m-0">

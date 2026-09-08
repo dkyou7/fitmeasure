@@ -1,12 +1,14 @@
 package com.iamnot.fitmeasure.config.security;
 
 import com.iamnot.fitmeasure.member.Member;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.*;
 
+@Getter
 public class OAuth2LoginMember implements OAuth2User, AppPrincipal {
     private final Long memberId;
     private final String nickname;
