@@ -41,37 +41,4 @@ public class MemberController {
         model.addAttribute("detail", memberDetailService.getDetail(membershipId));
         return "member/detail";
     }
-
-    @GetMapping("/members/connect")
-    public String connectForm() {
-        return "member/connect";
-    }
-
-    @PostMapping("/members/connect")
-    public String connect(@RequestParam String code, Model model) {
-        try {
-            connectService.connectByCode(code);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            model.addAttribute("error", e.getMessage());
-            return "member/connect";
-        }
-        return "redirect:/members";
-    }
-
-    @GetMapping("/connect")
-    public String connectByQr(@RequestParam String code,
-                              @AuthenticationPrincipal AppPrincipal principal, Model model) {
-        if (principal == null) return "redirect:/login?next=/connect?code=" + code;
-        if (principal.clubId() == null) {
-            model.addAttribute("error", "헬스장 계정으로 로그인해주세요.");
-            return "member/connect";
-        }
-        try {
-            connectService.connectByCode(code);
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-            return "member/connect";
-        }
-        return "redirect:/members";
-    }
 }

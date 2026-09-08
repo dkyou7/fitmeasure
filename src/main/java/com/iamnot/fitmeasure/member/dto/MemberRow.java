@@ -5,7 +5,6 @@ import java.time.LocalDate;
 public record MemberRow(
         Long membershipId,
         String nickname,
-        String phone,
-        boolean anonymous,
+        LocalDate lastMeasuredDate,   // 마지막 측정일 (없으면 null)
         LocalDate joinedAt
 ) {}

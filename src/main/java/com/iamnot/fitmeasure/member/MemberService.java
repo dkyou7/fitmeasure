@@ -3,6 +3,7 @@ package com.iamnot.fitmeasure.member;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
 import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
 import com.iamnot.fitmeasure.member.dto.MemberRow;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MembershipRepository membershipRepository;
     private final NicknameGenerator nicknameGenerator;
+    private final MeasurementSessionRepository sessionRepository;
 
     /** 현재 클럽의 회원(MEMBER 역할) 목록 */
     @Transactional(readOnly = true)
@@ -30,12 +33,13 @@ public class MemberService {
         return membershipRepository
                 .findByClubIdAndRoleOrderByNicknameAsc(currentClub.clubId(), MembershipRole.MEMBER)
                 .stream()
-                .map(m -> new MemberRow(
-                        m.getId(),
-                        m.getNickname(),
-                        m.getPhone(),
-                        !m.getMember().isClaimed(),
-                        m.getJoinedAt()))
+                .map(m -> {
+                    LocalDate last = sessionRepository
+                            .findFirstByMembershipIdOrderByMeasuredAtDesc(m.getId())
+                            .map(s -> s.getMeasuredAt().toLocalDate())
+                            .orElse(null);
+                    return new MemberRow(m.getId(), m.getNickname(), last, m.getJoinedAt());
+                })
                 .toList();
     }
 
