@@ -13,19 +13,19 @@ public class SignupService {
     private final MemberCredentialRepository credentialRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /** 아이디+비번으로 신규 계정 생성 (클럽/역할 없음 — 떠도는 사람) */
     @Transactional
-    public void signup(String username, String rawPassword, String name) {
+    public Long signup(String username, String rawPassword, String passwordConfirm) {
+        if (!rawPassword.equals(passwordConfirm)) {
+            throw new IllegalStateException("비밀번호가 일치하지 않아요.");
+        }
         String id = username.trim();
         if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, id).isPresent()) {
             throw new IllegalStateException("이미 사용 중인 아이디예요.");
         }
-
-        Member member = Member.anonymous();
-        member.claim(name);   // claimedAt 찍힘, 이름 설정(있으면)
+        Member member = Member.anonymous();   // 이름 안 받음, onboardedAt null
         memberRepository.save(member);
-
         credentialRepository.save(
                 MemberCredential.username(member, id, passwordEncoder.encode(rawPassword)));
+        return member.getId();
     }
 }

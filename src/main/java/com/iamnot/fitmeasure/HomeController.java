@@ -24,6 +24,9 @@ public class HomeController {
         // 로그인 안 함 → 랜딩
         if (principal == null) return "landing";
 
+        // 온보딩 먼저
+        if (!principal.isOnboarded()) return "redirect:/onboarding";
+
         // 운영자 → 관리 화면
         if (principal.isPlatformAdmin()) return "redirect:/admin";
 

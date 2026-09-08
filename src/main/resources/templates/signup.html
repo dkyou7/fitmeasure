@@ -60,9 +60,9 @@
 
         <form th:action="@{/signup}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <input class="field" type="text" name="username" placeholder="아이디" required autofocus>
+            <input class="field" type="text" name="username" placeholder="아이디" required>
             <input class="field" type="password" name="password" placeholder="비밀번호" required>
-            <input class="field" type="text" name="name" placeholder="이름 (선택)">
+            <input class="field" type="password" name="passwordConfirm" placeholder="비밀번호 확인" required>
             <button type="submit" class="btn">가입하기</button>
         </form>
 

@@ -41,6 +41,16 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private boolean platformAdmin = false;
 
+    private LocalDateTime onboardedAt;
+
+    public boolean isOnboarded() { return onboardedAt != null; }
+
+    public void completeOnboarding(String name, String phone) {
+        this.name = (name == null || name.isBlank()) ? this.name : name.trim();
+        this.phone = (phone == null || phone.isBlank()) ? null : phone.replaceAll("[^0-9]", "");
+        this.onboardedAt = java.time.LocalDateTime.now();
+    }
+
     public boolean isPlatformAdmin() { return platformAdmin; }
 
     public void grantPlatformAdmin() { this.platformAdmin = true; }

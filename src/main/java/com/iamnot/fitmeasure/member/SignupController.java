@@ -21,15 +21,14 @@ public class SignupController {
     @PostMapping("/signup")
     public String submit(@RequestParam String username,
                          @RequestParam String password,
-                         @RequestParam(required = false) String name,
+                         @RequestParam String passwordConfirm,
                          Model model) {
         try {
-            signupService.signup(username, password, name);
+            signupService.signup(username, password, passwordConfirm);
         } catch (IllegalStateException e) {
             model.addAttribute("error", e.getMessage());
             return "signup";
         }
-        // 가입 성공 → 로그인 화면으로 (가입했으니 로그인하라)
         return "redirect:/login?signup";
     }
 }
