@@ -13,9 +13,12 @@ public class CurrentClubFromSecurity implements CurrentClub {
     @Override
     public Long clubId() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof LoginMember lm) {
-            return lm.clubId();
+        if (auth == null || !(auth.getPrincipal() instanceof AppPrincipal p)) {
+            throw new IllegalStateException("로그인이 필요합니다.");
         }
-        throw new IllegalStateException("로그인이 필요합니다.");
+        if (p.clubId() == null) {
+            throw new IllegalStateException("소속된 클럽이 없습니다.");
+        }
+        return p.clubId();
     }
 }
