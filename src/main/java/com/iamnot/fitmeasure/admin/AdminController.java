@@ -1,5 +1,6 @@
 package com.iamnot.fitmeasure.admin;
 
+import com.iamnot.fitmeasure.club.ClubApplicationService;
 import com.iamnot.fitmeasure.club.ClubType;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ClubApplicationService clubApplicationService;
 
     @GetMapping
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.stats());
         model.addAttribute("clubs", adminService.listClubs());
+        model.addAttribute("applications", clubApplicationService.listPending());
         return "admin/dashboard";
     }
 
@@ -86,5 +89,20 @@ public class AdminController {
         model.addAttribute("page", adminService.listMembers(keyword, pageable));
         model.addAttribute("keyword", keyword);
         return "admin/members :: memberTable";
+    }
+
+    /**
+    * Club 오픈 승인
+    * */
+    @PostMapping("/applications/{id}/approve")
+    public String approveApplication(@PathVariable Long id) {
+        clubApplicationService.approve(id);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/applications/{id}/reject")
+    public String rejectApplication(@PathVariable Long id) {
+        clubApplicationService.reject(id);
+        return "redirect:/admin";
     }
 }
