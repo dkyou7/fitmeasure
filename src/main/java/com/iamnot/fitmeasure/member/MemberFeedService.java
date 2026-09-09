@@ -4,6 +4,7 @@ import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSession;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
+import com.iamnot.fitmeasure.member.dto.ClubSummary;
 import com.iamnot.fitmeasure.member.dto.FeedItem;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
@@ -13,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,4 +58,20 @@ public class MemberFeedService {
                 .limit(limit)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<ClubSummary> myClubs(AppPrincipal principal) {
+        return membershipRepository
+                .findByMemberIdAndRole(principal.memberId(), MembershipRole.MEMBER)
+                .stream()
+                .map(m -> {
+                    var sessions = sessionRepository.findByMembershipIdOrderByMeasuredAtDesc(m.getId());
+                    LocalDate last = sessions.isEmpty() ? null
+                            : sessions.get(0).getMeasuredAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    return new ClubSummary(m.getId(), m.getClub().getName(), last, sessions.size());
+                })
+                .toList();
+    }
+
+
 }
