@@ -30,9 +30,9 @@ public class MeController {
     @GetMapping("/me/records")
     public String records(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "redirect:/login";
-        model.addAttribute("feed", feedService.myFeed(principal));
+        model.addAttribute("clubs", feedService.myClubs(principal));
         model.addAttribute("activeTab", "records");
-        return "member/feed";   // 기존 피드 화면 재사용
+        return "member/records-clubs";
     }
 
     @GetMapping("/me/connect")
