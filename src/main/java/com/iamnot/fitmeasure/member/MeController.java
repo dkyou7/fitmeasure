@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
@@ -49,5 +50,14 @@ public class MeController {
         model.addAttribute("clubs", clubDiscoveryService.listedClubs());
         model.addAttribute("activeTab", "gyms");
         return "member/gyms";
+    }
+
+    @GetMapping("/me/records/{membershipId}")
+    public String clubRecord(@AuthenticationPrincipal AppPrincipal principal,
+                             @PathVariable Long membershipId, Model model) {
+        if (principal == null) return "redirect:/login";
+        model.addAttribute("detail", feedService.clubDetail(principal, membershipId));
+        model.addAttribute("activeTab", "records");
+        return "member/records-detail";
     }
 }
