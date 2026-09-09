@@ -15,9 +15,12 @@ public class ClubApplicationController {
     private final ClubApplicationService applicationService;
 
     @GetMapping
-    public String applyForm(Model model) {
+    public String applyForm(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (applicationService.hasPending(principal.memberId())) {
+            return "redirect:/apply/done";   // 또는 전용 상태 화면
+        }
         model.addAttribute("types", ClubType.values());
-        return "club-apply";
+        return "club/club-apply";
     }
 
     @PostMapping
@@ -25,13 +28,20 @@ public class ClubApplicationController {
                          @RequestParam String name,
                          @RequestParam ClubType type,
                          @RequestParam(required = false) String phone,
-                         @RequestParam(required = false) String address) {
-        applicationService.apply(principal.memberId(), name, type, phone, address);
+                         @RequestParam(required = false) String address,
+                         Model model) {
+        try {
+            applicationService.apply(principal.memberId(), name, type, phone, address);
+        } catch (IllegalStateException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("types", ClubType.values());
+            return "club/club-apply";
+        }
         return "redirect:/apply/done";
     }
 
     @GetMapping("/done")
     public String done() {
-        return "club-apply-done";
+        return "club/club-apply-done";
     }
 }

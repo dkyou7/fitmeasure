@@ -80,4 +80,9 @@ public class ClubApplicationService {
             slug = base + "-" + (++n);
         return slug;
     }
+
+    @Transactional(readOnly = true)
+    public boolean hasPending(Long memberId) {
+        return clubRepository.existsByApplicantMemberIdAndStatus(memberId, ClubStatus.PENDING);
+    }
 }
