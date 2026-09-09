@@ -41,15 +41,14 @@ public class ClubSeedInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         // 운영자는 클럽과 무관하게 항상 보장 (없으면 생성)
         seedAdmin();
-
-        if (clubRepository.findBySlug("demo-gym").isPresent()) {
+        if (clubRepository.findBySlugAndStatus("demo-gym", ClubStatus.APPROVED).isPresent()) {
             log.info("데모 클럽이 이미 존재하여 시드를 건너뜁니다.");
             return;
         }
 
         // 클럽
         Club club = clubRepository.save(new Club("데모 헬스장", "demo-gym", ClubType.GYM));
-        club.setListed(true);
+        club.updateListed(true);
         club.updateIntro("회원 한 분 한 분의 성장을 데이터로 관리합니다. " +
                 "3대 측정과 기초 체력을 정기적으로 측정해 눈에 보이는 변화를 만들어드려요.");
 

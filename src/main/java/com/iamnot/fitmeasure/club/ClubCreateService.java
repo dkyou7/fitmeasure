@@ -47,14 +47,11 @@ public class ClubCreateService {
 
     private String toSlug(String name) {
         String base = name.trim().toLowerCase()
-                .replaceAll("[^a-z0-9가-힣]+", "-")
-                .replaceAll("(^-|-$)", "");
+                .replaceAll("[^a-z0-9가-힣]+", "-").replaceAll("(^-|-$)", "");
         if (base.isBlank()) base = "club";
-        String slug = base;
-        int n = 1;
-        while (clubRepository.findBySlug(slug).isPresent()) {
+        String slug = base; int n = 1;
+        while (clubRepository.findBySlugAndStatus(slug, ClubStatus.APPROVED).isPresent())
             slug = base + "-" + (++n);
-        }
         return slug;
     }
 }

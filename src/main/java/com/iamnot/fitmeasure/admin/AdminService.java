@@ -5,6 +5,7 @@ import com.iamnot.fitmeasure.admin.dto.AdminMemberRow;
 import com.iamnot.fitmeasure.admin.dto.AdminStats;
 import com.iamnot.fitmeasure.club.Club;
 import com.iamnot.fitmeasure.club.ClubRepository;
+import com.iamnot.fitmeasure.club.ClubStatus;
 import com.iamnot.fitmeasure.club.ClubType;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
 import com.iamnot.fitmeasure.member.*;
@@ -63,13 +64,14 @@ public class AdminService {
                 .replaceAll("[^a-z0-9가-힣]+", "-").replaceAll("(^-|-$)", "");
         if (base.isBlank()) base = "club";
         String slug = base; int n = 1;
-        while (clubRepository.findBySlug(slug).isPresent()) slug = base + "-" + (++n);
+        while (clubRepository.findBySlugAndStatus(slug, ClubStatus.APPROVED).isPresent())
+            slug = base + "-" + (++n);
         return slug;
     }
 
     @Transactional(readOnly = true)
     public List<AdminClubRow> listClubs() {
-        return clubRepository.findAll().stream()
+        return clubRepository.findByStatus(ClubStatus.APPROVED).stream()
                 .map(c -> new AdminClubRow(
                         c.getId(), c.getName(), c.getType().name(), c.getPlan().name(),
                         membershipRepository.countClaimedMembers(c.getId()),
@@ -80,7 +82,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public AdminStats stats() {
-        List<Club> clubs = clubRepository.findAll();
+        List<Club> clubs = clubRepository.findByStatus(ClubStatus.APPROVED);
         long paid = clubs.stream().filter(c -> !c.isFree()).count();
         return new AdminStats(clubs.size(), paid);
     }

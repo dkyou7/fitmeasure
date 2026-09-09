@@ -6,7 +6,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    Optional<Club> findBySlug(String slug);
 
-    List<Club> findByListedTrue();
+    Optional<Club> findBySlugAndStatus(String slug, ClubStatus status);
+
+    List<Club> findByListedTrueAndStatus(ClubStatus status);
+
+    List<Club> findByStatus(ClubStatus status);
+
+    boolean existsByApplicantMemberIdAndStatus(Long applicantMemberId, ClubStatus status);
 }

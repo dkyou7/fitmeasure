@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.config;
 
 import com.iamnot.fitmeasure.club.ClubRepository;
+import com.iamnot.fitmeasure.club.ClubStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ public class FixedCurrentClub implements CurrentClub {
 
     @Override
     public Long clubId() {
-        return clubRepository.findBySlug("demo-gym")
+        return clubRepository.findBySlugAndStatus("demo-gym", ClubStatus.APPROVED)
                 .orElseThrow(() -> new IllegalStateException("데모 클럽이 시드되지 않았습니다."))
                 .getId();
     }
