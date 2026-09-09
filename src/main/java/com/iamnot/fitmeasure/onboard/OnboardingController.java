@@ -18,8 +18,8 @@ public class OnboardingController {
     @GetMapping("/onboarding")
     public String form(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "redirect:/login";
-        if (principal.isOnboarded()) return "redirect:/me";  // 이미 했으면 skip
-        model.addAttribute("nickname", principal.nickname());  // 카카오 닉네임 기본값
+        if (onboardingService.isOnboarded(principal.memberId())) return "redirect:/";
+        model.addAttribute("nickname", principal.nickname());
         return "onboard/onboarding";
     }
 
@@ -28,6 +28,6 @@ public class OnboardingController {
                          @RequestParam String name,
                          @RequestParam(required = false) String phone) {
         onboardingService.complete(principal.memberId(), name, phone);
-        return "redirect:/me";
+        return "redirect:/";
     }
 }
