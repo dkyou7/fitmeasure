@@ -15,11 +15,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(onboardingInterceptor)
-                .addPathPatterns("/**")           // 전체 적용
-                .excludePathPatterns(              // 정적·인증·공개 경로 제외
+                .addPathPatterns("/**")
+                .excludePathPatterns(
                         "/css/**", "/js/**", "/images/**", "/favicon.ico",
                         "/login", "/signup", "/oauth2/**", "/login/oauth2/**",
-                        "/", "/contact", "/s/**", "/connect",
+                        "/contact", "/s/**", "/connect",
                         "/h2-console/**", "/error"
                 );
     }

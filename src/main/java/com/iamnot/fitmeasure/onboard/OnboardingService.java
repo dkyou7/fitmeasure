@@ -24,4 +24,9 @@ public class OnboardingService {
                     .forEach(ms -> ms.rename(name.trim()));
         }
     }
+
+    @Transactional(readOnly = true)
+    public boolean isOnboarded(Long memberId) {
+        return memberRepository.findById(memberId).map(Member::isOnboarded).orElse(false);
+    }
 }

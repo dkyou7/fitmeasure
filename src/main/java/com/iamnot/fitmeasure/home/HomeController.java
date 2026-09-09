@@ -19,7 +19,6 @@ public class HomeController {
     @GetMapping("/")
     public String root(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "landing";
-        if (!principal.isOnboarded()) return "redirect:/onboarding";
         if (principal.isPlatformAdmin()) return "redirect:/admin";
         if (principal.clubId() == null) return "redirect:/me";
 
