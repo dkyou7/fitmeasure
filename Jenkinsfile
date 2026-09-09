@@ -27,7 +27,9 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'fitmeasure-db-password', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'fitmeasure_KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
-                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET')
+                    string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
+                    string(credentialsId: 'fitmeasure_NAVER_CLIENT_ID', variable: 'NAVER_CLIENT_ID'),
+                    string(credentialsId: 'fitmeasure_NAVER_CLIENT_SECRET', variable: 'NAVER_CLIENT_SECRET'),
                 ]) {
                     sh '''
                     docker rm -f $CONTAINER || true
@@ -39,6 +41,8 @@ pipeline {
                       -e DB_PASSWORD="$DB_PASSWORD" \
                       -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
                       -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
+                      -e NAVER_CLIENT_ID="NAVER_CLIENT_ID" \
+                      -e NAVER_CLIENT_SECRET="NAVER_CLIENT_SECRET" \
                       --restart unless-stopped \
                       $IMAGE
                     '''
