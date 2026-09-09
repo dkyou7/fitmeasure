@@ -41,8 +41,8 @@ pipeline {
                       -e DB_PASSWORD="$DB_PASSWORD" \
                       -e KAKAO_CLIENT_ID="$KAKAO_CLIENT_ID" \
                       -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
-                      -e NAVER_CLIENT_ID="NAVER_CLIENT_ID" \
-                      -e NAVER_CLIENT_SECRET="NAVER_CLIENT_SECRET" \
+                      -e NAVER_CLIENT_ID="$NAVER_CLIENT_ID" \
+                      -e NAVER_CLIENT_SECRET="$NAVER_CLIENT_SECRET" \
                       --restart unless-stopped \
                       $IMAGE
                     '''
