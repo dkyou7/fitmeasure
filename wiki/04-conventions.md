@@ -22,7 +22,6 @@
 - `@OneToMany` 지양(사용자 선호). 역참조가 필요하면 리포지토리로 조회.
 - enum은 항상 `@Enumerated(EnumType.STRING)`.
 - 공통 시각은 `BaseEntity`(createdAt/updatedAt, @PrePersist/@PreUpdate).
-- 정적 팩토리로 의도 드러내기(`Member.anonymous()`, `Member.withPhone()`, `MeasurementValue.ofNumber()`).
 
 ## 서비스/격리
 

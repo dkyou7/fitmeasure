@@ -37,11 +37,7 @@ public class MemberClaimService {
     public void absorbToLoggedIn(String token, Long loginMemberId) {
         MeasurementSession session = loadByToken(token);
         Membership membership = session.getMembership();
-        Member anonymousMember = membership.getMember();
 
-        if (anonymousMember.isClaimed()) {
-            throw new IllegalStateException("이미 계정이 연결된 기록입니다.");
-        }
         Member loginMember = memberRepository.findById(loginMemberId).orElseThrow();
         membership.transferTo(loginMember);
         syncNickname(loginMember);   // 흡수한 Membership도 이름으로

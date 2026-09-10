@@ -47,8 +47,7 @@ public class AdminService {
         Club club = clubRepository.save(new Club(clubName.trim(), slug, type));
 
         // 사장 계정
-        Member owner = Member.anonymous();
-        owner.claim(ownerName);
+        Member owner = Member.create();
         memberRepository.save(owner);
         credentialRepository.save(MemberCredential.username(
                 owner, ownerUsername.trim(), passwordEncoder.encode(ownerPassword)));

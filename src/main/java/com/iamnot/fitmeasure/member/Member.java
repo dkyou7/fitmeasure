@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 자연인. claimedAt이 null이면 클럽이 만들어둔 익명 회원,
- * 채워지면 본인이 계정으로 전환(claim)한 상태다.
  * 인증 수단(휴대폰/카카오/애플/구글)은 MemberCredential이 이 Member를
  * 단방향으로 참조한다. 관계 탐색은 MemberCredentialRepository로 한다.
  */
@@ -36,8 +34,6 @@ public class Member extends BaseEntity {
 
     private Short birthYear;
 
-    private LocalDateTime claimedAt;
-
     @Column(nullable = false)
     private boolean platformAdmin = false;
 
@@ -51,8 +47,6 @@ public class Member extends BaseEntity {
         this.onboardedAt = java.time.LocalDateTime.now();
     }
 
-    public boolean isPlatformAdmin() { return platformAdmin; }
-
     public void grantPlatformAdmin() { this.platformAdmin = true; }
 
     public void revokePlatformAdmin() { this.platformAdmin = false; }
@@ -61,41 +55,7 @@ public class Member extends BaseEntity {
         this.phone = (phone == null || phone.isBlank()) ? null : phone;
     }
 
-    /** 클럽이 등록하는 익명 회원 */
-    public static Member anonymous() {
-        return new Member();
-    }
-
-    /**
-     * 익명 회원을 계정으로 전환.
-     * 인증 수단(MemberCredential)은 이 메서드 호출 후 별도로 저장한다
-     * (credential.of***(member, ...) → credentialRepository.save).
-     */
-    public void claim(String name) {
-        if (isClaimed()) {
-            throw new IllegalStateException("이미 계정이 연결된 회원입니다.");
-        }
-        if (name != null && !name.isBlank()) {
-            this.name = name.trim();
-        }
-        this.claimedAt = LocalDateTime.now();
-    }
-
-    public boolean isClaimed() {
-        return claimedAt != null;
-    }
-
-    public void updateProfile(String name, Gender gender, Short birthYear) {
-        this.name = name;
-        this.gender = gender;
-        this.birthYear = birthYear;
-    }
-
-    public static Member withPhone(String phone) {
-        Member m = new Member();
-        m.phone = phone;
-        return m;
-    }
+    public static Member create() { return new Member();}
 
     public void updateName(String name) {
         this.name = (name == null || name.isBlank()) ? null : name.trim();

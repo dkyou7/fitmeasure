@@ -67,8 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member createSocialMember(OAuthInfo info) {
-        Member m = Member.anonymous();
-        m.claim(info.nickname());
+        Member m = Member.create();
         memberRepository.save(m);
         credentialRepository.save(
                 MemberCredential.social(m, info.provider(), info.providerId(), null));

@@ -22,7 +22,7 @@ public class SignupService {
         if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, id).isPresent()) {
             throw new IllegalStateException("이미 사용 중인 아이디예요.");
         }
-        Member member = Member.anonymous();   // 이름 안 받음, onboardedAt null
+        Member member = Member.create();   // 이름 안 받음, onboardedAt null
         memberRepository.save(member);
         credentialRepository.save(
                 MemberCredential.username(member, id, passwordEncoder.encode(rawPassword)));

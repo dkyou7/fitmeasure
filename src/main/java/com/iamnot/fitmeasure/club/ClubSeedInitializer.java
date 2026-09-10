@@ -79,7 +79,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         if (credentialRepository.findByProviderAndProviderId(AuthProvider.USERNAME, ADMIN_ID).isPresent()) {
             return;
         }
-        Member admin = Member.anonymous();
+        Member admin = Member.create();
         admin.completeOnboarding("운영자", null);   // 이름 + 온보딩 완료
         admin.grantPlatformAdmin();
         memberRepository.save(admin);
@@ -90,7 +90,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
 
     private void seedMember(Club club, MembershipRole role, String name,
                             String username, String rawPassword) {
-        Member person = Member.anonymous();
+        Member person = Member.create();
         person.completeOnboarding(name, null);      // 이름 + 온보딩 완료
         memberRepository.save(person);
         credentialRepository.save(MemberCredential.username(
@@ -130,7 +130,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
     private void seedMemberGrowth(Club club, MeasurementTemplate program, List<TemplateItem> items,
                                   Membership trainer, String name,
                                   Map<String, Double> baseByItem, Map<String, Double> gainByItem) {
-        Member person = Member.anonymous();
+        Member person = Member.create();
         person.completeOnboarding(name, null);
         memberRepository.save(person);
         Membership membership = membershipRepository.save(

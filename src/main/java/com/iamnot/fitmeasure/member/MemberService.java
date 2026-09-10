@@ -44,7 +44,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Membership register(String phone, boolean consent) {
+    public void register(String phone, boolean consent) {
         if (phone == null || phone.isBlank())
             throw new IllegalArgumentException("전화번호는 필수입니다.");
         if (!consent)
@@ -57,10 +57,10 @@ public class MemberService {
         if (membershipRepository.existsByClubIdAndPhone(clubId, normalizedPhone))
             throw new IllegalStateException("이미 등록된 번호예요.");
 
-        Member person = memberRepository.save(Member.anonymous());  // 계정만
+        Member person = memberRepository.save(Member.create());  // 계정만
         String nickname = nicknameGenerator.generate();
         Membership membership = new Membership(club, person, MembershipRole.MEMBER, nickname);
         membership.assignPhone(normalizedPhone);   // 번호는 Membership에
-        return membershipRepository.save(membership);
+        membershipRepository.save(membership);
     }
 }

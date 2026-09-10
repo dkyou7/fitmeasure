@@ -9,7 +9,6 @@ public record ShareCard(
         String clubName,
         String measuredByName,   // 측정한 트레이너 이름 추가
         String nickname,
-        boolean anonymous,
         LocalDate measuredDate,
         List<ShareValueRow> values,
         boolean hasTrend

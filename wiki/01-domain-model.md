@@ -21,7 +21,6 @@ Club (헬스장 = 측정 운영 주체)        │ 1:N
 ### Member — 자연인, 계정
 - 사람 그 자체. **역할이 없다.** 역할은 Membership이 가진다.
 - `phone` — 연락처이자 **사람 식별자**(공유·통합의 열쇠). unique. 트레이너가 회원 등록 시 입력.
-- `claimedAt` — null이면 익명(트레이너가 등록만 함), 값 있으면 본인이 계정 만듦(claim).
 - `platformAdmin` — 웹 운영자 여부(불리언). 향후 다층 권한 필요하면 enum→RBAC로 확장.
 - 인증 정보는 Member가 아니라 **MemberCredential**에 분리(소셜 로그인 대비).
 

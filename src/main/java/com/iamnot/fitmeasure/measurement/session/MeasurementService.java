@@ -236,7 +236,6 @@ public class MeasurementService {
                 member.getClub().getName(),
                 measuredByName,              // 추가
                 member.getNickname(),
-                !member.getMember().isClaimed(),
                 session.getMeasuredAt().toLocalDate(),
                 rows, hasTrend);
     }

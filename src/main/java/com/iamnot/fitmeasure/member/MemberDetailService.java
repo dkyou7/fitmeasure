@@ -72,30 +72,10 @@ public class MemberDetailService {
 
         return new MemberDetail(
                 m.getId(), m.getNickname(),
-                !m.getMember().isClaimed(),
                 m.getStatus() == MembershipStatus.ACTIVE,
                 m.getJoinedAt(),
                 lastDate, nextDue, overdue,
                 summaries, List.copyOf(tracked.values()));
-    }
-
-    /** 회원 활성/휴면 토글. claim한 회원은 본인 소유라 변경 불가 */
-    @Transactional
-    public void toggleStatus(Long membershipId) {
-        Membership m = membershipRepository
-                .findByIdAndClubId(membershipId, currentClub.clubId())
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-        if (m.getRole() != MembershipRole.MEMBER) {
-            throw new IllegalStateException("회원만 상태를 변경할 수 있습니다.");
-        }
-        if (m.getMember().isClaimed()) {
-            throw new IllegalStateException("가입한 회원은 휴면 처리할 수 없습니다. 본인이 관리합니다.");
-        }
-        if (m.getStatus() == MembershipStatus.ACTIVE) {
-            m.deactivate();
-        } else {
-            m.activate();
-        }
     }
 
     private LocalDate toDate(java.time.LocalDateTime dt) {
