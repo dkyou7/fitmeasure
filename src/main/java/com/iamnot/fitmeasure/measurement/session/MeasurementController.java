@@ -72,8 +72,9 @@ public class MeasurementController {
 
     @PostMapping("/result/{sessionId}/share")
     @ResponseBody
-    public Map<String, String> share(@PathVariable Long sessionId) {
-        String token = measurementService.enableShare(sessionId);
-        return java.util.Map.of("url", "/s/" + token);
+    public Map<String, String> share(@PathVariable Long sessionId,
+                                     @AuthenticationPrincipal AppPrincipal loginMember) {
+        String token = measurementService.enableShare(sessionId, loginMember);
+        return Map.of("url", "/s/" + token);
     }
 }

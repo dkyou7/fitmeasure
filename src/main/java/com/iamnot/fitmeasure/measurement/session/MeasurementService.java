@@ -190,18 +190,18 @@ public class MeasurementService {
         return new TrendView(itemName, unit, labels, nums);
     }
 
-    /** 세션 공유 활성화 → 토큰 반환 (트레이너가 "공유하기" 누를 때) */
     @Transactional
-    public String enableShare(Long sessionId) {
+    public String enableShare(Long sessionId, AppPrincipal principal) {
         MeasurementSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("측정 기록을 찾을 수 없습니다."));
-        if (!session.getMembership().getClub().getId().equals(currentClub.clubId())) {
-            throw new IllegalArgumentException("접근할 수 없는 기록입니다.");
+        Membership m = session.getMembership();
+        boolean isOwner = m.getMember().getId().equals(principal.memberId());
+        boolean isSameClub = principal.clubId() != null && principal.clubId().equals(m.getClub().getId());
+        if (!isOwner && !isSameClub) {
+            throw new IllegalStateException("접근할 수 없습니다.");
         }
         if (session.getShareToken() == null) {
             session.enableShare(shareTokenGenerator.generate());
-        } else {
-            session.enableShare(session.getShareToken()); // 이미 있으면 재활성만
         }
         return session.getShareToken();
     }
