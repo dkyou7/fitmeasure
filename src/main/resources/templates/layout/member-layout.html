@@ -64,6 +64,9 @@
     <th:block layout:fragment="styles"></th:block>
 </head>
 <body>
+<form style="display:none" aria-hidden="true">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+</form>
 <!-- 상단 헤더 -->
 <div class="m-header">
     <a class="logo" href="/me">1RepPlus<span class="dot">.</span></a>
