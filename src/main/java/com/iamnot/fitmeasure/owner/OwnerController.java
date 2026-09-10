@@ -31,16 +31,13 @@ public class OwnerController {
         long memberCount = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
         long staffCount = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.STAFF);
         int freeLimit = club.getFreeMemberLimit();
-        boolean overLimit = memberCount > freeLimit;
+        boolean overLimit = club.isFree() && memberCount > freeLimit;   // 무료일 때만 초과 의미
 
-        model.addAttribute("clubName", club.getName());
-        model.addAttribute("plan", club.getPlan().name());   // FREE / PAID
+        model.addAttribute("club", club);   // 엔티티 통째로 (plan.label, requestedPlan 등 화면에서)
         model.addAttribute("memberCount", memberCount);
         model.addAttribute("staffCount", staffCount);
         model.addAttribute("freeLimit", freeLimit);
         model.addAttribute("overLimit", overLimit);
-        // 목업: 결제 예정일은 임시 계산(다음 달 1일)
-        model.addAttribute("nextBillingDate", LocalDate.now().withDayOfMonth(1).plusMonths(1));
         return "owner/billing";
     }
 

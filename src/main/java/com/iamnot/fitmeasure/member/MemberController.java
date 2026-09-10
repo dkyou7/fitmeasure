@@ -1,9 +1,11 @@
 package com.iamnot.fitmeasure.member;
 
-import com.iamnot.fitmeasure.config.security.AppPrincipal;
-import com.iamnot.fitmeasure.membership.ConnectService;
+import com.iamnot.fitmeasure.club.Club;
+import com.iamnot.fitmeasure.club.ClubRepository;
+import com.iamnot.fitmeasure.config.CurrentClub;
+import com.iamnot.fitmeasure.membership.MembershipRepository;
+import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,25 +17,19 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberDetailService memberDetailService;
-    private final ConnectService connectService;
+    private final CurrentClub currentClub;
+    private final ClubRepository clubRepository;
+    private final MembershipRepository membershipRepository;
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("members", memberService.listMembers());
-        return "member/list";
-    }
+        Long clubId = currentClub.clubId();
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        long memberCount = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
 
-    @PostMapping
-    public String register(@RequestParam String phone,
-                           @RequestParam(defaultValue = "false") boolean consent,
-                           Model model) {
-        try {
-            memberService.register(phone, consent);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            model.addAttribute("regError", e.getMessage());
-        }
         model.addAttribute("members", memberService.listMembers());
-        return "member/list :: memberTable";
+        model.addAttribute("overLimit", club.isFree() && memberCount > club.getFreeMemberLimit());
+        return "member/list";
     }
 
     @GetMapping("/{membershipId}")

@@ -74,8 +74,12 @@
                 <div class="mt-2" style="height:8px;background:#F1EFE8;border-radius:100px;overflow:hidden;">
                     <div th:style="'width:' + (${memberCount} * 100 / ${freeLimit} > 100 ? 100 : ${memberCount} * 100 / ${freeLimit}) + '%;height:100%;background:' + (${overLimit} ? '#E64500' : '#FF5A1F') + ';'"></div>
                 </div>
-                <div class="text-primary fw-semibold mt-2" style="font-size:13px;" th:if="${overLimit}">
-                    무료 한도를 초과했어요. 유료 전환이 필요합니다.
+                <div class="mt-2" th:if="${overLimit}"
+                     style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:10px;padding:10px 12px;">
+                    <div class="text-primary fw-semibold" style="font-size:13px;">무료 한도 초과</div>
+                    <div class="text-secondary" style="font-size:12px;line-height:1.5;">
+                        기존 회원은 유지되지만 <b>새 회원 연결은 불가</b>해요. 유료 전환 시 계속 받을 수 있어요.
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,24 +92,27 @@
         </div>
     </div>
 
-    <!-- 결제 예정 (목업) -->
+    <!-- 결제 정보 -->
     <div class="card p-4">
         <div class="text-secondary mb-2" style="font-size:13px;">결제 정보</div>
-        <div th:if="${plan == 'FREE'}" class="text-secondary">
-            무료 플랜 사용 중이라 결제 내역이 없습니다.
+        <div th:if="${club.isFree()}" class="text-secondary">
+            무료 플랜 사용 중이에요.
         </div>
-        <div th:if="${plan == 'PAID'}">
+        <div th:unless="${club.isFree()}">
             <div class="d-flex justify-content-between py-2 border-bottom">
-                <span class="text-secondary">다음 결제 예정일</span>
-                <span class="fw-semibold" th:text="${#temporals.format(nextBillingDate, 'yyyy.MM.dd')}">2026.10.01</span>
+                <span class="text-secondary">플랜</span>
+                <span class="fw-semibold" th:text="${club.plan.label}">유료 월간</span>
             </div>
             <div class="d-flex justify-content-between py-2">
-                <span class="text-secondary">결제 수단</span>
-                <span class="text-secondary">등록된 수단 없음 (준비 중)</span>
+                <span class="text-secondary">만료일</span>
+                <span class="fw-semibold"
+                      th:text="${club.planExpiresAt != null} ? ${#temporals.format(club.planExpiresAt, 'yyyy.MM.dd')} : '-'">
+                    2026.10.01
+                </span>
             </div>
         </div>
         <div class="text-secondary mt-3" style="font-size:12px;">
-            * 결제 기능은 준비 중입니다. 도입 문의로 안내받으실 수 있어요.
+            * 실제 결제·요금은 운영자를 통해 안내받으실 수 있어요.
         </div>
     </div>
 </div>

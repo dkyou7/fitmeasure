@@ -38,7 +38,6 @@ public class ConnectService {
         return code;
     }
 
-    /** 트레이너가 코드로 회원을 자기 클럽에 연결 */
     @Transactional
     public Long connectByCode(String code) {
         ConnectCode cc = connectCodeRepository
@@ -51,14 +50,24 @@ public class ConnectService {
         Long clubId = currentClub.clubId();
         Member member = cc.getMember();
 
-        // 이미 이 클럽 회원이면 막기
         if (membershipRepository.existsByClubIdAndMemberId(clubId, member.getId())) {
             throw new IllegalStateException("이미 등록된 회원이에요.");
         }
 
-        Club club = clubRepository.getReferenceById(clubId);
+        // 무료 한도 체크 — 신규 연결 시점에만 (기존 회원은 grandfather로 유지)
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        if (club.isFree()) {
+            long current = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
+            if (current >= club.getFreeMemberLimit()) {
+                throw new IllegalStateException(
+                        "무료 플랜은 회원 " + club.getFreeMemberLimit() + "명까지 연결할 수 있어요. " +
+                                "더 받으시려면 유료 플랜으로 전환해주세요.");
+            }
+        }
+
+        Club clubRef = clubRepository.getReferenceById(clubId);
         String nickname = member.getName() != null ? member.getName() : "회원";
-        membershipRepository.save(new Membership(club, member, MembershipRole.MEMBER, nickname));
+        membershipRepository.save(new Membership(clubRef, member, MembershipRole.MEMBER, nickname));
         cc.markUsed();
 
         return member.getId();
