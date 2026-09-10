@@ -25,12 +25,14 @@ public class MeController {
     @GetMapping("/me")
     public String home(@AuthenticationPrincipal AppPrincipal principal, Model model) {
         if (principal == null) return "redirect:/login";
+
+        boolean hasClubRole = membershipRepository.hasOwnerOrStaffRole(principal.memberId());
+        boolean hasPending = applicationService.hasPending(principal.memberId());
+
         model.addAttribute("clubs", clubDiscoveryService.listedClubs());
         model.addAttribute("recentFeed", feedService.recentFeed(principal, 3));
-        // 오픈 신청 배너: 클럽 소속(OWNER/STAFF) 없고, 신청 대기도 없을 때만
-        boolean canApply = !membershipRepository.hasOwnerOrStaffRole(principal.memberId())
-                && !applicationService.hasPending(principal.memberId());
-        model.addAttribute("showApplyBanner", canApply);
+        model.addAttribute("showApplyBanner", !hasClubRole && !hasPending);  // 순수 회원만
+        model.addAttribute("hasPending", hasPending);                        // 신청 대기 안내
         model.addAttribute("activeTab", "home");
         return "member/home";
     }
