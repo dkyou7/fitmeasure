@@ -1,7 +1,12 @@
 package com.iamnot.fitmeasure.club;
 
+import com.iamnot.fitmeasure.measurement.session.MeasurementSession;
+import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
+import com.iamnot.fitmeasure.measurement.session.MeasurementValue;
+import com.iamnot.fitmeasure.measurement.session.MeasurementValueRepository;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplate;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
+import com.iamnot.fitmeasure.measurement.template.TemplateItem;
 import com.iamnot.fitmeasure.member.*;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
@@ -15,7 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 개발용 데모 클럽 시드. 표준 템플릿 시드 이후 실행(@Order).
@@ -33,6 +41,8 @@ public class ClubSeedInitializer implements ApplicationRunner {
     private final MeasurementTemplateRepository templateRepository;
     private final MemberCredentialRepository credentialRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MeasurementSessionRepository sessionRepository;
+    private final MeasurementValueRepository valueRepository;
 
     private static final String ADMIN_ID = "dkyou7@ktnet.co.kr";
 
@@ -55,7 +65,6 @@ public class ClubSeedInitializer implements ApplicationRunner {
         // 사장 / 트레이너 / 회원
         seedMember(club, MembershipRole.OWNER, "사장님", "123", "123");
         seedMember(club, MembershipRole.STAFF, "김트레이너", "234", "234");
-        seedMember(club, MembershipRole.MEMBER, "유테스터", "345", "345");
 
         // 표준 프로그램 복사
         List<MeasurementTemplate> standards = templateRepository.findByClubIsNull();
@@ -63,6 +72,7 @@ public class ClubSeedInitializer implements ApplicationRunner {
         log.info("표준 프로그램 {}개 복사 완료", standards.size());
 
         log.info("데모 클럽 시드 완료: {} (id={})", club.getName(), club.getId());
+        seedDemoMeasurements(club);
     }
 
     private void seedAdmin() {
@@ -86,5 +96,61 @@ public class ClubSeedInitializer implements ApplicationRunner {
         credentialRepository.save(MemberCredential.username(
                 person, username, passwordEncoder.encode(rawPassword)));
         membershipRepository.save(new Membership(club, person, role, name));
+    }
+    /** 시연용 측정 데이터 — 회원 몇 명에 여러 회차, 성장 그래프가 그려지게 */
+    private void seedDemoMeasurements(Club club) {
+        // 이 클럽의 "3대 측정" 프로그램과 항목
+        MeasurementTemplate program = templateRepository.findByClubId(club.getId()).stream()
+                .filter(t -> t.getName().contains("3대"))
+                .findFirst().orElse(null);
+        if (program == null) return;
+
+        List<TemplateItem> items = program.getItems().stream()
+                .filter(TemplateItem::isActive).toList();
+
+        // 측정할 트레이너(측정자)
+        Membership trainer = membershipRepository
+                .findByClubIdAndRoleOrderByNicknameAsc(club.getId(), MembershipRole.STAFF)
+                .stream().findFirst().orElse(null);
+
+        // 데모 회원 3명 + 각자 성장 곡선 (시작값, 회차당 증가폭)
+        seedMemberGrowth(club, program, items, trainer, "김성장",
+                Map.of("벤치프레스", 70.0, "스쿼트", 90.0, "데드리프트", 100.0),
+                Map.of("벤치프레스", 5.0, "스쿼트", 7.0, "데드리프트", 8.0));
+        seedMemberGrowth(club, program, items, trainer, "박근육",
+                Map.of("벤치프레스", 100.0, "스쿼트", 130.0, "데드리프트", 150.0),
+                Map.of("벤치프레스", 3.0, "스쿼트", 5.0, "데드리프트", 5.0));
+        seedMemberGrowth(club, program, items, trainer, "이초보",
+                Map.of("벤치프레스", 40.0, "스쿼트", 50.0, "데드리프트", 60.0),
+                Map.of("벤치프레스", 4.0, "스쿼트", 6.0, "데드리프트", 7.0));
+
+        log.info("시연용 측정 데이터 시드 완료");
+    }
+
+    private void seedMemberGrowth(Club club, MeasurementTemplate program, List<TemplateItem> items,
+                                  Membership trainer, String name,
+                                  Map<String, Double> baseByItem, Map<String, Double> gainByItem) {
+        Member person = Member.anonymous();
+        person.completeOnboarding(name, null);
+        memberRepository.save(person);
+        Membership membership = membershipRepository.save(
+                new Membership(club, person, MembershipRole.MEMBER, name));
+
+        int rounds = 4;
+        for (int r = 0; r < rounds; r++) {
+            LocalDateTime measuredAt = LocalDateTime.now().minusDays(28L * (rounds - 1 - r));
+            // 순서: membership, template, measuredBy, measuredAt
+            MeasurementSession session = new MeasurementSession(membership, program, trainer, measuredAt);
+
+            for (TemplateItem item : items) {
+                String key = item.getName().replaceAll("\\s*1RM", "").trim();
+                Double base = baseByItem.get(key);
+                Double gain = gainByItem.get(key);
+                if (base == null) continue;
+                double value = base + gain * r;
+                session.addValue(MeasurementValue.ofNumber(item, BigDecimal.valueOf(value)));
+            }
+            sessionRepository.save(session);   // cascade로 value도 저장
+        }
     }
 }
