@@ -54,7 +54,15 @@ public class OwnerController {
 
     @GetMapping("/staff")
     public String staff(Model model) {
+        Long clubId = currentClub.clubId();
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        long staffCount = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.STAFF);
+        int staffLimit = club.getPlan().getStaffLimit();
         model.addAttribute("staff", staffService.listStaff());
+        model.addAttribute("staffCount", staffCount);
+        model.addAttribute("staffLimit", staffLimit);
+        model.addAttribute("staffOverLimit", staffCount >= staffLimit);
+        model.addAttribute("isFree", club.isFree());
         return "owner/staff";
     }
 

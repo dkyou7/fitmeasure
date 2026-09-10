@@ -54,8 +54,22 @@ public class ConnectService {
             throw new IllegalStateException("이미 등록된 회원이에요.");
         }
 
-        // 무료 한도 체크 — 신규 연결 시점에만 (기존 회원은 grandfather로 유지)
+        // 한도 체크는 호출하는 쪽(회원 연결/트레이너 연결)에서 각자 담당
+        Club clubRef = clubRepository.getReferenceById(clubId);
+        String nickname = member.getName() != null ? member.getName() : "회원";
+        membershipRepository.save(new Membership(clubRef, member, MembershipRole.MEMBER, nickname));
+        cc.markUsed();
+
+        return member.getId();
+    }
+
+    /** 회원 연결 (회원 한도 체크 포함) */
+    @Transactional
+    public Long connectMemberByCode(String code) {
+        Long clubId = currentClub.clubId();
         Club club = clubRepository.findById(clubId).orElseThrow();
+
+        // 회원 한도 체크 (무료 플랜 + 한도 도달 시 차단, grandfather)
         if (club.isFree()) {
             long current = membershipRepository.countByClubIdAndRole(clubId, MembershipRole.MEMBER);
             if (current >= club.getFreeMemberLimit()) {
@@ -64,12 +78,6 @@ public class ConnectService {
                                 "더 받으시려면 유료 플랜으로 전환해주세요.");
             }
         }
-
-        Club clubRef = clubRepository.getReferenceById(clubId);
-        String nickname = member.getName() != null ? member.getName() : "회원";
-        membershipRepository.save(new Membership(clubRef, member, MembershipRole.MEMBER, nickname));
-        cc.markUsed();
-
-        return member.getId();
+        return connectByCode(code);   // 순수 연결
     }
 }

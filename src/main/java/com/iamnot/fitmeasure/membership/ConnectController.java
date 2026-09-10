@@ -19,11 +19,11 @@ public class ConnectController {
         return "member/connect";
     }
 
-    /** 트레이너: 코드 입력 제출 */
+    /** 트레이너: 코드 입력 제출 (회원 연결) */
     @PostMapping("/members/connect")
     public String connect(@RequestParam String code, Model model) {
         try {
-            connectService.connectByCode(code);
+            connectService.connectMemberByCode(code);   // 회원 한도 체크 포함
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             return "member/connect";
@@ -31,7 +31,7 @@ public class ConnectController {
         return "redirect:/members";
     }
 
-    /** QR 스캔으로 진입 (/connect?code=) */
+    /** QR 스캔으로 진입 (회원 연결) */
     @GetMapping("/connect")
     public String connectByQr(@RequestParam(required = false) String code,
                               @AuthenticationPrincipal AppPrincipal principal, Model model) {
@@ -49,7 +49,7 @@ public class ConnectController {
             return "member/connect";
         }
         try {
-            connectService.connectByCode(code);
+            connectService.connectMemberByCode(code);   // 회원 한도 체크 포함
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             return "member/connect";

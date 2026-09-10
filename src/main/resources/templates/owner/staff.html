@@ -7,27 +7,46 @@
 <div layout:fragment="content">
     <h1 class="mb-4">트레이너 관리</h1>
 
-    <div class="card p-3 mb-4">
-        <div class="text-secondary mb-2" style="font-size:13px;line-height:1.5;">
-            트레이너가 직접 <b>1RepPlus에 가입</b>한 뒤, 앱에서 발급한 <b>6자리 연결 코드</b>를 알려주면
-            아래에 입력해 트레이너로 등록할 수 있어요.
-        </div>
-        <div class="row g-2">
-            <div class="col">
-                <input class="form-control" name="code" id="staff-code"
-                       placeholder="트레이너 연결 코드 6자리" maxlength="6" inputmode="numeric">
+    <div th:unless="${staffOverLimit}">
+        <div class="card p-3 mb-4">
+            <div class="text-secondary mb-2" style="font-size:13px;line-height:1.5;">
+                트레이너가 직접 <b>1RepPlus에 가입</b>한 뒤, 앱에서 발급한 <b>6자리 연결 코드</b>를 알려주면
+                아래에 입력해 트레이너로 등록할 수 있어요.
             </div>
-            <div class="col-auto">
-                <button class="btn btn-primary" hx-post="/owner/staff" hx-include="#staff-code"
-                        hx-target="#staffTable" hx-swap="outerHTML"
-                        hx-on::after-request="if(event.detail.successful) staff-code.value='';">
-                    트레이너 등록
-                </button>
+            <div class="row g-2">
+                <div class="col">
+                    <input class="form-control" name="code" id="staff-code"
+                           placeholder="트레이너 연결 코드 6자리" maxlength="6" inputmode="numeric">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" hx-post="/owner/staff" hx-include="#staff-code"
+                            hx-target="#staffTable" hx-swap="outerHTML"
+                            hx-on::after-request="if(event.detail.successful) staff-code.value='';">
+                        트레이너 등록
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
     <div th:fragment="staffTable" id="staffTable">
+        <!-- 트레이너 사용량 -->
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center" style="font-size:14px;">
+                <span class="text-secondary">트레이너</span>
+                <span>
+                    <span class="fw-bold" th:text="${staffCount}">1</span> /
+                    <span th:text="${staffLimit}">1</span>명
+                </span>
+            </div>
+            <div th:if="${staffOverLimit}" class="mt-2"
+                 style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:10px;padding:10px 12px;">
+                <div class="text-primary fw-semibold" style="font-size:13px;">트레이너 한도 도달</div>
+                <div class="text-secondary" style="font-size:12px;line-height:1.5;">
+                    <span th:text="${isFree} ? '무료' : '유료'">무료</span> 플랜은 트레이너 <span th:text="${staffLimit}">1</span>명까지예요.
+                    <span th:if="${isFree}"><a href="/owner/billing" class="text-primary fw-semibold" style="text-decoration:none;">유료 전환</a> 시 3명까지 등록할 수 있어요.</span>
+                </div>
+            </div>
+        </div>
         <table class="table align-middle mb-0">
             <thead><tr><th>이름</th><th>역할</th><th>등록일</th><th>상태</th><th></th></tr></thead>
             <tbody>
@@ -45,10 +64,6 @@
                 </td>
                 <td class="text-end">
                     <div th:unless="${s.isOwner}" class="d-inline-flex gap-1">
-                        <button th:class="${s.status.name() == 'ACTIVE'} ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-primary'"
-                                th:text="${s.status.name() == 'ACTIVE'} ? '비활성' : '활성화'"
-                                th:hx-post="@{/owner/staff/{id}/toggle(id=${s.membershipId})}"
-                                hx-target="#staffTable" hx-swap="outerHTML">비활성</button>
                         <button class="btn btn-sm btn-outline-secondary"
                                 hx-confirm="이 트레이너를 일반 회원으로 강등할까요?"
                                 th:hx-post="@{/owner/staff/{id}/demote(id=${s.membershipId})}"
