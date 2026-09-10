@@ -41,4 +41,12 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     List<Membership> findByMemberId(Long memberId);
 
     Optional<Membership> findByClubIdAndMemberId(Long clubId, Long memberId);
+
+    @Query("""
+        select count(m) > 0 from Membership m
+        where m.member.id = :memberId
+          and m.role in (com.iamnot.fitmeasure.membership.MembershipRole.OWNER,
+                         com.iamnot.fitmeasure.membership.MembershipRole.STAFF)
+    """)
+    boolean hasOwnerOrStaffRole(@Param("memberId") Long memberId);
 }
