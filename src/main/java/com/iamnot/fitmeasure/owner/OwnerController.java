@@ -1,9 +1,6 @@
 package com.iamnot.fitmeasure.owner;
 
-import com.iamnot.fitmeasure.club.Club;
-import com.iamnot.fitmeasure.club.ClubRepository;
-import com.iamnot.fitmeasure.club.ClubService;
-import com.iamnot.fitmeasure.club.ClubType;
+import com.iamnot.fitmeasure.club.*;
 import com.iamnot.fitmeasure.config.CurrentClub;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
@@ -24,6 +21,7 @@ public class OwnerController {
     private final MembershipRepository membershipRepository;
     private final StaffService staffService;
     private final ClubService clubService;
+    private final OwnerService ownerService;
 
     @GetMapping("/billing")
     public String billing(Model model) {
@@ -100,5 +98,17 @@ public class OwnerController {
                              @RequestParam(defaultValue = "false") boolean listed) {
         clubService.updateClub(currentClub.clubId(), name, address, intro, listed);
         return "redirect:/owner/club?saved";
+    }
+
+    @PostMapping("/billing/request")
+    public String requestPlan(@RequestParam ClubPlan plan) {
+        ownerService.requestPlan(currentClub.clubId(), plan);
+        return "redirect:/owner/billing?requested";
+    }
+
+    @PostMapping("/billing/cancel")
+    public String cancelPlan() {
+        ownerService.cancelRequestPlan(currentClub.clubId());
+        return "redirect:/owner/billing";
     }
 }

@@ -14,10 +14,17 @@ public class ClubApplicationController {
 
     private final ClubApplicationService applicationService;
 
+    /** 사장 대상 소개 랜딩 (플랜·가치) — 신청 양식 진입 전 */
+    @GetMapping("/intro")
+    public String intro() {
+        return "club/club-apply-intro";
+    }
+
     @GetMapping
     public String applyForm(@AuthenticationPrincipal AppPrincipal principal, Model model) {
+        if (principal == null) return "redirect:/login?next=/apply";
         if (applicationService.hasPending(principal.memberId())) {
-            return "redirect:/apply/done";   // 또는 전용 상태 화면
+            return "redirect:/apply/done";
         }
         model.addAttribute("types", ClubType.values());
         return "club/club-apply";

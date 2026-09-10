@@ -1,7 +1,15 @@
 package com.iamnot.fitmeasure.club;
 
-/** 구독 상태. MVP에서는 수기로 변경한다. */
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum ClubPlan {
-    FREE,
-    PAID
+    FREE("무료"),
+    MONTHLY("유료 월간"),
+    YEARLY("유료 연간");
+
+    private final String label;
+    public boolean isPaid() { return this != FREE; }
 }

@@ -33,6 +33,15 @@
             .recent .d{font-size:12px;color:var(--sub);}
             .more-link{display:block;text-align:center;font-size:14px;color:var(--sub);
                 text-decoration:none;padding:8px;}
+            .promo{display:block;background:linear-gradient(135deg,#1A1A18,#3a3a36);border-radius:16px;
+                padding:20px;margin-bottom:24px;text-decoration:none;color:#fff;position:relative;overflow:hidden;}
+            .promo::after{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;
+                background:rgba(255,255,255,0.08);border-radius:50%;}
+            .promo-badge{display:inline-block;background:rgba(255,255,255,0.18);font-size:11px;font-weight:700;
+                padding:3px 10px;border-radius:100px;margin-bottom:8px;}
+            .promo-title{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:3px;}
+            .promo-sub{font-size:13px;opacity:0.85;margin-bottom:12px;line-height:1.5;}
+            .promo-cta{font-size:14px;font-weight:700;}
         </style>
     </th:block>
 </head>
@@ -43,6 +52,14 @@
         <h1>측정하고, 기록하고,<br>더 나아지다</h1>
         <p>트레이너가 측정한 내 운동력을<br>숫자와 그래프로 확인하세요.</p>
     </div>
+
+    <!-- 예비 사장 유도 배너 (측정 기록 없을 때) -->
+    <a href="/apply/intro" class="promo" th:if="${recentFeed.isEmpty()}">
+        <div class="promo-badge">파트너 모집</div>
+        <div class="promo-title">헬스장을 운영하고 계신가요?</div>
+        <div class="promo-sub">회원의 성장을 데이터로 보여주는 측정 솔루션</div>
+        <div class="promo-cta">도입 문의하기 →</div>
+    </a>
 
     <!-- 가치 -->
     <div class="values">

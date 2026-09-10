@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -72,7 +73,11 @@ public class AdminService {
     public List<AdminClubRow> listClubs() {
         return clubRepository.findByStatus(ClubStatus.APPROVED).stream()
                 .map(c -> new AdminClubRow(
-                        c.getId(), c.getName(), c.getType().name(), c.getPlan().name(),
+                        c.getId(), c.getName(), c.getType().name(),
+                        c.getPlan().name(), c.getPlan().getLabel(),
+                        c.getRequestedPlan() != null ? c.getRequestedPlan().name() : null,
+                        c.getRequestedPlan() != null ? c.getRequestedPlan().getLabel() : null,
+                        c.getPlanExpiresAt(),
                         membershipRepository.countClaimedMembers(c.getId()),
                         membershipRepository.countByClubIdAndRole(c.getId(), MembershipRole.STAFF),
                         c.getCreatedAt().toLocalDate()))
@@ -84,18 +89,6 @@ public class AdminService {
         List<Club> clubs = clubRepository.findByStatus(ClubStatus.APPROVED);
         long paid = clubs.stream().filter(c -> !c.isFree()).count();
         return new AdminStats(clubs.size(), paid);
-    }
-
-    /** 플랜 수동 전환 (수기 계약) */
-    @Transactional
-    public void togglePlan(Long clubId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new IllegalArgumentException("클럽을 찾을 수 없습니다."));
-        if (club.isFree()) {
-            club.upgradeToPaid();
-        } else {
-            club.downgradeToFree();
-        }
     }
 
     /** 아이디로 사용자 조회 (검색용) */
@@ -179,5 +172,17 @@ public class AdminService {
         Member m = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다."));
         m.revokePlatformAdmin();
+    }
+
+    @Transactional
+    public void approvePlan(Long clubId, LocalDate expiresAt) {
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        club.approvePlan(expiresAt);
+    }
+
+    @Transactional
+    public void expireToFree(Long clubId) {
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        club.downgradeToFree();
     }
 }

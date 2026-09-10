@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -52,6 +54,14 @@ public class Club extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String intro;   // 헬스장 소개 (회원에게 노출)
 
+    /** 사장이 신청한 플랜 (승인 대기). null이면 신청 없음 */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private ClubPlan requestedPlan;
+
+    /** 유료 플랜 만료일 (운영자 수동 관리) */
+    private java.time.LocalDate planExpiresAt;
+
     /** 어드민 직접 생성 (즉시 승인 상태) */
     public Club(String name, String slug, ClubType type) {
         this.name = name;
@@ -89,14 +99,7 @@ public class Club extends BaseEntity {
     }
 
     public boolean isApproved() { return status == ClubStatus.APPROVED; }
-
-    public boolean isFree() {
-        return plan == ClubPlan.FREE;
-    }
-    public void upgradeToPaid() {
-        this.plan = ClubPlan.PAID;
-    }
-    public void downgradeToFree() { this.plan = ClubPlan.FREE; }
+    public boolean isFree() { return plan == ClubPlan.FREE; }
     public void updateListed(boolean listed) { this.listed = listed; }
     public void updateIntro(String intro) { this.intro = intro; }
 
@@ -106,4 +109,35 @@ public class Club extends BaseEntity {
         this.intro = intro;
         this.listed = listed;
     }
+
+    /** 사장이 플랜 신청 */
+    public void requestPlan(ClubPlan target) {
+        if (target == ClubPlan.FREE) {
+            throw new IllegalArgumentException("무료는 신청 대상이 아닙니다.");
+        }
+        this.requestedPlan = target;
+    }
+
+    /** 사장이 신청 취소 */
+    public void cancelRequest() {
+        this.requestedPlan = null;
+    }
+
+    /** 운영자가 신청 승인 → 플랜 적용 + 만료일 설정 */
+    public void approvePlan(java.time.LocalDate expiresAt) {
+        if (requestedPlan == null) {
+            throw new IllegalStateException("신청된 플랜이 없습니다.");
+        }
+        this.plan = requestedPlan;
+        this.planExpiresAt = expiresAt;
+        this.requestedPlan = null;
+    }
+
+    /** 운영자가 무료로 전환 (만료 처리) */
+    public void downgradeToFree() {
+        this.plan = ClubPlan.FREE;
+        this.planExpiresAt = null;
+        this.requestedPlan = null;
+    }
+    public boolean hasPendingRequest() { return requestedPlan != null; }
 }

@@ -35,7 +35,6 @@
         <div class="md-head mt-2">
             <div class="who">
                 <span th:text="${detail.nickname}">이름 없는 곰</span>
-                <span class="md-badge" th:if="${detail.anonymous}">미가입</span>
             </div>
             <a class="btn btn-primary" th:href="@{/measure/{id}(id=${detail.membershipId})}">측정하기</a>
         </div>

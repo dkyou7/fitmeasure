@@ -6,10 +6,13 @@ import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,11 +30,17 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    @PostMapping("/clubs/{id}/toggle-plan")
-    public String togglePlan(@PathVariable Long id, Model model) {
-        adminService.togglePlan(id);
-        model.addAttribute("clubs", adminService.listClubs());
-        return "admin/dashboard :: clubTable";
+    @PostMapping("/clubs/{id}/approve-plan")
+    public String approvePlan(@PathVariable Long id,
+                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiresAt) {
+        adminService.approvePlan(id, expiresAt);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/clubs/{id}/expire-plan")
+    public String expirePlan(@PathVariable Long id) {
+        adminService.expireToFree(id);
+        return "redirect:/admin";
     }
 
     @GetMapping("/clubs/new")
@@ -103,6 +112,21 @@ public class AdminController {
     @PostMapping("/applications/{id}/reject")
     public String rejectApplication(@PathVariable Long id) {
         clubApplicationService.reject(id);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/clubs/{id}/approve")
+    public String approve(@PathVariable Long id,
+                          @RequestParam(required = false)
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiresAt) {
+        // 만료일 미입력 시 신청 플랜 기준 기본값(월간+1개월/연간+1년)은 서비스에서 처리하거나 여기서
+        adminService.approvePlan(id, expiresAt);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/clubs/{id}/expire")
+    public String expire(@PathVariable Long id) {
+        adminService.expireToFree(id);
         return "redirect:/admin";
     }
 }
