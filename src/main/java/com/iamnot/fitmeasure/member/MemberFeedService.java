@@ -4,6 +4,11 @@ import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.config.security.LoginMember;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSession;
 import com.iamnot.fitmeasure.measurement.session.MeasurementSessionRepository;
+import com.iamnot.fitmeasure.measurement.session.MeasurementValue;
+import com.iamnot.fitmeasure.measurement.session.dto.SessionSummary;
+import com.iamnot.fitmeasure.measurement.session.dto.TrackedItem;
+import com.iamnot.fitmeasure.measurement.template.TemplateItem;
+import com.iamnot.fitmeasure.member.dto.ClubRecordDetail;
 import com.iamnot.fitmeasure.member.dto.ClubSummary;
 import com.iamnot.fitmeasure.member.dto.FeedItem;
 import com.iamnot.fitmeasure.membership.Membership;
@@ -15,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -71,5 +74,39 @@ public class MemberFeedService {
                     return new ClubSummary(m.getId(), m.getClub().getName(), last, sessions.size());
                 })
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ClubRecordDetail clubDetail(AppPrincipal principal, Long membershipId) {
+        Membership m = membershipRepository.findById(membershipId)
+                .orElseThrow(() -> new IllegalArgumentException("기록을 찾을 수 없습니다."));
+        // 본인 소유 검증
+        if (!m.getMember().getId().equals(principal.memberId())) {
+            throw new IllegalStateException("본인의 기록만 볼 수 있어요.");
+        }
+
+        List<MeasurementSession> sessions = sessionRepository
+                .findByMembershipIdOrderByMeasuredAtDesc(m.getId());
+
+        // 항목별 추이 (측정된 항목만, 중복 제거)
+        Map<Long, TrackedItem> tracked = new LinkedHashMap<>();
+        for (MeasurementSession s : sessions) {
+            for (MeasurementValue v : s.getValues()) {
+                if (v.isSkipped() || v.getValueNumber() == null) continue;
+                TemplateItem item = v.getTemplateItem();
+                tracked.putIfAbsent(item.getId(),
+                        new TrackedItem(item.getId(), item.getName(), item.getUnit()));
+            }
+        }
+
+        // 세션 요약
+        List<SessionSummary> summaries = sessions.stream()
+                .map(s -> new SessionSummary(s.getId(), s.getTemplate().getName(),
+                        s.getMeasuredAt(),
+                        (int) s.getValues().stream().filter(x -> !x.isSkipped()).count()))
+                .toList();
+
+        return new ClubRecordDetail(m.getId(), m.getClub().getName(),
+                sessions.size(), List.copyOf(tracked.values()), summaries);
     }
 }

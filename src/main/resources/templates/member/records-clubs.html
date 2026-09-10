@@ -3,40 +3,40 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/member-layout}">
 <head>
-    <title>내 기록</title>
-    <th:block layout:fragment="styles">
-        <style>
-            .rc-card{display:block;background:#fff;border:1px solid var(--line);border-radius:16px;
-                padding:20px;margin-bottom:12px;text-decoration:none;color:inherit;transition:border-color .15s;}
-            .rc-card:hover{border-color:var(--orange);}
-            .rc-club{font-size:18px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;}
-            .rc-count{font-size:14px;color:var(--orange-deep);font-weight:600;}
-            .rc-last{font-size:13px;color:var(--sub);margin-top:4px;}
-            .rc-arrow{float:right;color:var(--sub);font-size:18px;}
-            .empty{text-align:center;color:var(--sub);padding:48px 20px;line-height:1.6;}
-        </style>
-    </th:block>
+  <title>내 기록</title>
+  <th:block layout:fragment="styles">
+    <style>
+      .rc-card{display:block;background:#fff;border:1px solid var(--line);border-radius:16px;
+        padding:20px;margin-bottom:12px;text-decoration:none;color:inherit;transition:border-color .15s;}
+      .rc-card:hover{border-color:var(--orange);}
+      .rc-club{font-size:18px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;}
+      .rc-count{font-size:14px;color:var(--orange-deep);font-weight:600;}
+      .rc-last{font-size:13px;color:var(--sub);margin-top:4px;}
+      .rc-arrow{float:right;color:var(--sub);font-size:18px;}
+      .empty{text-align:center;color:var(--sub);padding:48px 20px;line-height:1.6;}
+    </style>
+  </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:20px;">내 기록</h1>
+  <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.03em;margin-bottom:20px;">내 기록</h1>
 
-    <a class="rc-card" th:each="c : ${clubs}"
-       th:href="@{/me/records/{id}(id=${c.membershipId})}">
-        <span class="rc-arrow">›</span>
-        <div class="rc-club" th:text="${c.clubName}">데모 헬스장</div>
-        <div class="rc-count">
-            이 헬스장에서 <span th:text="${c.sessionCount}">3</span>번 측정했어요
-        </div>
-        <div class="rc-last" th:if="${c.lastMeasured != null}">
-            최근 측정 <span th:text="${#temporals.format(c.lastMeasured, 'yyyy.MM.dd')}">2026.09.09</span>
-        </div>
-    </a>
-
-    <div class="empty" th:if="${clubs.isEmpty()}">
-        아직 측정 기록이 없어요.<br>
-        헬스장에서 <b>연결</b> 후 측정받으면<br>기록이 여기 쌓입니다.
+  <a class="rc-card" th:each="c : ${clubs}"
+     th:href="@{/me/records/{id}(id=${c.membershipId})}">
+    <span class="rc-arrow">›</span>
+    <div class="rc-club" th:text="${c.clubName}">데모 헬스장</div>
+    <div class="rc-count">
+      이 헬스장에서 <span th:text="${c.sessionCount}">3</span>번 측정했어요
     </div>
+    <div class="rc-last" th:if="${c.lastMeasured != null}">
+      최근 측정 <span th:text="${#temporals.format(c.lastMeasured, 'yyyy.MM.dd')}">2026.09.09</span>
+    </div>
+  </a>
+
+  <div class="empty" th:if="${clubs.isEmpty()}">
+    아직 측정 기록이 없어요.<br>
+    헬스장에서 <b>연결</b> 후 측정받으면<br>기록이 여기 쌓입니다.
+  </div>
 </div>
 </body>
 </html>

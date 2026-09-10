@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/member-layout}">
+<head>
+    <title th:text="${detail.clubName} + ' 기록'">헬스장 기록</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .rd-back{font-size:14px;color:var(--sub);text-decoration:none;display:inline-block;margin-bottom:12px;}
+            .rd-back:hover{color:var(--orange);}
+            .rd-club{font-size:22px;font-weight:800;letter-spacing:-0.03em;}
+            .rd-count{font-size:14px;color:var(--orange-deep);font-weight:600;margin-bottom:20px;}
+            .rd-sec{font-size:15px;font-weight:700;color:var(--sub);margin:24px 0 10px;}
+            .chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:100px;
+                padding:7px 14px;margin:0 6px 6px 0;font-size:14px;cursor:pointer;}
+            .chip:hover,.chip.on{border-color:var(--orange);color:var(--orange);}
+            .chartbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:8px 0 16px;}
+            .sess{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:8px;
+                display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:inherit;}
+            .sess:hover{border-color:var(--orange);}
+            .sess .p{font-weight:600;}
+            .sess .d{font-size:13px;color:var(--sub);}
+            .empty{color:var(--sub);padding:20px 0;}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <a class="rd-back" href="/me/records">← 내 기록</a>
+    <div class="rd-club" th:text="${detail.clubName}">데모 헬스장</div>
+    <div class="rd-count">이 헬스장에서 <span th:text="${detail.sessionCount}">3</span>번 측정했어요</div>
+
+    <!-- 항목별 성장 -->
+    <div class="rd-sec">성장 추이</div>
+    <div th:if="${detail.trackedItems.isEmpty()}" class="empty">아직 측정된 항목이 없어요.</div>
+    <div th:unless="${detail.trackedItems.isEmpty()}">
+        <span class="chip" th:each="t,st : ${detail.trackedItems}"
+              th:classappend="${st.first} ? 'on'"
+              th:attr="data-mid=${detail.membershipId},data-iid=${t.itemId}"
+              th:text="${t.name}" onclick="showTrend(this)">벤치프레스</span>
+        <div class="chartbox"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <!-- 측정 이력 -->
+    <div class="rd-sec">측정 이력</div>
+    <a class="sess" th:each="s : ${detail.sessions}"
+       th:href="@{/measure/result/{sid}(sid=${s.sessionId})}">
+        <span class="p" th:text="${s.programName}">3대 측정</span>
+        <span class="d">
+            <span th:text="${#temporals.format(s.measuredAt, 'yyyy.MM.dd')}">2026.09.09</span>
+            · <span th:text="${s.itemCount}">3</span>개
+        </span>
+    </a>
+</div>
+<th:block layout:fragment="scripts">
+    <script th:inline="none">
+        let chart = null;
+        function showTrend(chip) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+            chip.classList.add('on');
+            fetch(`/measure/trend/${chip.dataset.mid}/item/${chip.dataset.iid}`)
+                .then(r => r.json())
+                .then(d => {
+                    if (chart) chart.destroy();
+                    chart = new Chart(document.getElementById('trendChart'), {
+                        type: 'line',
+                        data: { labels: d.labels, datasets: [{
+                                label: d.itemName + (d.unit ? ' (' + d.unit + ')' : ''),
+                                data: d.values, borderColor: '#FF5A1F',
+                                backgroundColor: 'rgba(255,90,31,0.1)',
+                                borderWidth: 3, tension: 0.3, fill: true,
+                                pointBackgroundColor: '#FF5A1F', pointRadius: 4 }] },
+                        options: { plugins:{legend:{display:true}}, scales:{y:{beginAtZero:false}} }
+                    });
+                });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const first = document.querySelector('.chip');
+            if (first) showTrend(first);
+        });
+    </script>
+</th:block>
+</body>
+</html>
