@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>클럽 관리</title></head>
+<body>
+<div layout:fragment="content">
+    <div style="max-width:640px;margin:0 auto;">
+        <a class="text-secondary text-decoration-none" href="/admin" style="font-size:14px;">← 플랫폼 관리</a>
+        <h1 class="mt-2 mb-1" th:text="${club.name}">데모 헬스장</h1>
+        <p class="text-secondary mb-4" style="font-size:14px;">
+            <span th:text="${club.type}">GYM</span> · 사장 <span th:text="${club.ownerName}">사장님</span>
+            · 회원 <span th:text="${club.memberCount}">0</span>명
+        </p>
+
+        <div class="alert" th:if="${param.saved}"
+             style="background:#FFF4EF;border:1px solid #FF5A1F;border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+            <span class="text-primary fw-semibold">저장됐어요.</span>
+        </div>
+
+        <!-- 현재 상태 -->
+        <div class="card p-4 mb-3">
+            <div class="row">
+                <div class="col-6">
+                    <div class="text-secondary" style="font-size:13px;">현재 플랜</div>
+                    <div class="fw-bold" style="font-size:20px;" th:text="${club.planLabel}">무료</div>
+                </div>
+                <div class="col-6">
+                    <div class="text-secondary" style="font-size:13px;">만료일</div>
+                    <div class="fw-bold" style="font-size:20px;"
+                         th:text="${club.planExpiresAt != null} ? ${#temporals.format(club.planExpiresAt, 'yyyy.MM.dd')} : '-'">-</div>
+                </div>
+            </div>
+            <div class="mt-3" th:if="${club.requestedPlan != null}"
+                 style="background:#FFF4EF;border-radius:10px;padding:10px 14px;">
+                <span class="text-primary fw-semibold" th:text="'사장 신청: ' + ${club.requestedLabel}">신청됨</span>
+            </div>
+        </div>
+
+        <!-- 플랜 변경 -->
+        <div class="card p-4">
+            <div class="fw-semibold mb-3">플랜 변경</div>
+            <form th:action="@{/admin/clubs/{id}/plan(id=${club.clubId})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div class="mb-3">
+                    <label class="form-label" style="font-size:13px;">플랜</label>
+                    <select class="form-select" name="plan">
+                        <option th:each="p : ${plans}" th:value="${p}"
+                                th:selected="${p == club.plan}" th:text="${p.label}">무료</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" style="font-size:13px;">만료일 (유료일 때)</label>
+                    <input type="date" class="form-control" name="expiresAt"
+                           th:value="${club.planExpiresAt != null} ? ${#temporals.format(club.planExpiresAt, 'yyyy-MM-dd')} : ''">
+                    <div class="form-text">무료로 바꾸면 만료일은 자동 삭제돼요.</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">플랜 저장</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

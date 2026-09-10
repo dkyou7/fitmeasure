@@ -140,4 +140,11 @@ public class Club extends BaseEntity {
         this.requestedPlan = null;
     }
     public boolean hasPendingRequest() { return requestedPlan != null; }
+
+    /** 운영자가 플랜을 직접 설정 (신청 승인·전환·만료 통합). FREE면 만료일·신청 클리어 */
+    public void setPlanManually(ClubPlan plan, java.time.LocalDate expiresAt) {
+        this.plan = plan;
+        this.planExpiresAt = (plan == ClubPlan.FREE) ? null : expiresAt;
+        this.requestedPlan = null;   // 신청 처리 완료
+    }
 }

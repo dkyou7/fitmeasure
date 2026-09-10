@@ -9,109 +9,175 @@
         *{margin:0;padding:0;box-sizing:border-box}
         html{scroll-behavior:smooth}
         body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;letter-spacing:-0.01em;}
-        .wrap{max-width:640px;margin:0 auto;padding:0 24px}
-        .topbar{height:56px;display:flex;align-items:center;border-bottom:1px solid var(--line);}
+        .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+        .topbar{height:56px;border-bottom:1px solid var(--line);}
+        .topbar .in{max-width:960px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;}
         .topbar .logo{font-weight:800;font-size:18px;letter-spacing:-0.03em;text-decoration:none;color:var(--ink);}
         .topbar .logo .dot{color:var(--orange);}
+        .topbar .home{font-size:14px;color:var(--sub);text-decoration:none;}
+        .topbar .home:hover{color:var(--orange);}
+
         .hero{padding:64px 0 48px;text-align:center}
         .eyebrow{display:inline-block;font-size:13px;font-weight:600;color:var(--orange-deep);background:var(--tint);
             padding:6px 14px;border-radius:100px;margin-bottom:22px}
-        .hero h1{font-size:38px;font-weight:800;line-height:1.14;letter-spacing:-0.04em;margin-bottom:18px}
+        .hero h1{font-size:40px;font-weight:800;line-height:1.14;letter-spacing:-0.04em;margin-bottom:18px}
         .hero h1 .hl{color:var(--orange)}
         .hero p{font-size:18px;color:var(--sub);margin-bottom:32px;line-height:1.55}
         .cta{font-size:16px;font-weight:700;color:#fff;background:var(--orange);padding:15px 32px;border-radius:12px;
             text-decoration:none;display:inline-block;box-shadow:0 6px 20px rgba(255,90,31,0.28);transition:transform .12s,background .15s}
         .cta:hover{background:var(--orange-deep);transform:translateY(-1px)}
         .hero .note{margin-top:16px;font-size:14px;color:var(--sub)}
+
         section{padding:56px 0}
-        .sec-h{font-size:26px;font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:12px}
-        .sec-sub{font-size:16px;color:var(--sub);text-align:center;margin-bottom:40px}
-        .win{display:flex;gap:16px;align-items:flex-start;padding:20px;background:#fff;border:1px solid var(--line);
-            border-radius:16px;margin-bottom:12px}
-        .win .ic{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--tint);
-            display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--orange);font-weight:800}
-        .win h3{font-size:17px;font-weight:700;margin-bottom:3px}
+        .sec-h{font-size:28px;font-weight:800;letter-spacing:-0.03em;text-align:center;margin-bottom:12px}
+        .sec-sub{font-size:16px;color:var(--sub);text-align:center;margin-bottom:44px}
+
+        .wins{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+        .win{padding:24px;background:#fff;border:1px solid var(--line);border-radius:16px}
+        .win .ic{width:44px;height:44px;border-radius:12px;background:var(--tint);
+            display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--orange);font-weight:800;margin-bottom:14px}
+        .win h3{font-size:17px;font-weight:700;margin-bottom:6px}
         .win p{font-size:14px;color:var(--sub);line-height:1.5}
-        .plans{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-        .plan{border:1px solid var(--line);border-radius:16px;padding:24px 18px;text-align:center;background:#fff}
-        .plan.hl{border-color:var(--orange);border-width:2px;position:relative}
-        .plan .badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;
-            font-size:11px;font-weight:600;padding:3px 12px;border-radius:100px;white-space:nowrap}
-        .plan .pname{font-size:16px;font-weight:700;margin-bottom:6px}
-        .plan .price{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:2px}
-        .plan .price.free{color:var(--orange)}
-        .plan .per{font-size:12px;color:var(--sub);margin-bottom:14px}
-        .plan ul{list-style:none;text-align:left;font-size:13px;color:var(--ink)}
-        .plan li{padding:3px 0}.plan li::before{content:'✓ ';color:var(--orange);font-weight:700}
-        .pricing-note{text-align:center;font-size:13px;color:var(--sub);margin-top:20px}
+
+        /* 요금제 — 레퍼런스 스타일 */
+        .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+        .plan{padding:0;display:flex;flex-direction:column;border-right:1px solid var(--line);position:relative}
+        .plan:last-child{border-right:none}
+        .plan.hl{background:#FFFBF9;}
+        .plan .rec{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;
+            font-size:12px;font-weight:700;padding:4px 16px;border-radius:0 0 10px 10px;}
+        .plan .phead{text-align:center;padding:28px 20px 0;}
+        .plan.hl .phead{padding-top:36px;}
+        .plan .pname{font-size:18px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px;}
+        .plan .price{font-size:30px;font-weight:800;letter-spacing:-0.03em;line-height:1;}
+        .plan .price.free{color:var(--orange);}
+        .plan .per{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.5;min-height:32px;}
+        .plan .pbtn{margin:20px 20px 0;padding:12px;border-radius:10px;font-size:14px;font-weight:700;text-align:center;
+            text-decoration:none;display:block;border:1px solid var(--orange);color:var(--orange);}
+        .plan .pbtn.fill{background:var(--orange);color:#fff;}
+        .plan .pbtn:hover{background:var(--orange);color:#fff;}
+        .plan .pnote{font-size:11px;color:var(--sub);text-align:center;padding:10px 20px 0;min-height:34px;}
+        .plan .feats{list-style:none;padding:24px 20px 28px;margin-top:12px;border-top:1px solid var(--line);}
+        .plan .feats li{font-size:13px;padding:6px 0;padding-left:22px;position:relative;color:var(--ink);}
+        .plan .feats li::before{content:'✓';position:absolute;left:0;color:var(--orange);font-weight:700;}
+        .plan .feats li.off{color:#C4C2BB;}
+        .plan .feats li.off::before{content:'–';color:#C4C2BB;}
+        .pricing-note{text-align:center;font-size:13px;color:var(--sub);margin-top:24px;}
+
         .final{text-align:center;padding:72px 0}
-        .final h2{font-size:30px;font-weight:800;letter-spacing:-0.03em;margin-bottom:16px}
+        .final h2{font-size:32px;font-weight:800;letter-spacing:-0.03em;margin-bottom:8px}
         .final h2 .hl{color:var(--orange)}
-        @media(max-width:560px){.hero h1{font-size:30px}.plans{grid-template-columns:1fr}}
+        .final p{font-size:16px;color:var(--sub);margin-bottom:28px}
+
+        @media(max-width:720px){
+            .hero h1{font-size:30px}
+            .wins{grid-template-columns:1fr}
+            .plans{grid-template-columns:1fr}
+            .plan{border-right:none;border-bottom:1px solid var(--line)}
+            .plan:last-child{border-bottom:none}
+        }
     </style>
 </head>
 <body>
-<div class="topbar"><div class="wrap" style="width:100%;"><a class="logo" href="/">1RepPlus<span class="dot">.</span></a></div></div>
+<div class="topbar">
+    <div class="in">
+        <a class="logo" href="/">1RepPlus<span class="dot">.</span></a>
+        <a class="home" href="/me">← 홈으로</a>
+    </div>
+</div>
 
 <header class="hero">
     <div class="wrap">
         <span class="eyebrow">헬스장 파트너 모집</span>
         <h1>회원이 다시 등록하는<br><span class="hl">이유</span>를 만드세요</h1>
         <p>운동력을 매달 측정하고 성장을 숫자로 보여주면, 회원은 계속 옵니다.</p>
-        <a href="#apply" class="cta">헬스장 오픈 신청</a>
-        <div class="note">회원 10명까지 무료 · 설치 없음</div>
+        <a href="#pricing" class="cta">요금제 보기</a>
+        <div class="note">회원 10명까지 무료 · 설치 없음 · 카드 등록 없음</div>
     </div>
 </header>
 
 <section>
     <div class="wrap">
-        <div class="win">
-            <div class="ic">↗</div>
-            <div><h3>재등록으로 이어집니다</h3><p>회원이 자기 성장을 눈으로 확인하는 순간, 다음 달 등록의 이유가 생깁니다.</p></div>
-        </div>
-        <div class="win">
-            <div class="ic">◷</div>
-            <div><h3>측정 주기 = 방문 주기</h3><p>"측정할 때 됐어요" 한마디가 회원을 다시 부릅니다.</p></div>
-        </div>
-        <div class="win">
-            <div class="ic">◆</div>
-            <div><h3>3분이면 준비 끝</h3><p>3대 측정·기초 체력 프로그램 기본 제공. 승인되면 바로 측정할 수 있어요.</p></div>
+        <div class="wins">
+            <div class="win"><div class="ic">↗</div><h3>재등록으로 이어집니다</h3>
+                <p>회원이 자기 성장을 눈으로 확인하는 순간, 다음 달 등록의 이유가 생깁니다.</p></div>
+            <div class="win"><div class="ic">◷</div><h3>측정 주기 = 방문 주기</h3>
+                <p>"측정할 때 됐어요" 한마디가 회원을 다시 부릅니다.</p></div>
+            <div class="win"><div class="ic">◆</div><h3>3분이면 준비 끝</h3>
+                <p>3대 측정·기초 체력 프로그램 기본 제공. 승인되면 바로 측정할 수 있어요.</p></div>
         </div>
     </div>
 </section>
 
-<section style="background:#F6F5F1;">
+<section id="pricing" style="background:#F6F5F1;">
     <div class="wrap">
         <div class="sec-h">요금제</div>
         <div class="sec-sub">먼저 무료로 써보고, 회원이 늘면 그때 이야기해요</div>
+
         <div class="plans">
+            <!-- 무료 -->
+            <div class="plan">
+                <div class="phead">
+                    <div class="pname">무료</div>
+                    <div class="price free">10명</div>
+                    <div class="per">회원 10명까지<br>영구 무료</div>
+                </div>
+                <a href="/apply" class="pbtn fill">무료로 시작</a>
+                <div class="pnote">카드 등록 없이 바로 시작</div>
+                <ul class="feats">
+                    <li>측정·기록 무제한</li>
+                    <li>성장 그래프</li>
+                    <li>결과 카드 공유</li>
+                    <li>3대 측정·기초체력 제공</li>
+                    <li class="off">회원 11명 이상</li>
+                </ul>
+            </div>
+
+            <!-- 월간 (추천) -->
             <div class="plan hl">
-                <span class="badge">무료로 시작</span>
-                <div class="pname">무료</div>
-                <div class="price free">10명</div>
-                <div class="per">회원 10명까지</div>
-                <ul><li>측정·기록 무제한</li><li>성장 그래프</li><li>결과 카드 공유</li></ul>
+                <div class="rec">추천</div>
+                <div class="phead">
+                    <div class="pname">유료 월간</div>
+                    <div class="price">문의</div>
+                    <div class="per">회원 무제한<br>매월 결제</div>
+                </div>
+                <a href="/apply" class="pbtn fill">시작하기</a>
+                <div class="pnote">도입 상담 시 요금 안내</div>
+                <ul class="feats">
+                    <li>무료의 모든 기능</li>
+                    <li>회원 무제한</li>
+                    <li>측정 명단·리텐션 관리</li>
+                    <li>헬스장 공개·회원 유입</li>
+                    <li>우선 지원</li>
+                </ul>
             </div>
+
+            <!-- 연간 -->
             <div class="plan">
-                <div class="pname">유료 월간</div>
-                <div class="price">문의</div>
-                <div class="per">매월</div>
-                <ul><li>회원 무제한</li><li>모든 기능</li></ul>
-            </div>
-            <div class="plan">
-                <div class="pname">유료 연간</div>
-                <div class="price">문의</div>
-                <div class="per">연 단위 (할인)</div>
-                <ul><li>회원 무제한</li><li>모든 기능</li></ul>
+                <div class="phead">
+                    <div class="pname">유료 연간</div>
+                    <div class="price">문의</div>
+                    <div class="per">회원 무제한<br>연 단위 결제 (할인)</div>
+                </div>
+                <a href="/apply" class="pbtn">시작하기</a>
+                <div class="pnote">월간 대비 할인</div>
+                <ul class="feats">
+                    <li>월간의 모든 기능</li>
+                    <li>연 결제 할인</li>
+                    <li>회원 무제한</li>
+                    <li>측정 명단·리텐션 관리</li>
+                    <li>우선 지원</li>
+                </ul>
             </div>
         </div>
-        <div class="pricing-note">* 유료 요금은 도입 상담 시 안내드립니다.</div>
+        <div class="pricing-note">* 유료 요금은 도입 상담 시 안내드립니다. 부가세 별도.</div>
     </div>
 </section>
 
 <section id="apply" class="final">
     <div class="wrap">
         <h2>지금 <span class="hl">무료</span>로 시작하세요</h2>
+        <p>신청하면 운영자 확인 후 승인해드려요.</p>
         <a href="/apply" class="cta">헬스장 오픈 신청하기</a>
     </div>
 </section>

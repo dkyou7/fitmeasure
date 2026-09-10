@@ -1,6 +1,7 @@
 package com.iamnot.fitmeasure.admin;
 
 import com.iamnot.fitmeasure.club.ClubApplicationService;
+import com.iamnot.fitmeasure.club.ClubPlan;
 import com.iamnot.fitmeasure.club.ClubType;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,22 @@ public class AdminController {
                              Model model) {
         adminService.createClubForExistingMember(memberId, clubName, type);
         return "redirect:/admin";
+    }
+
+    @GetMapping("/clubs/{id}")
+    public String clubDetail(@PathVariable Long id, Model model) {
+        model.addAttribute("club", adminService.clubDetail(id));
+        model.addAttribute("plans", ClubPlan.values());
+        return "admin/club-detail";
+    }
+
+    @PostMapping("/clubs/{id}/plan")
+    public String changePlan(@PathVariable Long id,
+                             @RequestParam ClubPlan plan,
+                             @RequestParam(required = false)
+                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expiresAt) {
+        adminService.changePlan(id, plan, expiresAt);
+        return "redirect:/admin/clubs/" + id + "?saved";
     }
 
     @GetMapping("/members")

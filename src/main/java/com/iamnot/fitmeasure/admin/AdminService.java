@@ -3,16 +3,14 @@ package com.iamnot.fitmeasure.admin;
 import com.iamnot.fitmeasure.admin.dto.AdminClubRow;
 import com.iamnot.fitmeasure.admin.dto.AdminMemberRow;
 import com.iamnot.fitmeasure.admin.dto.AdminStats;
-import com.iamnot.fitmeasure.club.Club;
-import com.iamnot.fitmeasure.club.ClubRepository;
-import com.iamnot.fitmeasure.club.ClubStatus;
-import com.iamnot.fitmeasure.club.ClubType;
+import com.iamnot.fitmeasure.club.*;
 import com.iamnot.fitmeasure.measurement.template.MeasurementTemplateRepository;
 import com.iamnot.fitmeasure.member.*;
 import com.iamnot.fitmeasure.membership.Membership;
 import com.iamnot.fitmeasure.membership.MembershipRepository;
 import com.iamnot.fitmeasure.membership.MembershipRole;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -101,6 +99,36 @@ public class AdminService {
         Member m = cred.getMember();
         return new MemberSearchResult(m.getId(), username.trim(), m.getName());
     }
+
+    @Transactional(readOnly = true)
+    public AdminClubDetail clubDetail(Long clubId) {
+        Club c = clubRepository.findById(clubId).orElseThrow();
+        String ownerName = membershipRepository
+                .findByClubIdAndRoleOrderByNicknameAsc(clubId, MembershipRole.OWNER)
+                .stream().findFirst().map(Membership::getNickname).orElse("-");
+        return new AdminClubDetail(
+                c.getId(), c.getName(), c.getType().name(),
+                c.getPlan(), c.getPlan().getLabel(),
+                c.getRequestedPlan(), c.getRequestedPlan() != null ? c.getRequestedPlan().getLabel() : null,
+                c.getPlanExpiresAt(), c.getAddress(), c.getIntro(), ownerName,
+                membershipRepository.countClaimedMembers(clubId),
+                membershipRepository.countByClubIdAndRole(clubId, MembershipRole.STAFF),
+                c.isListed(), c.getCreatedAt().toLocalDate());
+    }
+
+    /** 운영자가 플랜을 직접 변경 (승인/전환/만료 통합) */
+    @Transactional
+    public void changePlan(Long clubId, ClubPlan plan, LocalDate expiresAt) {
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        club.setPlanManually(plan, expiresAt);   // 아래 Club 메서드
+    }
+
+    public record AdminClubDetail(
+            Long clubId, String name, String type,
+            ClubPlan plan, String planLabel,
+            ClubPlan requestedPlan, String requestedLabel,
+            LocalDate planExpiresAt, String address, String intro, String ownerName,
+            long memberCount, long staffCount, boolean listed, LocalDate createdAt) {}
 
     public record MemberSearchResult(Long memberId, String username, String name) {}
 
