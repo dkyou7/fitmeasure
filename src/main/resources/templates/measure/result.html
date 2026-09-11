@@ -45,8 +45,9 @@
         </div>
 
         <div th:each="r : ${result.rows}">
-            <!-- 항목 값 근처, rank 있을 때만 -->
-            <span class="rank" th:if="${r.rank != null}"
+            <!-- 순위는 트레이너(OWNER/STAFF)에게만 진단 정보로 노출 -->
+            <span class="rank" sec:authorize="hasAnyRole('OWNER','STAFF')"
+                  th:if="${r.rank != null}"
                   th:text="${r.rankTotal} + '명 중 ' + ${r.rank} + '위'">12명 중 3위</span>
             <div class="rrow" th:unless="${r.skipped}">
                 <span class="name" th:text="${r.name}">벤치프레스 1RM</span>
