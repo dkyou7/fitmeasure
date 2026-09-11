@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${program.name} + ' · 항목 관리'">프로그램 항목 관리</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .prog-wrap{max-width:720px;margin:0 auto;}
+            .back{font-size:14px;color:var(--sub);text-decoration:none;}
+            .back:hover{color:var(--orange);}
+            .addbox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:28px;}
+            .addbox .boxtitle{font-size:16px;font-weight:700;margin-bottom:4px;}
+            .addbox .boxsub{font-size:13px;color:var(--sub);margin-bottom:20px;}
+            .field{margin-bottom:18px;}
+            .field label{font-size:14px;font-weight:600;display:block;margin-bottom:4px;}
+            .field .help{font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.45;}
+            .field input,.field select{width:100%;padding:11px 13px;border:1px solid var(--line);
+                border-radius:10px;font-size:14px;font-family:inherit;}
+            .field input:focus,.field select:focus{outline:none;border-color:var(--orange);}
+            .add-btn{width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:10px;
+                font-size:15px;font-weight:700;cursor:pointer;}
+            .add-btn:hover{background:var(--orange-deep);}
+            .item-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;}
+            .item-card.inactive{opacity:0.5;}
+            .ic-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+            .ic-name{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;}
+            .ic-lock{font-size:11px;color:var(--orange);background:var(--tint);padding:3px 10px;border-radius:100px;white-space:nowrap;}
+            .ic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+            .ic-grid label{font-size:12px;color:var(--sub);display:block;margin-bottom:4px;}
+            .ic-grid input,.ic-grid select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;}
+            .ic-grid input:disabled,.ic-grid select:disabled{background:#F1EFE8;color:var(--sub);}
+            .ic-actions{display:flex;gap:8px;align-items:center;}
+            @media(max-width:600px){.ic-grid{grid-template-columns:1fr 1fr;}}
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="prog-wrap">
+        <a class="back" th:href="@{/programs/{id}(id=${program.templateId})}">← 프로그램 상세</a>
+        <h1 class="mt-2 mb-1" th:text="${program.name}">3대 측정</h1>
+        <p class="text-secondary mb-4">측정 항목을 추가하거나 수정할 수 있어요.</p>
+
+        <!-- 항목 추가 -->
+        <div class="addbox">
+            <div class="boxtitle">측정 항목 추가</div>
+            <div class="boxsub">회원이 측정받을 종목을 하나 추가합니다. 예를 들어 '벤치프레스', '플랭크' 같은 거예요.</div>
+
+            <div class="field">
+                <label>항목 이름</label>
+                <div class="help">측정할 종목 이름을 적어주세요. (예: 케틀벨 스윙, 턱걸이)</div>
+                <input type="text" name="name" id="i-name" placeholder="예: 케틀벨 스윙">
+            </div>
+
+            <div class="field">
+                <label>어떻게 측정하나요?</label>
+                <div class="help">이 종목의 결과를 무엇으로 기록할지 골라주세요.</div>
+                <select name="measurementType" id="i-type">
+                    <option value="NUMBER">숫자 — 무게나 거리 (예: 80kg, 15cm)</option>
+                    <option value="REPS">횟수 — 몇 번 했는지 (예: 팔굽혀펴기 30회)</option>
+                    <option value="TIME">시간 — 얼마나 오래/빨리 (예: 플랭크, 러닝)</option>
+                    <option value="SELECT">선택 — 정해진 보기 중 고르기</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>단위</label>
+                <div class="help">기록에 붙는 단위예요. 숫자는 kg·cm, 횟수는 회, 시간은 초로 적으면 돼요. (비워도 됩니다)</div>
+                <input type="text" name="unit" id="i-unit" placeholder="예: kg / 회 / 초 / cm">
+            </div>
+
+            <div class="field">
+                <label>어느 쪽이 더 좋은 기록인가요?</label>
+                <div class="help">성장 그래프 방향이 이걸로 정해져요. 벤치프레스는 '높을수록', 1km 달리기 기록은 '낮을수록' 좋죠.</div>
+                <select name="direction" id="i-dir">
+                    <option value="HIGHER_BETTER">높을수록 좋음 (무게·횟수 등)</option>
+                    <option value="LOWER_BETTER">낮을수록 좋음 (달리기 기록 등)</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>어떤 능력인가요?</label>
+                <div class="help">이 종목이 측정하는 신체 능력이에요. 나중에 회원의 강점·약점을 한눈에 보여줄 때 쓰여요.</div>
+                <select name="category" id="i-cat">
+                    <option value="STRENGTH">근력 — 최대 힘 (벤치·스쿼트 등)</option>
+                    <option value="ENDURANCE">근지구력 — 반복 버티기 (팔굽혀펴기 등)</option>
+                    <option value="CARDIO">심폐지구력 — 숨차는 운동 (달리기 등)</option>
+                    <option value="FLEXIBILITY">유연성 — 몸의 가동 범위 (스트레칭 등)</option>
+                    <option value="CORE">코어 — 몸통 안정성 (플랭크 등)</option>
+                    <option value="ETC">기타</option>
+                </select>
+            </div>
+
+            <button class="add-btn"
+                    th:hx-post="@{/programs/{id}/edit/items(id=${program.templateId})}"
+                    hx-include="#i-name,#i-type,#i-unit,#i-dir,#i-cat"
+                    hx-target="#itemTable" hx-swap="outerHTML"
+                    hx-on::after-request="document.getElementById('i-name').value='';document.getElementById('i-unit').value='';">
+                이 항목 추가하기
+            </button>
+        </div>
+
+        <!-- 현재 항목 목록 -->
+        <h2 class="mb-2" style="font-size:15px;color:var(--sub);font-weight:600;">현재 측정 항목</h2>
+        <div th:fragment="itemTable" id="itemTable">
+            <div class="text-secondary mb-3" style="font-size:13px;">
+                총 <span th:text="${program.items.size()}">3</span>개
+            </div>
+            <div class="item-card" th:each="i : ${program.items}" th:classappend="${!i.active} ? 'inactive'">
+                <form th:hx-post="@{/programs/{pid}/edit/items/{iid}(pid=${program.templateId},iid=${i.id})}"
+                      hx-target="#itemTable" hx-swap="outerHTML">
+                    <div class="ic-head">
+                        <input class="ic-name" name="name" th:value="${i.name}" placeholder="항목 이름">
+                        <span class="ic-lock" th:if="${i.locked}">측정값 있음 · 일부 잠김</span>
+                    </div>
+                    <div class="ic-grid">
+                        <div>
+                            <label>측정 방식</label>
+                            <select name="measurementType" th:disabled="${i.locked}">
+                                <option value="NUMBER" th:selected="${i.measurementType.name()=='NUMBER'}">숫자</option>
+                                <option value="REPS" th:selected="${i.measurementType.name()=='REPS'}">횟수</option>
+                                <option value="TIME" th:selected="${i.measurementType.name()=='TIME'}">시간</option>
+                                <option value="SELECT" th:selected="${i.measurementType.name()=='SELECT'}">선택</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>단위</label>
+                            <input name="unit" th:value="${i.unit}" th:disabled="${i.locked}" placeholder="kg/회/초">
+                        </div>
+                        <div>
+                            <label>방향</label>
+                            <select name="direction" th:disabled="${i.locked}">
+                                <option value="HIGHER_BETTER" th:selected="${i.direction.name()=='HIGHER_BETTER'}">높을수록↑</option>
+                                <option value="LOWER_BETTER" th:selected="${i.direction.name()=='LOWER_BETTER'}">낮을수록↓</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>능력</label>
+                            <select name="category">
+                                <option value="STRENGTH" th:selected="${i.category.name()=='STRENGTH'}">근력</option>
+                                <option value="ENDURANCE" th:selected="${i.category.name()=='ENDURANCE'}">근지구력</option>
+                                <option value="CARDIO" th:selected="${i.category.name()=='CARDIO'}">심폐</option>
+                                <option value="FLEXIBILITY" th:selected="${i.category.name()=='FLEXIBILITY'}">유연성</option>
+                                <option value="CORE" th:selected="${i.category.name()=='CORE'}">코어</option>
+                                <option value="ETC" th:selected="${i.category.name()=='ETC'}">기타</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- disabled 필드는 값이 안 넘어가므로 hidden으로 보존 -->
+                    <th:block th:if="${i.locked}">
+                        <input type="hidden" name="measurementType" th:value="${i.measurementType.name()}">
+                        <input type="hidden" name="unit" th:value="${i.unit}">
+                        <input type="hidden" name="direction" th:value="${i.direction.name()}">
+                    </th:block>
+                    <div class="ic-actions">
+                        <button type="submit" class="btn btn-sm btn-primary">저장</button>
+                        <button th:if="${i.active}" type="button" class="btn btn-sm btn-outline-secondary"
+                                th:hx-post="@{/programs/{pid}/edit/items/{iid}/deactivate(pid=${program.templateId},iid=${i.id})}"
+                                hx-target="#itemTable" hx-swap="outerHTML">비활성</button>
+                        <span th:unless="${i.active}" class="text-secondary" style="font-size:12px;">비활성됨</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
