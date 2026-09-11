@@ -21,4 +21,19 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
                                      @Param("itemId") Long itemId);
 
     boolean existsByTemplateItemId(Long templateItemId);
+
+    /** 순위 계산용 모집단: 같은 클럽·같은 템플릿·같은 항목의 유효 값 전체 (회원별 최신 선별은 서비스에서) */
+    @Query("""
+    select v from MeasurementValue v
+    join v.session s
+    where s.membership.club.id = :clubId
+      and s.template.id = :templateId
+      and v.templateItem.id = :itemId
+      and v.skipped = false
+      and v.valueNumber is not null
+    order by s.membership.id asc, s.measuredAt desc
+""")
+    List<MeasurementValue> findClubItemValues(@Param("clubId") Long clubId,
+                                              @Param("templateId") Long templateId,
+                                              @Param("itemId") Long itemId);
 }

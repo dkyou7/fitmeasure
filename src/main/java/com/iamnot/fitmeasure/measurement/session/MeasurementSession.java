@@ -61,6 +61,13 @@ public class MeasurementSession extends BaseEntity {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MeasurementValue> values = new ArrayList<>();
 
+    /** 측정 시점 신체 정보 (체중 대비 근력 분석 기준값, 선택) */
+    @Column
+    private Double bodyWeight;   // kg
+
+    @Column
+    private Double height;       // cm
+
     public MeasurementSession(Membership membership, MeasurementTemplate template,
                               Membership measuredBy, LocalDateTime measuredAt) {
         this.membership = membership;
@@ -77,6 +84,11 @@ public class MeasurementSession extends BaseEntity {
     public void enableShare(String token) {
         this.shareToken = token;
         this.shareEnabled = true;
+    }
+
+    public void recordBody(Double bodyWeight, Double height) {
+        this.bodyWeight = bodyWeight;
+        this.height = height;
     }
 
     public void disableShare() {

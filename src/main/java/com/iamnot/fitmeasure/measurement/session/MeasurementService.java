@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,9 @@ public class MeasurementService {
      */
     @Transactional
     public Long save(Long membershipId, Long programId,
-                     Map<Long, String> values, String note, AppPrincipal loginMember) {
+                     Map<Long, String> values, String note,
+                     Double bodyWeight, Double height,
+                     AppPrincipal loginMember) {
         Membership member = loadMember(membershipId);
         MeasurementTemplate program = loadProgram(programId);
         Membership measuredBy = currentMeasurer(loginMember);
@@ -62,6 +65,7 @@ public class MeasurementService {
         if (note != null && !note.isBlank()) {
             session.updateNote(note.trim());
         }
+        session.recordBody(bodyWeight, height);   // 체중·키 (null 허용)
 
         for (TemplateItem item : program.getItems()) {
             if (!item.isActive()) continue;
@@ -127,6 +131,7 @@ public class MeasurementService {
         }
 
         Long membershipId = session.getMembership().getId();
+        final Double sessionBodyWeight = session.getBodyWeight();   // 배수 계산 기준값
 
         List<ResultValueRow> rows = session.getValues().stream().map(v -> {
             TemplateItem item = v.getTemplateItem();
@@ -152,8 +157,14 @@ public class MeasurementService {
                     change = (cmp > 0 ? "+" : "") + diff.stripTrailingZeros().toPlainString();
                 }
             }
+            // row 만드는 스트림 안, return new ResultValueRow(...) 직전
+            int[] rankPair = clubRank(session, v, item);
+            Integer rank = rankPair != null ? rankPair[0] : null;
+            Integer rankTotal = rankPair != null ? rankPair[1] : null;
+
             return new ResultValueRow(item.getId(), item.getName(), item.getUnit(),
-                    display, v.isSkipped() ? "-" : change, improved, v.isSkipped());
+                    display, v.isSkipped() ? "-" : change, improved, v.isSkipped(),
+                    rank, rankTotal);
         }).toList();
 
         return new ResultView(session.getId(), membershipId,
@@ -238,5 +249,39 @@ public class MeasurementService {
                 member.getNickname(),
                 session.getMeasuredAt().toLocalDate(),
                 rows, hasTrend);
+    }
+
+    /**
+     * 클럽 내 순위: 같은 클럽·템플릿·항목에서 회원별 최신 값만 모아,
+     * 이 회원의 값이 몇 위인지 계산. [rank, total] 반환, 계산 불가 시 null.
+     */
+    private int[] clubRank(MeasurementSession session, MeasurementValue myValue, TemplateItem item) {
+        if (myValue.isSkipped() || myValue.getValueNumber() == null) return null;
+
+        Long clubId = session.getMembership().getClub().getId();
+        Long templateId = session.getTemplate().getId();
+
+        List<MeasurementValue> pop = valueRepository
+                .findClubItemValues(clubId, templateId, item.getId());
+
+        // 회원별 최신 1건만 (쿼리가 회원asc·측정일desc 정렬 → 회원별 첫 등장이 최신)
+        Map<Long, BigDecimal> latestByMember = new LinkedHashMap<>();
+        for (MeasurementValue v : pop) {
+            Long memberId = v.getSession().getMembership().getId();
+            latestByMember.putIfAbsent(memberId, v.getValueNumber());
+        }
+
+        int total = latestByMember.size();
+        if (total <= 1) return null;   // 나 혼자면 순위 의미 없음
+
+        boolean higherBetter = item.getDirection() == ScoreDirection.HIGHER_BETTER;
+        BigDecimal mine = myValue.getValueNumber();
+
+        long better = latestByMember.values().stream()
+                .filter(other -> higherBetter ? other.compareTo(mine) > 0
+                        : other.compareTo(mine) < 0)
+                .count();
+
+        return new int[]{ (int) better + 1, total };
     }
 }

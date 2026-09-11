@@ -5,8 +5,10 @@ public record ResultValueRow(
         Long itemId,
         String name,
         String unit,
-        String displayValue,   // 표시용(TIME은 2:10 포맷)
-        String changeLabel,    // "+5", "-12", "첫 측정" 등
-        boolean improved,      // 개선 여부(방향 반영)
-        boolean skipped
+        String displayValue,
+        String changeLabel,
+        boolean improved,
+        boolean skipped,
+        Integer rank,        // 클럽 내 순위 (1위=최상위, 계산 불가면 null)
+        Integer rankTotal    // 모집단 인원수 (분모)
 ) {}

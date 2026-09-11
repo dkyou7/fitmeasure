@@ -47,8 +47,22 @@ public class MeasurementController {
                         e -> Long.valueOf(e.getKey().substring(5)),
                         Map.Entry::getValue));
         String note = allParams.get("note");
-        Long sessionId = measurementService.save(membershipId, programId, values, note, loginMember);
+        Double bodyWeight = parseNullableDouble(allParams.get("bodyWeight"));
+        Double height = parseNullableDouble(allParams.get("height"));
+
+        Long sessionId = measurementService.save(
+                membershipId, programId, values, note, bodyWeight, height, loginMember);
         return "redirect:/measure/result/" + sessionId;
+    }
+
+    /** 빈 값·공백·숫자 아님은 null로 (선택 입력) */
+    private Double parseNullableDouble(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            return Double.valueOf(raw.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /** 측정 결과지 */

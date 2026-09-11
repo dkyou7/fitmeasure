@@ -24,6 +24,17 @@
             .msave{width:100%;padding:16px;background:var(--orange);color:#fff;border:none;border-radius:12px;
                 font-size:17px;font-weight:700;cursor:pointer;display:block;}
             .msave:hover{background:var(--orange-deep,#E64500);}
+            .mbody{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;}
+            .mbody .mname{font-size:17px;font-weight:700;margin-bottom:2px;}
+            .mbody .mdesc{font-size:13px;color:var(--sub);margin-bottom:12px;line-height:1.45;}
+            .mbody .brow{display:flex;gap:12px;}
+            .mbody .bcol{flex:1;}
+            .mbody .blabel{font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;}
+            .mbody .binput{display:flex;align-items:center;gap:8px;}
+            .mbody .binput input{flex:1;padding:14px;border:1px solid var(--line);border-radius:10px;
+                font-size:18px;font-family:inherit;font-weight:600;min-width:0;}
+            .mbody .binput input:focus{outline:none;border-color:var(--orange);}
+            .mbody .binput .munit{font-size:15px;color:var(--sub);}
         </style>
     </th:block>
 </head>
@@ -36,6 +47,30 @@
             <div class="mhead">
                 <div class="who" th:text="${form.memberNickname}">이름 없는 곰</div>
                 <div class="prog" th:text="${form.programName}">3대 측정</div>
+            </div>
+            <div class="mbody">
+                <div class="mname">신체 정보</div>
+                <div class="mdesc">채우면 체중 대비 근력까지 분석해드려요. 비워도 측정은 저장됩니다.</div>
+                <div class="brow">
+                    <div class="bcol">
+                        <label class="blabel" for="bodyWeight">체중</label>
+                        <div class="binput">
+                            <input type="number" step="0.1" min="20" max="300"
+                                   inputmode="decimal" id="bodyWeight" name="bodyWeight"
+                                   placeholder="비우면 건너뜀">
+                            <span class="munit">kg</span>
+                        </div>
+                    </div>
+                    <div class="bcol">
+                        <label class="blabel" for="height">키</label>
+                        <div class="binput">
+                            <input type="number" step="0.1" min="100" max="250"
+                                   inputmode="decimal" id="height" name="height"
+                                   placeholder="비우면 건너뜀">
+                            <span class="munit">cm</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="mitem" th:each="it : ${form.items}">
