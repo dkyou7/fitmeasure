@@ -65,7 +65,7 @@
                 <td class="text-end">
                     <div th:unless="${s.isOwner}" class="d-inline-flex gap-1">
                         <button class="btn btn-sm btn-outline-secondary"
-                                hx-confirm="이 트레이너를 일반 회원으로 강등할까요?"
+                                hx-confirm="관리 데이터가 모두 유실됩니다. 진행할까요?"
                                 th:hx-post="@{/owner/staff/{id}/demote(id=${s.membershipId})}"
                                 hx-target="#staffTable" hx-swap="outerHTML">회원으로</button>
                     </div>

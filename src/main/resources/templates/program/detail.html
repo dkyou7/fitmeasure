@@ -34,6 +34,11 @@
             .ic-grid input:disabled,.ic-grid select:disabled{background:#F1EFE8;color:var(--sub);}
             .ic-actions{display:flex;gap:8px;align-items:center;}
             @media(max-width:600px){.ic-grid{grid-template-columns:1fr 1fr;}}
+            .ranktbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+            .ranktbl th,.ranktbl td{padding:12px 14px;text-align:right;font-size:14px;border-bottom:1px solid var(--line);white-space:nowrap;}
+            .ranktbl th:nth-child(-n+2),.ranktbl td:nth-child(-n+2){text-align:left;}
+            .ranktbl thead th{background:#FAFAF8;color:var(--sub);font-weight:600;font-size:13px;}
+            .ranktbl tbody tr:last-child td{border-bottom:none;}
         </style>
     </th:block>
 </head>
@@ -167,6 +172,24 @@
                 </form>
             </div>
         </div>
+        <h2 class="md-h2">회원 순위</h2>
+        <div th:if="${ranking.rows.isEmpty()}" class="empty">아직 이 프로그램으로 측정한 회원이 없습니다.</div>
+        <table class="ranktbl" th:unless="${ranking.rows.isEmpty()}">
+            <thead>
+            <tr>
+                <th th:if="${ranking.totalRankable}">등수</th>
+                <th>이름</th>
+                <th th:each="n : ${ranking.itemNames}" th:text="${n}">벤치프레스 1RM</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${ranking.rows}">
+                <td th:if="${ranking.totalRankable}" th:text="${r.rank != null ? r.rank : '-'}">1</td>
+                <td th:text="${r.memberName}">김근육</td>
+                <td th:each="v : ${r.values}" th:text="${v != null ? v : '-'}">123</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 </body>

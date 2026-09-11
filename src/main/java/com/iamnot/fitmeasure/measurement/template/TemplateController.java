@@ -27,10 +27,11 @@ public class TemplateController {
         return "redirect:/programs/" + id;
     }
 
-    /** 프로그램 상세 (항목 관리) */
+    /** 프로그램 상세 (항목 관리 + 회원 순위) */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         addProgramModel(model, id);
+        model.addAttribute("ranking", templateService.getRanking(id));
         return "program/detail";
     }
 
