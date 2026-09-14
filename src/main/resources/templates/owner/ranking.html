@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:fragment="content">
+
+    <h4 class="mb-3">측정 순위</h4>
+
+    <!-- 상태 1: 숫자 측정 기록이 아예 없음 -->
+    <div th:if="${items.isEmpty()}" class="text-center py-5">
+        <p class="text-muted mb-3">아직 측정 기록이 없어요.<br>첫 측정을 진행하면 여기에 순위가 표시됩니다.</p>
+        <a class="btn btn-primary" th:href="@{/owner/staff}">트레이너 관리로 가기</a>
+    </div>
+
+    <!-- 상태 2: 정상 -->
+    <div th:unless="${items.isEmpty()}">
+
+        <form method="get" th:action="@{/owner/ranking}" class="mb-3">
+            <select name="itemId" class="form-select" onchange="this.form.submit()">
+                <option th:each="i : ${items}"
+                        th:value="${i.id}"
+                        th:text="${i.name} + (${i.unit} != null ? ' (' + ${i.unit} + ')' : '')"
+                        th:selected="${i.id == selected.id}"></option>
+            </select>
+        </form>
+
+        <p class="text-muted small mb-2">
+            <span th:text="${selected.direction.name() == 'HIGHER_BETTER'} ? '값이 클수록 상위' : '값이 작을수록 상위'"></span>
+            · 회원별 최고 기록 기준
+        </p>
+
+        <table class="table table-sm align-middle">
+            <thead>
+            <tr>
+                <th style="width:60px">순위</th>
+                <th>회원</th>
+                <th class="text-end">기록</th>
+                <th class="text-end" style="width:110px">측정일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <td th:text="${row.rank}"></td>
+                <td th:text="${row.memberName}"></td>
+                <td class="text-end">
+                    <strong th:text="${row.value}"></strong>
+                    <span class="text-muted" th:text="${selected.unit}"></span>
+                </td>
+                <td class="text-end text-muted small"
+                    th:text="${#temporals.format(row.measuredAt, 'yyyy.MM.dd')}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+</body>
+</html>
