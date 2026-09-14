@@ -14,7 +14,6 @@ import java.util.List;
  * 네이티브 앱은 CORS 대상이 아니므로 운영에는 필요 없다.
  */
 @Configuration
-@Profile("dev")
 public class DevCorsConfig {
 
     @Bean
