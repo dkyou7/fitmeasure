@@ -17,8 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberRepository memberRepository;
-    private final MemberCredentialRepository credentialRepository;
+    private final SocialMemberService socialMemberService;
     private final MembershipRepository membershipRepository;
 
     @Override
@@ -29,10 +28,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuthInfo info = extract(registrationId, oauth.getAttributes());
 
-        Member member = credentialRepository
-                .findByProviderAndProviderId(info.provider(), info.providerId())
-                .map(MemberCredential::getMember)
-                .orElseGet(() -> createSocialMember(info));
+        // 앱 토큰 발급과 동일한 경로로 회원을 찾거나 만든다
+        Member member = socialMemberService.findOrCreate(info.provider(), info.providerId());
 
         List<Membership> memberships =
                 membershipRepository.findLoginableByMemberId(member.getId());
@@ -64,14 +61,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             default -> throw new IllegalStateException("지원하지 않는 소셜 로그인: " + registrationId);
         };
-    }
-
-    private Member createSocialMember(OAuthInfo info) {
-        Member m = Member.create();
-        memberRepository.save(m);
-        credentialRepository.save(
-                MemberCredential.social(m, info.provider(), info.providerId(), null));
-        return m;
     }
 
     private record OAuthInfo(AuthProvider provider, String providerId, String nickname) {}
