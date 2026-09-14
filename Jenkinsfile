@@ -30,6 +30,7 @@ pipeline {
                     string(credentialsId: 'fitmeasure_KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
                     string(credentialsId: 'fitmeasure_NAVER_CLIENT_ID', variable: 'NAVER_CLIENT_ID'),
                     string(credentialsId: 'fitmeasure_NAVER_CLIENT_SECRET', variable: 'NAVER_CLIENT_SECRET'),
+                    string(credentialsId: 'fitmeasure_JWT_SECRET', variable: 'JWT_SECRET'),
                 ]) {
                     sh '''
                     docker rm -f $CONTAINER || true
@@ -43,6 +44,7 @@ pipeline {
                       -e KAKAO_CLIENT_SECRET="$KAKAO_CLIENT_SECRET" \
                       -e NAVER_CLIENT_ID="$NAVER_CLIENT_ID" \
                       -e NAVER_CLIENT_SECRET="$NAVER_CLIENT_SECRET" \
+                      -e JWT_SECRET="$JWT_SECRET" \
                       --restart unless-stopped \
                       $IMAGE
                     '''
