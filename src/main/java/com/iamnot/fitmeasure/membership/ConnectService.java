@@ -6,6 +6,7 @@ import com.iamnot.fitmeasure.config.CurrentClub;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.member.Member;
 import com.iamnot.fitmeasure.member.MemberRepository;
+import com.iamnot.fitmeasure.member.dto.ConnectCodeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,18 @@ public class ConnectService {
         connectCodeRepository.save(
                 new ConnectCode(member, code, LocalDateTime.now().plusMinutes(EXPIRE_MINUTES)));
         return code;
+    }
+
+    /** 연결 코드와 만료 시각을 함께 발급 (앱 API용) */
+    @Transactional
+    public ConnectCodeResponse issueCodeWithExpiry(AppPrincipal principal) {
+        Member member = memberRepository.findById(principal.memberId()).orElseThrow();
+        connectCodeRepository.markAllUsedByMemberId(member.getId());
+
+        String code = String.format("%06d", ThreadLocalRandom.current().nextInt(1_000_000));
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(EXPIRE_MINUTES);
+        connectCodeRepository.save(new ConnectCode(member, code, expiresAt));
+        return new ConnectCodeResponse(code, expiresAt);
     }
 
     @Transactional

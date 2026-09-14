@@ -3,10 +3,13 @@ package com.iamnot.fitmeasure.member.api;
 import com.iamnot.fitmeasure.config.security.AppPrincipal;
 import com.iamnot.fitmeasure.member.MemberFeedService;
 import com.iamnot.fitmeasure.member.dto.ClubSummary;
+import com.iamnot.fitmeasure.member.dto.ConnectCodeResponse;
+import com.iamnot.fitmeasure.membership.ConnectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class MemberApiController {
 
     private final MemberFeedService feedService;
+    private final ConnectService connectService;
 
     @GetMapping("/records")
     public ResponseEntity<List<ClubSummary>> records(@AuthenticationPrincipal AppPrincipal principal) {
@@ -29,5 +33,13 @@ public class MemberApiController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(feedService.myClubs(principal));
+    }
+
+    @PostMapping("/connect-code")
+    public ResponseEntity<ConnectCodeResponse> connectCode(@AuthenticationPrincipal AppPrincipal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(connectService.issueCodeWithExpiry(principal));
     }
 }
